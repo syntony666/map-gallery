@@ -1,0 +1,35 @@
+[
+  {
+    "districtId": "臺北市",
+    "coverImage": "/images/taipei-cover.jpg",
+    "description": "台北城市景點與照片集合。",
+    "items": [
+      {
+        "id": "taipei-001",
+        "title": "台北 101",
+        "thumbnail": "/images/taipei-001-thumb.jpg",
+        "image": "/images/taipei-001.jpg",
+        "summary": "城市地標。",
+        "description": "可作為首頁代表內容。"
+      }
+    ]
+  },
+  {
+    "districtId": "臺中市",
+    "coverImage": "/images/taichung-cover.jpg",
+    "description": "台中景點與照片集合。",
+    "items": []
+  },
+  {
+    "districtId": "高雄市",
+    "coverImage": "/images/kaohsiung-cover.jpg",
+    "description": "高雄景點與照片集合。",
+    "items": []
+  },
+  {
+    "districtId": "連江縣",
+    "coverImage": "/images/kaohsiung-cover.jpg",
+    "description": "高雄景點與照片集合。",
+    "items": []
+  }
+]

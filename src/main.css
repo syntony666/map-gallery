@@ -1,0 +1,64 @@
+@import "leaflet/dist/leaflet.css";
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-page {
+  width: 100vw;
+  height: 100vh;
+  background: #f3f3f3;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+.leaflet-container img {
+  max-width: none !important;
+}
+
+.leaflet-tooltip-pane:focus,
+path:focus {
+  outline: none !important;
+}
+
+.county-tooltip {
+  background: rgba(255, 255, 255, 0.92);
+  border: 0;
+  border-radius: 999px;
+  color: #1f3d3d;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.map-hover-label {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  color: #1f3d3d;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 14px;
+}
+
+.leaflet-popup-content {
+  margin: 12px;
+  min-width: 220px;
+}
