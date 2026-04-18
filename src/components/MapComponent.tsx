@@ -1,20 +1,11 @@
-import { useMemo, useState, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  Marker,
-  Popup,
-  useMap,
-} from "react-leaflet";
+import { useMemo, useState } from "react";
+import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 import type { LatLngExpression, Layer, LeafletMouseEvent } from "leaflet";
 import taiwanCounties from "../data/twcounty.json";
 import pins from "../data/pins.json";
 import districts from "../data/districts.json";
-import {
-  DistrictPopup,
-  type DistrictPopupData,
-} from "../components/DistrictPopup";
+import { DistrictPopup, type DistrictPopupData } from "./DistrictPopup";
+import { HoverLabel } from "./HoverLabel";
 
 type Pin = {
   districtId: string;
@@ -40,11 +31,6 @@ type DistrictContent = {
   items: Item[];
 };
 
-type HoverLabelProps = {
-  districtName: string;
-  position: [number, number];
-};
-
 const taiwanCenter: LatLngExpression = [23.7, 121];
 
 const taiwanBounds: [[number, number], [number, number]] = [
@@ -67,40 +53,7 @@ function getFeatureDistrictId(feature: GeoJSON.Feature | undefined): string {
   );
 }
 
-function HoverLabel({ districtName, position }: HoverLabelProps) {
-  const map = useMap();
-  const [point, setPoint] = useState(() =>
-    map.latLngToContainerPoint(position),
-  );
-
-  useEffect(() => {
-    function updatePoint() {
-      setPoint(map.latLngToContainerPoint(position));
-    }
-
-    updatePoint();
-
-    map.on("move zoom resize", updatePoint);
-
-    return () => {
-      map.off("move zoom resize", updatePoint);
-    };
-  }, [map, position]);
-
-  return (
-    <div
-      className="map-hover-label"
-      style={{
-        left: `${point.x}px`,
-        top: `${point.y}px`,
-      }}
-    >
-      {districtName}
-    </div>
-  );
-}
-
-export function MapPage() {
+export function MapComponent() {
   const [hoveredDistrictId, setHoveredDistrictId] = useState<string | null>(
     null,
   );
@@ -170,7 +123,7 @@ export function MapPage() {
 
     return {
       color: "#ffffff",
-      weight: 1.5,
+      weight: 1,
       fillColor: "#8fd3d1",
       fillOpacity: 0.18,
     };
@@ -214,69 +167,67 @@ export function MapPage() {
   }
 
   return (
-    <div className="map-page">
-      <MapContainer
-        center={taiwanCenter}
-        zoom={8}
-        minZoom={7}
-        maxZoom={10}
-        maxBounds={taiwanBounds}
-        maxBoundsViscosity={1.0}
-        keyboard={false}
-        style={{ width: "100%", height: "100vh" }}
-      >
-        <TileLayer
-          attribution="&copy; OpenStreetMap contributors &copy; CARTO"
-          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
+    <MapContainer
+      center={taiwanCenter}
+      zoom={8}
+      minZoom={7}
+      maxZoom={9}
+      maxBounds={taiwanBounds}
+      maxBoundsViscosity={1.0}
+      keyboard={false}
+      className="w-full h-full"
+    >
+      <TileLayer
+        attribution="&copy; OpenStreetMap contributors &copy; CARTO"
+        url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
+      />
+
+      <GeoJSON
+        key={geoJsonKey}
+        data={taiwanCounties as GeoJSON.GeoJsonObject}
+        style={(feature) => getPolygonStyle(getFeatureDistrictId(feature))}
+        onEachFeature={onEachFeature}
+      />
+
+      {pins.map((pin: Pin) => (
+        <Marker
+          key={pin.districtId}
+          opacity={0}
+          position={[pin.lat, pin.lng]}
+          eventHandlers={{
+            mouseover: () => {
+              handleDistrictHover(pin.districtId, [pin.lat, pin.lng]);
+            },
+            mouseout: () => {
+              handleDistrictLeave(pin.districtId);
+            },
+            click: () => {
+              handleDistrictClick(pin.districtId, [pin.lat, pin.lng]);
+            },
+          }}
         />
+      ))}
 
-        <GeoJSON
-          key={geoJsonKey}
-          data={taiwanCounties as GeoJSON.GeoJsonObject}
-          style={(feature) => getPolygonStyle(getFeatureDistrictId(feature))}
-          onEachFeature={onEachFeature}
+      {hoveredDistrictId && hoveredPosition && (
+        <HoverLabel
+          districtName={hoveredDistrictId}
+          position={hoveredPosition}
         />
+      )}
 
-        {pins.map((pin: Pin) => (
-          <Marker
-            key={pin.districtId}
-            opacity={0}
-            position={[pin.lat, pin.lng]}
-            eventHandlers={{
-              mouseover: () => {
-                handleDistrictHover(pin.districtId, [pin.lat, pin.lng]);
-              },
-              mouseout: () => {
-                handleDistrictLeave(pin.districtId);
-              },
-              click: () => {
-                handleDistrictClick(pin.districtId, [pin.lat, pin.lng]);
-              },
-            }}
-          />
-        ))}
-
-        {hoveredDistrictId && hoveredPosition && (
-          <HoverLabel
-            districtName={hoveredDistrictId}
-            position={hoveredPosition}
-          />
-        )}
-
-        {selectedPopupPosition && (
-          <Popup
-            position={selectedPopupPosition}
-            eventHandlers={{
-              remove: () => {
-                setSelectedDistrictId(null);
-                setSelectedPopupPosition(null);
-              },
-            }}
-          >
-            <DistrictPopup district={selectedDistrict} />
-          </Popup>
-        )}
-      </MapContainer>
-    </div>
+      {selectedPopupPosition && (
+        <Popup
+          position={selectedPopupPosition}
+          eventHandlers={{
+            remove: () => {
+              setSelectedDistrictId(null);
+              setSelectedPopupPosition(null);
+            },
+          }}
+        >
+          <DistrictPopup district={selectedDistrict} />
+        </Popup>
+      )}
+    </MapContainer>
   );
 }

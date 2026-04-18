@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { MapPage } from "./pages/MapPage";
 import "./main.css";
+import { HomePage } from "./pages/HomePage";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <MapPage />
+    <HomePage />
   </React.StrictMode>,
 );
