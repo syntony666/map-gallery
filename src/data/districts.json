@@ -2,7 +2,7 @@
   {
     "districtId": "臺北市",
     "coverImage": "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=85",
-    "description": "台北城市景點、街景與日常照片集合。",
+    "description": "台北好貴 爛台北",
     "items": [
       {
         "id": "taipei-001",
@@ -12,7 +12,7 @@
         "image": "https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=85",
         "summary": "從信義區街角望向台北 101。",
         "description": "傍晚的台北 101 與信義商圈街景，可作為台北城市地標代表內容。",
-        "collections": ["地標", "傍晚", "123"]
+        "collections": ["地標", "傍晚", "123", "8888"]
       },
       {
         "id": "taipei-002",

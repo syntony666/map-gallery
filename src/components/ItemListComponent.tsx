@@ -9,7 +9,7 @@ export function ItemListComponent({ district, items }: ItemListProps) {
   return (
     <section className="mt-6">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">所有景點</h2>
+        <h2 className="text-lg font-semibold">所有相片</h2>
 
         <span className="text-sm text-stone-500">{items.length} 個項目</span>
       </div>

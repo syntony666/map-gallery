@@ -69,9 +69,9 @@ export function DistrictPage() {
             <div className="font-bold text-lg text-stone-700">←</div>
 
             <span className="min-w-0">
-              <span className="block truncate text-2xl font-bold sm:text-3xl text-stone-700">
+              <p className="truncate text-2xl font-bold sm:text-3xl text-stone-700">
                 {district.districtId}
-              </span>
+              </p>
             </span>
           </button>
         </div>
@@ -83,15 +83,16 @@ export function DistrictPage() {
         >
           ＋ 新增照片
         </button>
-      </header>
-
+      </header>{" "}
+      <p className="truncate my-6 text-sm text-stone-600">
+        {district.description}
+      </p>
       {/* 橫向圖片列 */}
       <CollectionComponent
         collections={collections}
         collectionName={collectionName}
         onSelect={toggleCollection}
       ></CollectionComponent>
-
       {/* 搜尋、篩選與排序列 */}
       <DistrictToolbarComponent
         keyword={keyword}
@@ -99,7 +100,6 @@ export function DistrictPage() {
         onKeywordChange={setKeyword}
         onSortChange={setSort}
       />
-
       {/* 景點卡片區 */}
       <ItemListComponent
         items={visibleItems}

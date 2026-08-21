@@ -14,7 +14,7 @@ export function CollectionComponent({
   if (!collections || collections.length === 0) {
     return (
       <div className="flex h-28 w-full items-center justify-center rounded-lg bg-stone-100 text-sm text-stone-500">
-        此行政區目前還沒有照片
+        目前沒有相簿
       </div>
     );
   }
