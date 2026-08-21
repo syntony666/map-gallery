@@ -1,4 +1,5 @@
 import type { Item } from "../type/item.type";
+import { EmptyState } from "./EmptyState";
 
 export type ItemListProps = {
   district: string;
@@ -15,9 +16,7 @@ export function ItemListComponent({ district, items }: ItemListProps) {
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-stone-300 bg-white p-10 text-center text-stone-500">
-          找不到符合條件的內容
-        </div>
+        <EmptyState title="" description="找不到符合條件的內容" />
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {items.map((item) => (

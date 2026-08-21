@@ -1,4 +1,5 @@
 import type { CollectionGroup } from "../type/item.type";
+import { EmptyState } from "./EmptyState";
 
 export type CollectionProps = {
   collections: CollectionGroup[] | null;
@@ -12,11 +13,7 @@ export function CollectionComponent({
   onSelect,
 }: CollectionProps) {
   if (!collections || collections.length === 0) {
-    return (
-      <div className="flex h-28 w-full items-center justify-center rounded-lg bg-stone-100 text-sm text-stone-500">
-        目前沒有相簿
-      </div>
-    );
+    return <EmptyState title="" description="目前沒有相簿" />;
   }
   return (
     <section className="flex gap-3 overflow-x-auto pb-2 my-4">
