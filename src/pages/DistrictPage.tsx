@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionComponent } from "../components/CollectionComponent";
-import type { Item } from "../type/item.type";
 import { DistrictToolbarComponent } from "../components/DistrictToolbarComponent";
 import { useDistrictFilters } from "../hooks/useDistrictFilters";
+import { ItemListComponent } from "../components/ItemListComponent";
 
 export function DistrictPage() {
   const { districtId } = useParams();
@@ -12,6 +12,7 @@ export function DistrictPage() {
   const district = districts.find(
     (district) => district.districtId === districtId,
   );
+  const items = district?.items ?? [];
 
   const {
     keyword,
@@ -22,28 +23,11 @@ export function DistrictPage() {
     toggleCollection,
     collections,
     visibleItems,
-  } = useDistrictFilters(district?.items as Item[]);
+  } = useDistrictFilters(items);
 
   if (!district) {
     return (
-      <main className="mx-auto max-w-6xl p-6">
-        <button
-          type="button"
-          onClick={() => navigate("/")}
-          className="rounded bg-gray-100 px-3 py-2 text-sm"
-        >
-          ← 回到地圖
-        </button>
-
-        <h1 className="mt-6 text-2xl font-bold">找不到這個行政區</h1>
-      </main>
-    );
-  }
-
-  return (
-    <main className="min-h-screen bg-stone-50 text-stone-800">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-        {/* 標題列 */}
+      <main className="mx-auto p-6">
         <header className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
@@ -55,82 +39,72 @@ export function DistrictPage() {
               ←
             </button>
 
-            <h1 className="text-2xl font-bold sm:text-3xl">
-              {district.districtId}
-            </h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">{districtId}</h1>
           </div>
 
           <button
             type="button"
             onClick={() => alert("上傳功能尚未開放")}
-            className="rounded bg-teal-600 px-3 py-2 text-sm text-white"
+            className="rounded bg-stone-600 px-3 py-2 text-sm text-white"
           >
             ＋ 新增照片
           </button>
         </header>
+        <h1 className="mt-6 text-2xl font-bold">目前還沒有資料</h1>
+      </main>
+    );
+  }
 
-        {/* 橫向圖片列 */}
-        <CollectionComponent
-          collections={collections}
-          collectionName={collectionName}
-          onSelect={toggleCollection}
-        ></CollectionComponent>
+  return (
+    <div className="mx-auto px-4 py-6 sm:px-6">
+      {/* 標題列 */}
+      <header className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="flex min-w-0 items-center gap-2 rounded p-2 text-xl hover:bg-stone-200"
+            aria-label="回到地圖"
+          >
+            <div className="font-bold text-lg text-stone-700">←</div>
 
-        {/* 搜尋、篩選與排序列 */}
-        <DistrictToolbarComponent
-          keyword={keyword}
-          sort={sort}
-          onKeywordChange={setKeyword}
-          onSortChange={setSort}
-        />
-
-        {/* 景點卡片區 */}
-        <section className="mt-6">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">所有景點</h2>
-
-            <span className="text-sm text-stone-500">
-              {visibleItems.length} 個項目
+            <span className="min-w-0">
+              <span className="block truncate text-2xl font-bold sm:text-3xl text-stone-700">
+                {district.districtId}
+              </span>
             </span>
-          </div>
+          </button>
+        </div>
 
-          {visibleItems.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-stone-300 bg-white p-10 text-center text-stone-500">
-              找不到符合條件的內容
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {visibleItems.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() =>
-                    navigate(`/district/${district.districtId}/item/${item.id}`)
-                  }
-                  className="overflow-hidden rounded-xl bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                >
-                  <img
-                    src={item.thumbnail || item.image}
-                    alt={item.title}
-                    className="aspect-square w-full object-cover"
-                    loading="lazy"
-                  />
+        <button
+          type="button"
+          onClick={() => alert("上傳功能尚未開放")}
+          className="rounded bg-stone-200 px-3 py-2 text-sm"
+        >
+          ＋ 新增照片
+        </button>
+      </header>
 
-                  <div className="p-3">
-                    <h3 className="truncate font-medium">{item.title}</h3>
+      {/* 橫向圖片列 */}
+      <CollectionComponent
+        collections={collections}
+        collectionName={collectionName}
+        onSelect={toggleCollection}
+      ></CollectionComponent>
 
-                    {item.summary && (
-                      <p className="mt-1 line-clamp-2 text-sm text-stone-500">
-                        {item.summary}
-                      </p>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
-    </main>
+      {/* 搜尋、篩選與排序列 */}
+      <DistrictToolbarComponent
+        keyword={keyword}
+        sort={sort}
+        onKeywordChange={setKeyword}
+        onSortChange={setSort}
+      />
+
+      {/* 景點卡片區 */}
+      <ItemListComponent
+        items={visibleItems}
+        district={district.districtId}
+      ></ItemListComponent>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { Item, SortOption } from "../type/item.type";
 
 export function useDistrictFilters(items: Item[]) {
+
   const [keyword, setKeyword] = useState("");
   const [collectionName, setCollectionName] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
@@ -21,7 +22,9 @@ export function useDistrictFilters(items: Item[]) {
     return Array.from(groups, ([collection, items]) => ({
       name: collection,
       items,
-    }));
+    })).sort((a, b) =>
+      b.items[0].date.localeCompare(a.items[0].date, "zh-Hant"),
+    );
   }, [items]);
 
   const visibleItems = useMemo(() => {
