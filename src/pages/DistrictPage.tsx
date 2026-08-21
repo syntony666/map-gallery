@@ -1,71 +1,28 @@
-import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionComponent } from "../components/CollectionComponent";
-import type { Item, SortOption } from "../type/item.type";
+import type { Item } from "../type/item.type";
 import { DistrictToolbarComponent } from "../components/DistrictToolbarComponent";
+import { useDistrictFilters } from "../hooks/useDistrictFilters";
 
 export function DistrictPage() {
   const { districtId } = useParams();
   const navigate = useNavigate();
 
-  const [keyword, setKeyword] = useState("");
-  const [sort, setSort] = useState("newest" as SortOption);
-  const [collectionSelected, setCollectionSelected] = useState("");
-
   const district = districts.find(
     (district) => district.districtId === districtId,
   );
 
-  const collections = useMemo(() => {
-    if (!district) {
-      return null;
-    }
-
-    const groups = new Map<string, Item[]>();
-
-    district.items.forEach((item) => {
-      item.collections?.forEach((collection) => {
-        const items = groups.get(collection) ?? [];
-
-        items.push(item);
-
-        groups.set(collection, items);
-      });
-    });
-
-    return Array.from(groups, ([collection, items]) => ({
-      name: collection,
-      items,
-    }));
-  }, [district]);
-
-  const items = useMemo(() => {
-    if (!district) return [];
-
-    const filtered = district.items
-      .filter((item) =>
-        collectionSelected === ""
-          ? true
-          : item.collections?.includes(collectionSelected),
-      )
-      .filter((item) => {
-        const content = [item.title, item.summary, item.description]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        return content.includes(keyword.toLowerCase());
-      });
-
-    return [...filtered].sort((a, b) => {
-      if (sort === "title") {
-        return a.title.localeCompare(b.title, "zh-Hant");
-      }
-
-      return 0;
-    });
-  }, [district, keyword, sort, collectionSelected]);
+  const {
+    keyword,
+    setKeyword,
+    sort,
+    setSort,
+    collectionName,
+    toggleCollection,
+    collections,
+    visibleItems,
+  } = useDistrictFilters(district?.items as Item[]);
 
   if (!district) {
     return (
@@ -115,7 +72,8 @@ export function DistrictPage() {
         {/* 橫向圖片列 */}
         <CollectionComponent
           collections={collections}
-          onCollectionSelect={setCollectionSelected}
+          collectionName={collectionName}
+          onSelect={toggleCollection}
         ></CollectionComponent>
 
         {/* 搜尋、篩選與排序列 */}
@@ -132,22 +90,22 @@ export function DistrictPage() {
             <h2 className="text-lg font-semibold">所有景點</h2>
 
             <span className="text-sm text-stone-500">
-              {items.length} 個項目
+              {visibleItems.length} 個項目
             </span>
           </div>
 
-          {items.length === 0 ? (
+          {visibleItems.length === 0 ? (
             <div className="rounded-lg border border-dashed border-stone-300 bg-white p-10 text-center text-stone-500">
               找不到符合條件的內容
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {items.map((item) => (
+              {visibleItems.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() =>
-                    navigate(`/district/${district.id}/item/${item.id}`)
+                    navigate(`/district/${district.districtId}/item/${item.id}`)
                   }
                   className="overflow-hidden rounded-xl bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 >

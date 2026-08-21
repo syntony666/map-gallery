@@ -1,24 +1,16 @@
-import { useState } from "react";
 import type { CollectionGroup } from "../type/item.type";
 
 export type CollectionProps = {
   collections: CollectionGroup[] | null;
-  onCollectionSelect: (value: string) => void;
+  collectionName: string;
+  onSelect: (value: string) => void;
 };
 
 export function CollectionComponent({
   collections,
-  onCollectionSelect,
+  collectionName,
+  onSelect,
 }: CollectionProps) {
-  const [collectionName, setCollectionName] = useState("");
-
-  const onCollectionClick = (collection: CollectionGroup) => {
-    setCollectionName(
-      collectionName === collection.name ? "" : collection.name,
-    );
-    onCollectionSelect(collectionName);
-  };
-
   if (!collections || collections.length === 0) {
     return (
       <div className="flex h-28 w-full items-center justify-center rounded-lg bg-stone-100 text-sm text-stone-500">
@@ -32,7 +24,7 @@ export function CollectionComponent({
         <button
           key={collection.name}
           type="button"
-          onClick={() => onCollectionClick(collection)}
+          onClick={() => onSelect(collection.name)}
           className={`shrink-0 overflow-hidden 
             ${collectionName === "" || collectionName === collection.name ? "" : "opacity-60"}`}
           aria-label={`查看：${collection.name}`}

@@ -6,7 +6,7 @@ export type Item = {
   image: string;
   summary?: string;
   description?: string;
-  collections: string[];
+  collections?: string[];
 };
 
 export type CollectionGroup = {
