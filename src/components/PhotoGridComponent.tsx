@@ -1,12 +1,12 @@
 import type { Photo } from "../type/photo.type";
 import { EmptyState } from "./EmptyState";
 
-export type PhotoListProps = {
+export type PhotoGridProps = {
   district: string;
   photos: Photo[];
 };
 
-export function PhotoListComponent({ district, photos }: PhotoListProps) {
+export function PhotoGridComponent({ district, photos }: PhotoGridProps) {
   return (
     <section className="mt-6">
       <div className="mb-3 flex photos-center justify-between">

@@ -2,22 +2,22 @@ import type { CollectionGroup } from "../type/photo.type";
 import { EmptyState } from "./EmptyState";
 
 export type CollectionProps = {
-  collections: CollectionGroup[] | null;
+  collectionGroup: CollectionGroup[] | null;
   collectionName: string;
   onSelect: (value: string) => void;
 };
 
 export function CollectionComponent({
-  collections,
+  collectionGroup,
   collectionName,
   onSelect,
 }: CollectionProps) {
-  if (!collections || collections.length === 0) {
+  if (!collectionGroup || collectionGroup.length === 0) {
     return <EmptyState title="" description="目前沒有相簿" />;
   }
   return (
     <section className="flex gap-3 overflow-x-auto pb-2 my-4">
-      {collections.map((collection) => (
+      {collectionGroup.map((collection) => (
         <button
           key={collection.name}
           type="button"

@@ -3,7 +3,7 @@ import districts from "../data/districts.json";
 import { CollectionComponent } from "../components/CollectionComponent";
 import { DistrictToolbarComponent } from "../components/DistrictToolbarComponent";
 import { useDistrictFilters } from "../hooks/useDistrictFilters";
-import { PhotoListComponent } from "../components/PhotoListComponent";
+import { PhotoGridComponent } from "../components/PhotoGridComponent";
 import type { TitleBarButton } from "../type/title-bar.type";
 import { TitleBarComponent } from "../components/TitleBarComponent";
 import type { District } from "../type/district";
@@ -33,7 +33,7 @@ function DistrictContent({ district }: DistrictContentProps) {
     setSort,
     collectionName,
     toggleCollection,
-    collections,
+    collectionGroup,
     visiblePhotos,
   } = useDistrictFilters(district.photos);
 
@@ -48,7 +48,7 @@ function DistrictContent({ district }: DistrictContentProps) {
       </p>
       {/* 橫向圖片列 */}
       <CollectionComponent
-        collections={collections}
+        collectionGroup={collectionGroup}
         collectionName={collectionName}
         onSelect={toggleCollection}
       ></CollectionComponent>
@@ -64,7 +64,7 @@ function DistrictContent({ district }: DistrictContentProps) {
         <EmptyState title="" description="你來早了 這裡什麼都沒有" />
       )}
       {!isDistrictEmpty && (
-        <PhotoListComponent district={district.id} photos={visiblePhotos} />
+        <PhotoGridComponent district={district.id} photos={visiblePhotos} />
       )}
     </div>
   );

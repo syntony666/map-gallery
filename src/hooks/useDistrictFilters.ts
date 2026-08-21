@@ -6,7 +6,7 @@ export function useDistrictFilters(photos: Photo[]) {
   const [collectionName, setCollectionName] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
 
-  const collections = useMemo(() => {
+  const collectionGroup = useMemo(() => {
     const groups = new Map<string, Photo[]>();
 
     photos.forEach((photo) => {
@@ -73,7 +73,7 @@ export function useDistrictFilters(photos: Photo[]) {
     setCollectionName,
     toggleCollection,
 
-    collections,
+    collectionGroup,
     visiblePhotos,
   };
 }
