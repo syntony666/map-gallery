@@ -1,13 +1,13 @@
 import { useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
-import { CollectionComponent } from "../components/CollectionComponent";
-import { DistrictToolbarComponent } from "../components/DistrictToolbarComponent";
+import { CollectionBar } from "../components/district/CollectionBar";
+import { DistrictToolbar } from "../components/district/DistrictToolbar";
 import { useDistrictFilters } from "../hooks/useDistrictFilters";
-import { PhotoGridComponent } from "../components/PhotoGridComponent";
-import type { TitleBarButton } from "../type/title-bar.type";
-import { TitleBarComponent } from "../components/TitleBarComponent";
-import type { District } from "../type/district";
-import { EmptyState } from "../components/EmptyState";
+import { PhotoGrid } from "../components/district/PhotoGrid";
+import type { TitleBarButton } from "../types/title-bar.type";
+import { TitleBar } from "../components/common/TitleBar";
+import type { District } from "../types/district";
+import { EmptyState } from "../components/common/EmptyState";
 
 export function DistrictPage() {
   const { districtId } = useParams();
@@ -47,13 +47,13 @@ function DistrictContent({ district }: DistrictContentProps) {
         {district.description}
       </p>
       {/* 橫向圖片列 */}
-      <CollectionComponent
+      <CollectionBar
         collectionGroup={collectionGroup}
         collectionName={collectionName}
         onSelect={toggleCollection}
-      ></CollectionComponent>
+      ></CollectionBar>
       {/* 搜尋、篩選與排序列 */}
-      <DistrictToolbarComponent
+      <DistrictToolbar
         keyword={keyword}
         sort={sort}
         onKeywordChange={setKeyword}
@@ -64,7 +64,7 @@ function DistrictContent({ district }: DistrictContentProps) {
         <EmptyState title="" description="你來早了 這裡什麼都沒有" />
       )}
       {!isDistrictEmpty && (
-        <PhotoGridComponent district={district.id} photos={visiblePhotos} />
+        <PhotoGrid district={district.id} photos={visiblePhotos} />
       )}
     </div>
   );
@@ -92,7 +92,7 @@ function TitleBarContent({ districtName }: { districtName: string }) {
     },
   ];
   return (
-    <TitleBarComponent
+    <TitleBar
       districtName={districtName}
       onBack={() => navigate("/")}
       buttons={titleButtons}

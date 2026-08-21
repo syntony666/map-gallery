@@ -1,4 +1,4 @@
-import type { SortOption } from "../type/photo.type";
+import type { SortOption } from "../../types/photo.type";
 
 type PhotoToolbarProps = {
   keyword: string;
@@ -7,7 +7,7 @@ type PhotoToolbarProps = {
   onSortChange: (value: SortOption) => void;
 };
 
-export function DistrictToolbarComponent({
+export function DistrictToolbar({
   keyword,
   sort,
   onKeywordChange,

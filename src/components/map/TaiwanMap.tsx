@@ -1,22 +1,22 @@
 import { useMemo, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 import type { LatLngExpression, Layer, LeafletMouseEvent } from "leaflet";
-import taiwanCounties from "../data/twcounty.json";
-import pins from "../data/pins.json";
-import districts from "../data/districts.json";
+import taiwanCounties from "../../data/twcounty.json";
+import pins from "../../data/pins.json";
+import districts from "../../data/districts.json";
 import { DistrictPopup, type DistrictPopupData } from "./DistrictPopup";
-import { HoverLabel } from "./HoverLabel";
-import type { Photo } from "../type/photo.type";
+import { DistrictHoverLabel } from "./DistrictHoverLabel";
+import type { Photo } from "../../types/photo.type";
 
 type Pin = {
-  districtId: string;
+  id: string;
   lat: number;
   lng: number;
   iconType?: string;
 };
 
 type DistrictContent = {
-  districtId: string;
+  id: string;
   districtName?: string;
   coverImage?: string;
   description?: string;
@@ -30,8 +30,8 @@ const taiwanBounds: [[number, number], [number, number]] = [
   [27.0, 124.0],
 ];
 
-function getDistrictContent(districtId: string): DistrictContent | undefined {
-  return districts.find((district) => district.id === districtId);
+function getDistrictContent(id: string): DistrictContent | undefined {
+  return districts.find((district) => district.id === id);
 }
 
 function getFeatureDistrictId(feature: GeoJSON.Feature | undefined): string {
@@ -45,7 +45,7 @@ function getFeatureDistrictId(feature: GeoJSON.Feature | undefined): string {
   );
 }
 
-export function MapComponent() {
+export function TaiwanMap() {
   const [hoveredDistrictId, setHoveredDistrictId] = useState<string | null>(
     null,
   );
@@ -60,30 +60,22 @@ export function MapComponent() {
     [number, number] | null
   >(null);
 
-  function handleDistrictHover(
-    districtId: string,
-    hoverPosition?: [number, number],
-  ) {
-    if (selectedDistrictId === districtId) return;
+  function handleDistrictHover(id: string, hoverPosition?: [number, number]) {
+    if (selectedDistrictId === id) return;
 
-    setHoveredDistrictId(districtId);
+    setHoveredDistrictId(id);
 
     if (hoverPosition) {
       setHoveredPosition(hoverPosition);
     }
   }
-  function handleDistrictLeave(districtId: string) {
-    setHoveredDistrictId((current) =>
-      current === districtId ? null : current,
-    );
+  function handleDistrictLeave(id: string) {
+    setHoveredDistrictId((current) => (current === id ? null : current));
     setHoveredPosition(null);
   }
 
-  function handleDistrictClick(
-    districtId: string,
-    popupPosition?: [number, number],
-  ) {
-    setSelectedDistrictId(districtId);
+  function handleDistrictClick(id: string, popupPosition?: [number, number]) {
+    setSelectedDistrictId(id);
 
     if (popupPosition) {
       setSelectedPopupPosition(popupPosition);
@@ -91,9 +83,9 @@ export function MapComponent() {
     setHoveredPosition(null);
   }
 
-  function getPolygonStyle(districtId: string) {
-    const isSelected = selectedDistrictId === districtId;
-    const isHovered = hoveredDistrictId === districtId;
+  function getPolygonStyle(id: string) {
+    const isSelected = selectedDistrictId === id;
+    const isHovered = hoveredDistrictId === id;
 
     if (isSelected) {
       return {
@@ -126,14 +118,14 @@ export function MapComponent() {
   }, [hoveredDistrictId, selectedDistrictId]);
 
   function getSelectedDistrictData(
-    districtId: string | null,
+    id: string | null,
   ): DistrictPopupData | null {
-    if (!districtId) return null;
+    if (!id) return null;
 
-    const content = getDistrictContent(districtId);
+    const content = getDistrictContent(id);
 
     return {
-      districtId: content?.id ?? selectedDistrictId ?? "查無行政區",
+      id: content?.id ?? selectedDistrictId ?? "查無行政區",
       coverImage: content?.coverImage,
       description: content?.description,
       photos: content?.photos ?? [],
@@ -143,17 +135,17 @@ export function MapComponent() {
   const selectedDistrict = getSelectedDistrictData(selectedDistrictId);
 
   function onEachFeature(feature: GeoJSON.Feature, layer: Layer) {
-    const districtId = getFeatureDistrictId(feature);
+    const id = getFeatureDistrictId(feature);
 
     layer.on({
       mouseover: (e: LeafletMouseEvent) => {
-        handleDistrictHover(districtId, [e.latlng.lat, e.latlng.lng]);
+        handleDistrictHover(id, [e.latlng.lat, e.latlng.lng]);
       },
       mouseout: () => {
-        handleDistrictLeave(districtId);
+        handleDistrictLeave(id);
       },
       click: (e: LeafletMouseEvent) => {
-        handleDistrictClick(districtId, [e.latlng.lat, e.latlng.lng]);
+        handleDistrictClick(id, [e.latlng.lat, e.latlng.lng]);
       },
     });
   }
@@ -203,7 +195,7 @@ export function MapComponent() {
       ))}
       {/* 自製游標移入高亮 */}
       {hoveredDistrictId && hoveredPosition && (
-        <HoverLabel
+        <DistrictHoverLabel
           districtName={hoveredDistrictId}
           position={hoveredPosition}
         />

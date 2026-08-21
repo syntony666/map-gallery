@@ -1,7 +1,7 @@
 import type { Photo } from "../type/photo.type";
 
 export type DistrictPopupData = {
-  districtId: string;
+  id: string;
   coverImage?: string;
   description?: string;
   photos: Photo[];

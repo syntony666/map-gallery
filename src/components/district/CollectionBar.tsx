@@ -1,5 +1,5 @@
-import type { CollectionGroup } from "../type/photo.type";
-import { EmptyState } from "./EmptyState";
+import type { CollectionGroup } from "../../types/photo.type";
+import { EmptyState } from "../common/EmptyState";
 
 export type CollectionProps = {
   collectionGroup: CollectionGroup[] | null;
@@ -7,7 +7,7 @@ export type CollectionProps = {
   onSelect: (value: string) => void;
 };
 
-export function CollectionComponent({
+export function CollectionBar({
   collectionGroup,
   collectionName,
   onSelect,

@@ -1,12 +1,12 @@
-import type { Photo } from "../type/photo.type";
-import { EmptyState } from "./EmptyState";
+import type { Photo } from "../../types/photo.type";
+import { EmptyState } from "../common/EmptyState";
 
 export type PhotoGridProps = {
   district: string;
   photos: Photo[];
 };
 
-export function PhotoGridComponent({ district, photos }: PhotoGridProps) {
+export function PhotoGrid({ district, photos }: PhotoGridProps) {
   return (
     <section className="mt-6">
       <div className="mb-3 flex photos-center justify-between">

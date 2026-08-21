@@ -6,7 +6,10 @@ type HoverLabelProps = {
   position: [number, number];
 };
 
-export function HoverLabel({ districtName, position }: HoverLabelProps) {
+export function DistrictHoverLabel({
+  districtName,
+  position,
+}: HoverLabelProps) {
   const map = useMap();
   const [point, setPoint] = useState(() =>
     map.latLngToContainerPoint(position),

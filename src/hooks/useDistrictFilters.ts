@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { Photo, SortOption } from "../type/photo.type";
+import type { Photo, SortOption } from "../types/photo.type";
 
 export function useDistrictFilters(photos: Photo[]) {
   const [keyword, setKeyword] = useState("");

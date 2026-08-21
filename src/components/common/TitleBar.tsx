@@ -6,7 +6,7 @@ type TitleBarComponentProps = {
   buttons?: TitleBarButton[];
 };
 
-export function TitleBarComponent({
+export function TitleBar({
   districtName,
   onBack,
   buttons = [],
