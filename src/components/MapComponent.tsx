@@ -6,21 +6,13 @@ import pins from "../data/pins.json";
 import districts from "../data/districts.json";
 import { DistrictPopup, type DistrictPopupData } from "./DistrictPopup";
 import { HoverLabel } from "./HoverLabel";
+import type { Item } from "../type/item.type";
 
 type Pin = {
   districtId: string;
   lat: number;
   lng: number;
   iconType?: string;
-};
-
-type Item = {
-  id: string;
-  title: string;
-  thumbnail?: string;
-  image: string;
-  summary?: string;
-  description?: string;
 };
 
 type DistrictContent = {

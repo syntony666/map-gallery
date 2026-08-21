@@ -11,7 +11,8 @@
         "thumbnail": "https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=400&q=80",
         "image": "https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=85",
         "summary": "從信義區街角望向台北 101。",
-        "description": "傍晚的台北 101 與信義商圈街景，可作為台北城市地標代表內容。"
+        "description": "傍晚的台北 101 與信義商圈街景，可作為台北城市地標代表內容。",
+        "collections": ["地標", "傍晚"]
       },
       {
         "id": "taipei-002",
@@ -20,7 +21,8 @@
         "thumbnail": "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=400&q=80",
         "image": "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1600&q=85",
         "summary": "河岸散步與夕陽時刻。",
-        "description": "沿著淡水河河岸散步，記錄大稻埕碼頭黃昏的光線與城市輪廓。"
+        "description": "沿著淡水河河岸散步，記錄大稻埕碼頭黃昏的光線與城市輪廓。",
+        "collections": ["地標", "傍晚"]
       },
       {
         "id": "taipei-003",
@@ -29,7 +31,8 @@
         "thumbnail": "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=400&q=80",
         "image": "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1600&q=85",
         "summary": "人潮、招牌與台北夜生活。",
-        "description": "西門町街頭的霓虹、行人與店家招牌，呈現熱鬧的夜間城市節奏。"
+        "description": "西門町街頭的霓虹、行人與店家招牌，呈現熱鬧的夜間城市節奏。",
+        "collections": ["地標", "夜晚"]
       },
       {
         "id": "taipei-004",
@@ -38,7 +41,8 @@
         "thumbnail": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=400&q=80",
         "image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1600&q=85",
         "summary": "俯瞰台北盆地與城市天際線。",
-        "description": "從象山步道的觀景點遠望信義區，適合做為城市與自然交界的照片紀錄。"
+        "description": "從象山步道的觀景點遠望信義區，適合做為城市與自然交界的照片紀錄。",
+        "collections": ["自然景觀"]
       },
       {
         "id": "taipei-005",

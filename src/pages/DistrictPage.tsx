@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
+import { CollectionComponent } from "../components/CollectionComponent";
+import type { Item } from "../type/item.type";
 
 export function DistrictPage() {
   const { districtId } = useParams();
@@ -12,6 +14,29 @@ export function DistrictPage() {
   const district = districts.find(
     (district) => district.districtId === districtId,
   );
+
+  const collections = useMemo(() => {
+    if (!district) {
+      return null;
+    }
+
+    const groups = new Map<string, Item[]>();
+
+    district.items.forEach((item) => {
+      item.collections?.forEach((collection) => {
+        const items = groups.get(collection) ?? [];
+
+        items.push(item);
+
+        groups.set(collection, items);
+      });
+    });
+
+    return Array.from(groups, ([collection, items]) => ({
+      name: collection,
+      items,
+    }));
+  }, [district]);
 
   const items = useMemo(() => {
     if (!district) return [];
@@ -81,31 +106,10 @@ export function DistrictPage() {
 
         {/* 橫向圖片列 */}
         <section className="mt-6">
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {district.items.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() =>
-                  navigate(`/district/${district.districtId}/item/${item.id}`)
-                }
-                className="shrink-0 overflow-hidden rounded-full bg-stone-200"
-                aria-label={`查看：${item.title}`}
-              >
-                <img
-                  src={item.thumbnail || item.image}
-                  alt={item.title}
-                  className="h-18 w-18 object-cover sm:h-24 sm:w-24"
-                />
-              </button>
-            ))}
-
-            {district.items.length === 0 && (
-              <div className="flex h-28 w-full items-center justify-center rounded-lg bg-stone-100 text-sm text-stone-500">
-                此行政區目前還沒有照片
-              </div>
-            )}
-          </div>
+          <CollectionComponent
+            collections={collections}
+            district={district.districtId}
+          ></CollectionComponent>
         </section>
 
         {/* 搜尋、篩選與排序列 */}

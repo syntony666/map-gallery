@@ -1,11 +1,4 @@
-type Item = {
-  id: string;
-  title: string;
-  thumbnail?: string;
-  image: string;
-  summary?: string;
-  description?: string;
-};
+import type { Item } from "../type/item.type";
 
 export type DistrictPopupData = {
   districtId: string;
