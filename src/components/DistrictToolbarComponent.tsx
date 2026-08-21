@@ -1,6 +1,6 @@
-import type { SortOption } from "../type/item.type";
+import type { SortOption } from "../type/photo.type";
 
-type ItemToolbarProps = {
+type PhotoToolbarProps = {
   keyword: string;
   sort: SortOption;
   onKeywordChange: (value: string) => void;
@@ -12,9 +12,9 @@ export function DistrictToolbarComponent({
   sort,
   onKeywordChange,
   onSortChange,
-}: ItemToolbarProps) {
+}: PhotoToolbarProps) {
   return (
-    <section className="flex flex-wrap items-center border-y border-stone-200 gap-3 py-4">
+    <section className="flex flex-wrap photos-center border-y border-stone-200 gap-3 py-4">
       <input
         type="search"
         value={keyword}

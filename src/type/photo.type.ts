@@ -1,4 +1,4 @@
-export type Item = {
+export type Photo = {
   id: string;
   title: string;
   date: string;
@@ -11,7 +11,7 @@ export type Item = {
 
 export type CollectionGroup = {
   name: string;
-  items: Item[];
+  photos: Photo[];
 };
 
 export type SortOption = "newest" | "oldest" | "title";

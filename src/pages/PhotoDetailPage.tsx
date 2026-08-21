@@ -2,12 +2,10 @@ import { useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 
 export function PhotoDetailPage() {
-  const { districtId, itemId } = useParams();
+  const { districtId, photoId } = useParams();
   const navigate = useNavigate();
 
-  const district = districts.find(
-    (district) => district.districtId === districtId,
-  );
+  const district = districts.find((district) => district.id === districtId);
 
   if (!district) {
     return (
@@ -33,18 +31,18 @@ export function PhotoDetailPage() {
     );
   }
 
-  const item = district.items.find((item) => item.id === itemId);
+  const photo = district.photos.find((photo) => photo.id === photoId);
 
-  if (!item) {
+  if (!photo) {
     return (
       <main className="min-h-screen">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
           <button
             type="button"
-            onClick={() => navigate(`/district/${district.districtId}`)}
+            onClick={() => navigate(`/district/${district.id}`)}
             className="rounded px-2 py-1 text-sm hover:bg-stone-100"
           >
-            ← {district.districtId} Snaps
+            ← {district.id} Snaps
           </button>
 
           <section className="mt-10 text-center">
@@ -64,15 +62,15 @@ export function PhotoDetailPage() {
       <header>
         <button
           type="button"
-          onClick={() => navigate(`/district/${district.districtId}`)}
-          className="flex min-w-0 items-center gap-2 rounded p-2 text-xl hover:bg-stone-200"
-          aria-label={`返回 ${district.districtId} Snaps`}
+          onClick={() => navigate(`/district/${district.id}`)}
+          className="flex min-w-0 photos-center gap-2 rounded p-2 text-xl hover:bg-stone-200"
+          aria-label={`返回 ${district.id} Snaps`}
         >
           <div className="font-bold text-lg text-stone-700">←</div>
 
           <span className="min-w-0">
             <p className="truncate text-2xl font-bold sm:text-3xl text-stone-700">
-              {district.districtId}
+              {district.id}
             </p>
           </span>
         </button>
@@ -81,30 +79,30 @@ export function PhotoDetailPage() {
       <article className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,2fr)] lg:gap-10">
         <div className="aspect-square bg-stone-950 lg:aspect-4/3">
           <img
-            src={item.image}
-            alt={item.title}
+            src={photo.image}
+            alt={photo.title}
             className="h-full w-full object-contain"
           />
         </div>
 
         <section className="lg:pt-1">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{item.title}</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{photo.title}</h1>
 
             <time className="mt-1 block text-sm text-stone-500">
-              {item.date}
+              {photo.date}
             </time>
           </div>
 
-          {item.collections?.length && item.collections.length > 0 && (
+          {photo.collections?.length && photo.collections.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2">
-              {item.collections.map((collection) => (
+              {photo.collections.map((collection) => (
                 <button
                   key={collection}
                   type="button"
                   onClick={() =>
                     navigate(
-                      `/district/${district.districtId}?collection=${encodeURIComponent(collection)}`,
+                      `/district/${district.id}?collection=${encodeURIComponent(collection)}`,
                     )
                   }
                   className="text-sm text-teal-700 hover:text-teal-900"
@@ -115,15 +113,15 @@ export function PhotoDetailPage() {
             </div>
           )}
 
-          {item.summary && (
+          {photo.summary && (
             <p className="mt-6 font-medium leading-7 text-stone-700">
-              {item.summary}
+              {photo.summary}
             </p>
           )}
 
-          {item.description && (
+          {photo.description && (
             <p className="mt-3 whitespace-pre-line text-sm leading-7 text-stone-600">
-              {item.description}
+              {photo.description}
             </p>
           )}
         </section>

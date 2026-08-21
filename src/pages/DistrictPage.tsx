@@ -3,7 +3,7 @@ import districts from "../data/districts.json";
 import { CollectionComponent } from "../components/CollectionComponent";
 import { DistrictToolbarComponent } from "../components/DistrictToolbarComponent";
 import { useDistrictFilters } from "../hooks/useDistrictFilters";
-import { ItemListComponent } from "../components/ItemListComponent";
+import { PhotoListComponent } from "../components/PhotoListComponent";
 import type { TitleBarButton } from "../type/title-bar.type";
 import { TitleBarComponent } from "../components/TitleBarComponent";
 import type { District } from "../type/district";
@@ -12,9 +12,7 @@ import { EmptyState } from "../components/EmptyState";
 export function DistrictPage() {
   const { districtId } = useParams();
 
-  const district = districts.find(
-    (district) => district.districtId === districtId,
-  );
+  const district = districts.find((district) => district.id === districtId);
 
   if (!district) {
     return <TitleBarContent districtName={districtId as string} />;
@@ -36,15 +34,15 @@ function DistrictContent({ district }: DistrictContentProps) {
     collectionName,
     toggleCollection,
     collections,
-    visibleItems,
-  } = useDistrictFilters(district.items);
+    visiblePhotos,
+  } = useDistrictFilters(district.photos);
 
-  const isDistrictEmpty = !district.items.length;
+  const isDistrictEmpty = !district.photos.length;
 
   return (
     <div className="mx-auto px-4 py-6 sm:px-6">
       {/* 標題列 */}
-      <TitleBarContent districtName={district.districtId} />
+      <TitleBarContent districtName={district.id} />
       <p className="truncate my-4 text-sm text-stone-600">
         {district.description}
       </p>
@@ -66,10 +64,7 @@ function DistrictContent({ district }: DistrictContentProps) {
         <EmptyState title="" description="你來早了 這裡什麼都沒有" />
       )}
       {!isDistrictEmpty && (
-        <ItemListComponent
-          district={district.districtId}
-          items={visibleItems}
-        />
+        <PhotoListComponent district={district.id} photos={visiblePhotos} />
       )}
     </div>
   );
@@ -91,7 +86,7 @@ function TitleBarContent({ districtName }: { districtName: string }) {
       label: "新增相片",
       icon: "bi-plus-lg",
       // onClick: () => {
-      //   navigate(`/district/${district.districtId}/item/new/edit`);
+      //   navigate(`/district/${district.id}/photo/new/edit`);
       // },
       onClick: () => alert("上傳功能尚未開放"),
     },

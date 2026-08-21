@@ -1,40 +1,39 @@
 import { useMemo, useState } from "react";
-import type { Item, SortOption } from "../type/item.type";
+import type { Photo, SortOption } from "../type/photo.type";
 
-export function useDistrictFilters(items: Item[]) {
-
+export function useDistrictFilters(photos: Photo[]) {
   const [keyword, setKeyword] = useState("");
   const [collectionName, setCollectionName] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
 
   const collections = useMemo(() => {
-    const groups = new Map<string, Item[]>();
+    const groups = new Map<string, Photo[]>();
 
-    items.forEach((item) => {
-      item.collections?.forEach((collection) => {
-        const items = groups.get(collection) ?? [];
+    photos.forEach((photo) => {
+      photo.collections?.forEach((collection) => {
+        const photos = groups.get(collection) ?? [];
 
-        items.push(item);
+        photos.push(photo);
 
-        groups.set(collection, items);
+        groups.set(collection, photos);
       });
     });
-    return Array.from(groups, ([collection, items]) => ({
+    return Array.from(groups, ([collection, photos]) => ({
       name: collection,
-      items,
+      photos,
     })).sort((a, b) =>
-      b.items[0].date.localeCompare(a.items[0].date, "zh-Hant"),
+      b.photos[0].date.localeCompare(a.photos[0].date, "zh-Hant"),
     );
-  }, [items]);
+  }, [photos]);
 
-  const visibleItems = useMemo(() => {
+  const visiblePhotos = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
 
-    const filteredItems = items.filter((item) => {
+    const filteredPhotos = photos.filter((photo) => {
       const matchesCollection =
-        !collectionName || item.collections?.includes(collectionName);
+        !collectionName || photo.collections?.includes(collectionName);
 
-      const searchableText = [item.title, item.summary, item.description]
+      const searchableText = [photo.title, photo.summary, photo.description]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -45,7 +44,7 @@ export function useDistrictFilters(items: Item[]) {
       return matchesCollection && matchesKeyword;
     });
 
-    return [...filteredItems].sort((a, b) => {
+    return [...filteredPhotos].sort((a, b) => {
       switch (sort) {
         case "newest":
           return b.date.localeCompare(a.date);
@@ -57,7 +56,7 @@ export function useDistrictFilters(items: Item[]) {
           return a.title.localeCompare(b.title, "zh-Hant");
       }
     });
-  }, [items, keyword, collectionName, sort]);
+  }, [photos, keyword, collectionName, sort]);
 
   function toggleCollection(collection: string) {
     setCollectionName((current) => (current === collection ? "" : collection));
@@ -75,6 +74,6 @@ export function useDistrictFilters(items: Item[]) {
     toggleCollection,
 
     collections,
-    visibleItems,
+    visiblePhotos,
   };
 }

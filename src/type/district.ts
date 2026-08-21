@@ -1,8 +1,8 @@
-import type { Item } from "./item.type";
+import type { Photo } from "./photo.type";
 
 export type District = {
-  districtId: string;
+  id: string;
   coverImage?: string;
   description?: string;
-  items: Item[];
+  photos: Photo[];
 };

@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
     Component: DistrictPage,
   },
   {
-    path: "/district/:districtId/item/:itemId",
+    path: "/district/:districtId/photo/:photoId",
     Component: PhotoDetailPage,
   },
 ]);

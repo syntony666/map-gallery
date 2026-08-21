@@ -6,7 +6,7 @@ import pins from "../data/pins.json";
 import districts from "../data/districts.json";
 import { DistrictPopup, type DistrictPopupData } from "./DistrictPopup";
 import { HoverLabel } from "./HoverLabel";
-import type { Item } from "../type/item.type";
+import type { Photo } from "../type/photo.type";
 
 type Pin = {
   districtId: string;
@@ -20,7 +20,7 @@ type DistrictContent = {
   districtName?: string;
   coverImage?: string;
   description?: string;
-  items: Item[];
+  photos: Photo[];
 };
 
 const taiwanCenter: LatLngExpression = [23.7, 121];
@@ -31,7 +31,7 @@ const taiwanBounds: [[number, number], [number, number]] = [
 ];
 
 function getDistrictContent(districtId: string): DistrictContent | undefined {
-  return districts.find((district) => district.districtId === districtId);
+  return districts.find((district) => district.id === districtId);
 }
 
 function getFeatureDistrictId(feature: GeoJSON.Feature | undefined): string {
@@ -133,10 +133,10 @@ export function MapComponent() {
     const content = getDistrictContent(districtId);
 
     return {
-      districtId: content?.districtId ?? selectedDistrictId ?? "查無行政區",
+      districtId: content?.id ?? selectedDistrictId ?? "查無行政區",
       coverImage: content?.coverImage,
       description: content?.description,
-      items: content?.items ?? [],
+      photos: content?.photos ?? [],
     };
   }
 
@@ -185,18 +185,18 @@ export function MapComponent() {
       {/* 地圖自帶元件：錨點 */}
       {pins.map((pin: Pin) => (
         <Marker
-          key={pin.districtId}
+          key={pin.id}
           opacity={0}
           position={[pin.lat, pin.lng]}
           eventHandlers={{
             mouseover: () => {
-              handleDistrictHover(pin.districtId, [pin.lat, pin.lng]);
+              handleDistrictHover(pin.id, [pin.lat, pin.lng]);
             },
             mouseout: () => {
-              handleDistrictLeave(pin.districtId);
+              handleDistrictLeave(pin.id);
             },
             click: () => {
-              handleDistrictClick(pin.districtId, [pin.lat, pin.lng]);
+              handleDistrictClick(pin.id, [pin.lat, pin.lng]);
             },
           }}
         />

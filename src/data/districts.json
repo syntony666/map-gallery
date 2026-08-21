@@ -1,9 +1,9 @@
 [
   {
-    "districtId": "臺北市",
+    "id": "臺北市",
     "coverImage": "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=85",
     "description": "台北好貴 爛台北",
-    "items": [
+    "photos": [
       {
         "id": "taipei-001",
         "title": "台北 101",
@@ -66,17 +66,17 @@
   },
 
   {
-    "districtId": "新北市",
+    "id": "新北市",
     "coverImage": "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=85",
     "description": "跟台北市一樣爛",
-    "items": []
+    "photos": []
   },
 
   {
-    "districtId": "臺中市",
+    "id": "臺中市",
     "coverImage": "https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=1600&q=85",
     "description": "台中景點、建築、街區與旅行照片集合。",
-    "items": [
+    "photos": [
       {
         "id": "taichung-001",
         "title": "高美濕地",
@@ -126,10 +126,10 @@
   },
 
   {
-    "districtId": "高雄市",
+    "id": "高雄市",
     "coverImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=85",
     "description": "高雄港灣、老街、藝術空間與城市日常照片集合。",
-    "items": [
+    "photos": [
       {
         "id": "kaohsiung-001",
         "title": "駁二藝術特區",
@@ -170,10 +170,10 @@
   },
 
   {
-    "districtId": "連江縣",
+    "id": "連江縣",
     "coverImage": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1600&q=85",
     "description": "馬祖群島的戰地遺跡、石屋聚落、海岸與島嶼日常。",
-    "items": [
+    "photos": [
       {
         "id": "lienchiang-001",
         "title": "芹壁聚落",

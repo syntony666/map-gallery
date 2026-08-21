@@ -12,11 +12,11 @@ export function TitleBarComponent({
   buttons = [],
 }: TitleBarComponentProps) {
   return (
-    <header className="flex items-center gap-2">
+    <header className="flex photos-center gap-2">
       <button
         type="button"
         onClick={onBack}
-        className="flex min-w-0 items-center gap-2 rounded p-2 text-xl hover:bg-stone-300"
+        className="flex min-w-0 photos-center gap-2 rounded p-2 text-xl hover:bg-stone-300"
         aria-label={`返回 ${districtName} Snaps`}
       >
         <span className="font-bold text-lg text-stone-700">←</span>
@@ -28,7 +28,7 @@ export function TitleBarComponent({
       </button>
 
       {buttons.length > 0 && (
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        <div className="ml-auto flex shrink-0 photos-center gap-2">
           {buttons.map((button) => (
             <button
               key={button.id}

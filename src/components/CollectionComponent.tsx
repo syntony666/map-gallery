@@ -1,4 +1,4 @@
-import type { CollectionGroup } from "../type/item.type";
+import type { CollectionGroup } from "../type/photo.type";
 import { EmptyState } from "./EmptyState";
 
 export type CollectionProps = {
@@ -27,8 +27,8 @@ export function CollectionComponent({
           aria-label={`查看：${collection.name}`}
         >
           <img
-            src={collection.items[0].thumbnail || collection.items[0].image}
-            alt={collection.items[0].title}
+            src={collection.photos[0].thumbnail || collection.photos[0].image}
+            alt={collection.photos[0].title}
             className="h-18 w-18  rounded-full bg-stone-200 sm:h-24 sm:w-24"
           />
 
