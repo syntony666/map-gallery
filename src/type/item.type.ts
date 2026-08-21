@@ -13,3 +13,5 @@ export type CollectionGroup = {
   name: string;
   items: Item[];
 };
+
+export type SortOption = "newest" | "oldest" | "title";

@@ -2,14 +2,16 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionComponent } from "../components/CollectionComponent";
-import type { Item } from "../type/item.type";
+import type { Item, SortOption } from "../type/item.type";
+import { DistrictToolbarComponent } from "../components/DistrictToolbarComponent";
 
 export function DistrictPage() {
   const { districtId } = useParams();
   const navigate = useNavigate();
 
   const [keyword, setKeyword] = useState("");
-  const [sort, setSort] = useState("newest");
+  const [sort, setSort] = useState("newest" as SortOption);
+  const [collectionSelected, setCollectionSelected] = useState("");
 
   const district = districts.find(
     (district) => district.districtId === districtId,
@@ -41,14 +43,20 @@ export function DistrictPage() {
   const items = useMemo(() => {
     if (!district) return [];
 
-    const filtered = district.items.filter((item) => {
-      const content = [item.title, item.summary, item.description]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+    const filtered = district.items
+      .filter((item) =>
+        collectionSelected === ""
+          ? true
+          : item.collections?.includes(collectionSelected),
+      )
+      .filter((item) => {
+        const content = [item.title, item.summary, item.description]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
-      return content.includes(keyword.toLowerCase());
-    });
+        return content.includes(keyword.toLowerCase());
+      });
 
     return [...filtered].sort((a, b) => {
       if (sort === "title") {
@@ -57,7 +65,7 @@ export function DistrictPage() {
 
       return 0;
     });
-  }, [district, keyword, sort]);
+  }, [district, keyword, sort, collectionSelected]);
 
   if (!district) {
     return (
@@ -105,41 +113,18 @@ export function DistrictPage() {
         </header>
 
         {/* 橫向圖片列 */}
-        <section className="mt-6">
-          <CollectionComponent
-            collections={collections}
-            district={district.districtId}
-          ></CollectionComponent>
-        </section>
+        <CollectionComponent
+          collections={collections}
+          onCollectionSelect={setCollectionSelected}
+        ></CollectionComponent>
 
         {/* 搜尋、篩選與排序列 */}
-        <section className="mt-6 flex flex-wrap items-center gap-3 border-y border-stone-200 py-4">
-          <input
-            type="search"
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-            placeholder="搜尋景點或照片"
-            className="min-w-0 flex-1 rounded border border-stone-300 bg-white px-3 py-2 text-sm outline-none focus:border-teal-600"
-          />
-
-          <button
-            type="button"
-            onClick={() => alert("篩選功能待實作")}
-            className="rounded border border-stone-300 bg-white px-3 py-2 text-sm"
-          >
-            篩選
-          </button>
-
-          <select
-            value={sort}
-            onChange={(event) => setSort(event.target.value)}
-            className="rounded border border-stone-300 bg-white px-3 py-2 text-sm"
-            aria-label="排序方式"
-          >
-            <option value="newest">最新</option>
-            <option value="title">標題 A–Z</option>
-          </select>
-        </section>
+        <DistrictToolbarComponent
+          keyword={keyword}
+          sort={sort}
+          onKeywordChange={setKeyword}
+          onSortChange={setSort}
+        />
 
         {/* 景點卡片區 */}
         <section className="mt-6">
