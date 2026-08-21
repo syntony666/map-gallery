@@ -1,4 +1,4 @@
-import type { TitleBarButton } from "../type/title-bar.type";
+import type { TitleBarButton } from "../../types/title-bar.type";
 
 type TitleBarComponentProps = {
   districtName: string;
