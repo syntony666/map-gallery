@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import { HomePage } from "./pages/HomePage";
 import { DistrictPage } from "./pages/DistrictPage";
-import { ItemDetailPage } from "./pages/ItemDetailPage";
+import { PhotoDetailPage } from "./pages/PhotoDetailPage";
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +14,6 @@ export const router = createBrowserRouter([
   },
   {
     path: "/district/:districtId/item/:itemId",
-    Component: ItemDetailPage,
+    Component: PhotoDetailPage,
   },
 ]);

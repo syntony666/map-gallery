@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 
-export function ItemDetailPage() {
+export function PhotoDetailPage() {
   const { districtId, itemId } = useParams();
   const navigate = useNavigate();
 
