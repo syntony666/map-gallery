@@ -1,10 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./main.css";
-import { HomePage } from "./pages/HomePage";
+import { RouterProvider } from "react-router";
+import { router } from "./router";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <HomePage />
+    {/* <main className="h-screen flex flex-col overflow-hidden"> */}
+    <div className="flex-1 min-h-0 max-w-5xl w-full mx-auto px-4">
+      <RouterProvider router={router} />
+    </div>
+    {/* </main> */}
   </React.StrictMode>,
 );

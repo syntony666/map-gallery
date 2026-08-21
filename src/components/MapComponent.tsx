@@ -167,16 +167,18 @@ export function MapComponent() {
   }
 
   return (
+    // 設定地圖基本資料
     <MapContainer
       center={taiwanCenter}
-      zoom={8}
+      zoom={7}
       minZoom={7}
-      maxZoom={9}
+      maxZoom={7}
       maxBounds={taiwanBounds}
       maxBoundsViscosity={1.0}
       keyboard={false}
       className="w-full h-full"
     >
+      {/* 地圖圖檔 */}
       <TileLayer
         attribution="&copy; OpenStreetMap contributors &copy; CARTO"
         url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
@@ -188,7 +190,7 @@ export function MapComponent() {
         style={(feature) => getPolygonStyle(getFeatureDistrictId(feature))}
         onEachFeature={onEachFeature}
       />
-
+      {/* 地圖自帶元件：錨點 */}
       {pins.map((pin: Pin) => (
         <Marker
           key={pin.districtId}
@@ -207,14 +209,14 @@ export function MapComponent() {
           }}
         />
       ))}
-
+      {/* 自製游標移入高亮 */}
       {hoveredDistrictId && hoveredPosition && (
         <HoverLabel
           districtName={hoveredDistrictId}
           position={hoveredPosition}
         />
       )}
-
+      {/* 各縣市的顯示氣泡 */}
       {selectedPopupPosition && (
         <Popup
           position={selectedPopupPosition}
