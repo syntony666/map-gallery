@@ -15,7 +15,7 @@ export function PhotoGrid({ district, photos }: PhotoGridProps) {
   };
   return (
     <section className="mt-6">
-      <div className="mb-3 flex item-center justify-between">
+      <div className="mb-3 flex items-center justify-between">
         <div>
           <span className="text-lg font-semibold me-2">所有相片</span>
           <Button button={addButton} />

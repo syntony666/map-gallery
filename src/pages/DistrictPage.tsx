@@ -50,10 +50,10 @@ function DistrictContent({ district }: DistrictContentProps) {
   return (
     <main>
       {/* 標題列 */}
-      <TitleBarContent districtName={district.id} />
-      <p className="truncate my-4 text-sm text-stone-600">
-        {district.description}
-      </p>
+      <TitleBarContent
+        description={district.description}
+        districtName={district.id}
+      />
       {/* 橫向圖片列 */}
       <CollectionBar
         collectionGroup={collectionGroup}
@@ -78,12 +78,17 @@ function DistrictContent({ district }: DistrictContentProps) {
   );
 }
 
-function TitleBarContent({ districtName }: { districtName: string }) {
+function TitleBarContent({
+  districtName,
+  description,
+}: {
+  districtName: string;
+  description?: string;
+}) {
   const navigate = useNavigate();
   const titleButtons: TitleBarButton[] = [
     {
       id: "manage",
-      label: "",
       icon: "bi-pencil-square",
       onClick: () => {
         console.log("開啟管理模式");
@@ -93,6 +98,7 @@ function TitleBarContent({ districtName }: { districtName: string }) {
   return (
     <TitleBar
       districtName={districtName.length !== 0 ? districtName : "回到地圖"}
+      description={description}
       onBack={() => navigate("/")}
       buttons={districtName.length !== 0 ? titleButtons : undefined}
     />

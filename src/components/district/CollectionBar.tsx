@@ -24,7 +24,6 @@ export function CollectionBar({
           onClick={() => onSelect(collection.name)}
           className={`shrink-0 overflow-hidden 
             ${collectionName === "" || collectionName === collection.name ? "" : "opacity-60"}`}
-          aria-label={`查看：${collection.name}`}
         >
           <img
             src={collection.photos[0].thumbnail || collection.photos[0].image}

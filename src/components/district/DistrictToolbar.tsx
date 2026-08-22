@@ -14,7 +14,7 @@ export function DistrictToolbar({
   onSortChange,
 }: PhotoToolbarProps) {
   return (
-    <section className="flex flex-wrap item-center border-y border-stone-200 gap-3 py-4">
+    <section className="flex flex-wrap items-center border-y border-stone-200 gap-3 py-4">
       <input
         type="search"
         value={keyword}
