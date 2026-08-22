@@ -23,9 +23,9 @@ export function PhotoInfo({ districtName, photo }: PhotoInfoProps) {
               key={collection}
               type="button"
               onClick={() =>
-                navigate(
-                  `/district/${districtName}?collection=${encodeURIComponent(collection)}`,
-                )
+                navigate(`/district/${districtName}`, {
+                  state: { collectionName: collection },
+                })
               }
               className="text-sm text-purple-500 hover:text-purple-700"
             >

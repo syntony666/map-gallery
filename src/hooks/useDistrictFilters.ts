@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
 import type { Photo, SortOption } from "../types/photo.type";
 
-export function useDistrictFilters(photos: Photo[]) {
+export function useDistrictFilters(
+  photos: Photo[],
+  initialCollectionName = "",
+) {
   const [keyword, setKeyword] = useState("");
-  const [collectionName, setCollectionName] = useState("");
+  const [collectionName, setCollectionName] = useState(initialCollectionName);
   const [sort, setSort] = useState<SortOption>("newest");
 
   const collectionGroup = useMemo(() => {

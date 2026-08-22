@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionBar } from "../components/district/CollectionBar";
 import { DistrictToolbar } from "../components/district/DistrictToolbar";
@@ -11,6 +11,7 @@ import { EmptyState } from "../components/common/EmptyState";
 
 export function DistrictPage() {
   const { districtId } = useParams();
+  const { state } = useLocation();
 
   const district = districts.find((district) => district.id === districtId);
 
@@ -26,14 +27,23 @@ export function DistrictPage() {
     );
   }
 
-  return <DistrictContent district={district}></DistrictContent>;
+  return (
+    <DistrictContent
+      district={district}
+      initialCollectionName={state.collectionName ?? ""}
+    ></DistrictContent>
+  );
 }
 
 type DistrictContentProps = {
   district: District;
+  initialCollectionName?: string;
 };
 
-function DistrictContent({ district }: DistrictContentProps) {
+function DistrictContent({
+  district,
+  initialCollectionName,
+}: DistrictContentProps) {
   const {
     keyword,
     setKeyword,
@@ -43,7 +53,7 @@ function DistrictContent({ district }: DistrictContentProps) {
     toggleCollection,
     collectionGroup,
     visiblePhotos,
-  } = useDistrictFilters(district.photos);
+  } = useDistrictFilters(district.photos, initialCollectionName);
 
   const isDistrictEmpty = !district.photos.length;
 
@@ -91,7 +101,7 @@ function TitleBarContent({
       id: "manage",
       icon: "bi-pencil-square",
       onClick: () => {
-        console.log("開啟管理模式");
+        alert("編輯模式未實作");
       },
     },
   ];

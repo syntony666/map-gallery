@@ -57,7 +57,7 @@ function PhotoDetailContent({
       label: "",
       icon: "bi-pencil-square",
       onClick: () => {
-        console.log("開啟管理模式");
+        alert("編輯模式未實作");
       },
     },
   ];

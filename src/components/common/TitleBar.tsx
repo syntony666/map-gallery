@@ -39,9 +39,11 @@ export function TitleBar({
       </div>
 
       {description && (
-        <div className="ml-3 text-stone-500">
-          <i className="bi bi-quote text-sm" />
-          <p className="indent-6 mb-6 text-sm">{description}</p>
+        <div className="ml-3 text-sm text-stone-500">
+          <p className="mb-6 flex items-start gap-2">
+            <i className="bi bi-chat-square-heart mt-0.5 shrink-0" />
+            <span>{description}</span>
+          </p>
         </div>
       )}
     </header>
