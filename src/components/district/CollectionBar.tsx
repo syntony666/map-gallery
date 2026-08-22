@@ -1,5 +1,6 @@
 import type { CollectionGroup } from "../../types/photo.type";
 import { EmptyState } from "../common/EmptyState";
+import "./CollectionBar.css";
 
 export type CollectionProps = {
   collectionGroup: CollectionGroup[] | null;
@@ -28,9 +29,8 @@ export function CollectionBar({
           <img
             src={collection.photos[0].thumbnail || collection.photos[0].image}
             alt={collection.photos[0].title}
-            className="h-18 w-18  rounded-full bg-stone-200 sm:h-24 sm:w-24"
+            className="collection-item h-18 w-18 rounded-full bg-stone-200 sm:h-24 sm:w-24"
           />
-
           <p className="mt-1 w-18 truncate text-xs sm:w-24">
             {collection.name}
           </p>
