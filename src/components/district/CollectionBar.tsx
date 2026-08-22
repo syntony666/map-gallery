@@ -17,7 +17,7 @@ export function CollectionBar({
     return <EmptyState title="" description="目前沒有相簿" />;
   }
   return (
-    <section className="flex gap-3 overflow-x-auto pb-2 my-4">
+    <section className="flex gap-3 overflow-x-auto pb-2 mt-6 mb-4">
       {collectionGroup.map((collection) => (
         <button
           key={collection.name}

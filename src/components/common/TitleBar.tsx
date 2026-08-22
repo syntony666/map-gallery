@@ -20,7 +20,7 @@ export function TitleBar({
         <button
           type="button"
           onClick={onBack}
-          className="flex min-w-0 items-center gap-2 rounded p-2 text-xl hover:bg-stone-300"
+          className="flex min-w-0 items-center gap-2 rounded p-2 text-xl hover:bg-stone-200"
         >
           <i className="bi bi-arrow-left-short shrink-0 text-3xl leading-none" />
 
@@ -39,7 +39,10 @@ export function TitleBar({
       </div>
 
       {description && (
-        <p className="ml-12 mb-6 text-sm text-stone-500">{description}</p>
+        <div className="ml-3 text-stone-500">
+          <i className="bi bi-quote text-sm" />
+          <p className="indent-6 mb-6 text-sm">{description}</p>
+        </div>
       )}
     </header>
   );
