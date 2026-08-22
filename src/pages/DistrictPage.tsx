@@ -15,7 +15,15 @@ export function DistrictPage() {
   const district = districts.find((district) => district.id === districtId);
 
   if (!district) {
-    return <TitleBarContent districtName={districtId as string} />;
+    return (
+      <div>
+        <TitleBarContent districtName="" />
+        <EmptyState
+          title=""
+          description="目前未建立此行政區 請確認網址或聯絡管理員"
+        />
+      </div>
+    );
   }
 
   return <DistrictContent district={district}></DistrictContent>;
@@ -40,7 +48,7 @@ function DistrictContent({ district }: DistrictContentProps) {
   const isDistrictEmpty = !district.photos.length;
 
   return (
-    <div className="mx-auto px-4 py-6 sm:px-6">
+    <main>
       {/* 標題列 */}
       <TitleBarContent districtName={district.id} />
       <p className="truncate my-4 text-sm text-stone-600">
@@ -66,7 +74,7 @@ function DistrictContent({ district }: DistrictContentProps) {
       {!isDistrictEmpty && (
         <PhotoGrid district={district.id} photos={visiblePhotos} />
       )}
-    </div>
+    </main>
   );
 }
 
@@ -75,27 +83,18 @@ function TitleBarContent({ districtName }: { districtName: string }) {
   const titleButtons: TitleBarButton[] = [
     {
       id: "manage",
-      label: "編輯頁面",
+      label: "",
       icon: "bi-pencil-square",
       onClick: () => {
         console.log("開啟管理模式");
       },
     },
-    {
-      id: "add-photo",
-      label: "新增相片",
-      icon: "bi-plus-lg",
-      // onClick: () => {
-      //   navigate(`/district/${district.id}/photo/new/edit`);
-      // },
-      onClick: () => alert("上傳功能尚未開放"),
-    },
   ];
   return (
     <TitleBar
-      districtName={districtName}
+      districtName={districtName.length !== 0 ? districtName : "回到地圖"}
       onBack={() => navigate("/")}
-      buttons={titleButtons}
+      buttons={districtName.length !== 0 ? titleButtons : undefined}
     />
   );
 }

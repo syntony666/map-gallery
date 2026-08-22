@@ -38,7 +38,7 @@ export function DistrictPopup({ district }: DistrictPopupProps) {
       <p style={{ margin: "0 0 8px", fontSize: "14px", lineHeight: 1.5 }}>
         {district?.description || "尚無介紹內容"}
       </p>
-      <div className="flex photos-center justify-between">
+      <div className="flex item-center justify-between">
         <p className="text-xs text-gray-500">
           項目數：{district.photos.length}
         </p>

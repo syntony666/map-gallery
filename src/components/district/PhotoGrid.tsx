@@ -1,4 +1,5 @@
 import type { Photo } from "../../types/photo.type";
+import { Button } from "../common/Button";
 import { EmptyState } from "../common/EmptyState";
 
 export type PhotoGridProps = {
@@ -7,11 +8,18 @@ export type PhotoGridProps = {
 };
 
 export function PhotoGrid({ district, photos }: PhotoGridProps) {
+  const addButton = {
+    id: "addPhoto",
+    icon: "bi-plus-lg",
+    onClick: () => alert("上傳功能尚未開放"),
+  };
   return (
     <section className="mt-6">
-      <div className="mb-3 flex photos-center justify-between">
-        <h2 className="text-lg font-semibold">所有相片</h2>
-
+      <div className="mb-3 flex item-center justify-between">
+        <div>
+          <span className="text-lg font-semibold me-2">所有相片</span>
+          <Button button={addButton} />
+        </div>
         <span className="text-sm text-stone-500">{photos.length} 個項目</span>
       </div>
 
