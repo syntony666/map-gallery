@@ -168,6 +168,8 @@ function DistrictContent({
         />
       )}
 
+      <div className="border-b border-stone-200 -mt-4 pb-4 height" />
+
       {/* 搜尋、篩選與排序列 */}
       {!isEditMode && (
         <DistrictToolbar

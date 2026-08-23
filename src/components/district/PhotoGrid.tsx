@@ -14,7 +14,7 @@ export function PhotoGrid({ district, photos }: PhotoGridProps) {
     onClick: () => alert("上傳功能尚未開放"),
   };
   return (
-    <section className="mt-6">
+    <section>
       <div className="mb-3 flex items-center justify-between">
         <div>
           <span className="text-lg font-semibold me-2">所有相片</span>
