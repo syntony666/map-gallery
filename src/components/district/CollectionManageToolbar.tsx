@@ -13,10 +13,13 @@ export function CollectionManageToolbar({
   onRemove,
 }: CollectionManageToolbarProps) {
   return (
-    <section className="flex flex-wrap items-center justify-between gap-3 border-y border-stone-700 py-3">
-      <p className="text-sm text-stone-600">
+    <section
+      className="flex flex-wrap items-center justify-between py-3
+        border-y border-stone-400"
+    >
+      <p className="text-sm text-stone-500">
         正在編輯：
-        <span className="ml-1 font-medium text-stone-800">
+        <span className="ml-1 font-medium text-stone-700">
           {collection.name}
         </span>
         <span className="ml-1 text-stone-400">

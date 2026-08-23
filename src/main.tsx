@@ -10,8 +10,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
     ></link>
-    <main className="min-h-screen flex flex-col overflow-hidden bg-stone-100 text-stone-800">
-      <div className="flex-1 min-h-0 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6">
+    <main className="min-h-screen bg-stone-100 text-stone-800">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
         <RouterProvider router={router} />
       </div>
     </main>

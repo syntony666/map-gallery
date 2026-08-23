@@ -23,20 +23,18 @@ export function CollectionBar({
   }
 
   return (
-    <>
-      <section className="flex gap-3 overflow-x-auto">
-        {collectionGroup.map((collection) => (
-          <CollectionItem
-            key={collection.name}
-            collection={collection}
-            isSelected={
-              selectedCollectionName === "" ||
-              selectedCollectionName === collection.name
-            }
-            onClick={() => handleCollectionClick(collection)}
-          />
-        ))}
-      </section>
-    </>
+    <section className="flex gap-3 overflow-x-auto -mx-4 px-4">
+      {collectionGroup.map((collection) => (
+        <CollectionItem
+          key={collection.name}
+          collection={collection}
+          isSelected={
+            selectedCollectionName === "" ||
+            selectedCollectionName === collection.name
+          }
+          onClick={() => handleCollectionClick(collection)}
+        />
+      ))}
+    </section>
   );
 }

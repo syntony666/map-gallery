@@ -37,7 +37,7 @@ export function PhotoGrid({ district, photos }: PhotoGridProps) {
               className="overflow-hidden rounded-xl bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
               <img
-                src={photo.thumbnail || photo.image}
+                src={photo.image}
                 alt={photo.title}
                 className="aspect-square w-full object-cover"
                 loading="lazy"

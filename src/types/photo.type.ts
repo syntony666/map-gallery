@@ -2,7 +2,6 @@ export type Photo = {
   id: string;
   title: string;
   date: string;
-  thumbnail?: string;
   image: string;
   summary?: string;
   description?: string;
