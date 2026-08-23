@@ -1,41 +1,42 @@
-import type { CollectionGroup } from "../../types/photo.type";
+import type { Collection } from "../../types/photo.type";
 import { EmptyState } from "../common/EmptyState";
+import { CollectionItem } from "./CollectionItem";
 import "./CollectionBar.css";
 
-export type CollectionProps = {
-  collectionGroup: CollectionGroup[] | null;
-  collectionName: string;
+type CollectionBarProps = {
+  collectionGroup: Collection[] | null;
+  selectedCollectionName: string;
   onSelect: (value: string) => void;
 };
 
 export function CollectionBar({
   collectionGroup,
-  collectionName,
+  selectedCollectionName,
   onSelect,
-}: CollectionProps) {
+}: CollectionBarProps) {
   if (!collectionGroup || collectionGroup.length === 0) {
     return <EmptyState title="" description="目前沒有相簿" />;
   }
+
+  function handleCollectionClick(collection: Collection) {
+    onSelect(collection.name);
+  }
+
   return (
-    <section className="flex gap-3 overflow-x-auto pb-2 mt-6 mb-4">
-      {collectionGroup.map((collection) => (
-        <button
-          key={collection.name}
-          type="button"
-          onClick={() => onSelect(collection.name)}
-          className={`shrink-0 overflow-hidden 
-            ${collectionName === "" || collectionName === collection.name ? "" : "opacity-60"}`}
-        >
-          <img
-            src={collection.photos[0].thumbnail || collection.photos[0].image}
-            alt={collection.photos[0].title}
-            className="collection-item h-18 w-18 rounded-full bg-stone-200 sm:h-24 sm:w-24"
+    <>
+      <section className="flex gap-3 overflow-x-auto">
+        {collectionGroup.map((collection) => (
+          <CollectionItem
+            key={collection.name}
+            collection={collection}
+            isSelected={
+              selectedCollectionName === "" ||
+              selectedCollectionName === collection.name
+            }
+            onClick={() => handleCollectionClick(collection)}
           />
-          <p className="mt-1 w-18 truncate text-xs sm:w-24">
-            {collection.name}
-          </p>
-        </button>
-      ))}
-    </section>
+        ))}
+      </section>
+    </>
   );
 }

@@ -4,16 +4,13 @@ import type { District } from "../types/district";
 export function useDistrictEditor(district: District) {
   const [currentDistrict, setCurrentDistrict] = useState(district);
   const [draftDistrict, setDraftDistrict] = useState<District | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
 
   function startEditing() {
     setDraftDistrict(structuredClone(currentDistrict));
-    setIsEditing(true);
   }
 
   function cancelEditing() {
     setDraftDistrict(null);
-    setIsEditing(false);
   }
 
   function updateDescription(description: string) {
@@ -27,21 +24,63 @@ export function useDistrictEditor(district: District) {
     );
   }
 
+  function renameCollection(currentName: string, nextName: string) {
+    const name = nextName.trim();
+
+    if (!name || name === currentName) return;
+
+    setDraftDistrict((current) => {
+      if (!current) return current;
+
+      return {
+        ...current,
+        photos: current.photos.map((photo) => ({
+          ...photo,
+          collections: photo.collections?.includes(currentName)
+            ? [
+                ...new Set(
+                  photo.collections.map((collection) =>
+                    collection === currentName ? name : collection,
+                  ),
+                ),
+              ]
+            : photo.collections,
+        })),
+      };
+    });
+  }
+
+  function removeCollection(collectionName: string) {
+    setDraftDistrict((current) => {
+      if (!current) return current;
+
+      return {
+        ...current,
+        photos: current.photos.map((photo) => ({
+          ...photo,
+          collections: photo.collections?.filter(
+            (collection) => collection !== collectionName,
+          ),
+        })),
+      };
+    });
+  }
+
   function saveChanges() {
     if (!draftDistrict) return;
 
     setCurrentDistrict(draftDistrict);
     setDraftDistrict(null);
-    setIsEditing(false);
   }
 
   return {
     currentDistrict,
     draftDistrict,
-    isEditing,
     startEditing,
     cancelEditing,
     updateDescription,
+    renameCollection,
+    removeCollection,
     saveChanges,
   };
 }

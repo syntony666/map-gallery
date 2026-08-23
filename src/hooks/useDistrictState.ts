@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import type { Photo, SortOption } from "../types/photo.type";
 
-export function useDistrictFilters(
+export function useDistrictState(
   photos: Photo[],
+  isEditMode: boolean,
   initialCollectionName = "",
 ) {
   const [keyword, setKeyword] = useState("");
@@ -14,27 +15,33 @@ export function useDistrictFilters(
 
     photos.forEach((photo) => {
       photo.collections?.forEach((collection) => {
-        const photos = groups.get(collection) ?? [];
+        const collectionPhotos = groups.get(collection) ?? [];
 
-        photos.push(photo);
-
-        groups.set(collection, photos);
+        collectionPhotos.push(photo);
+        groups.set(collection, collectionPhotos);
       });
     });
-    return Array.from(groups, ([collection, photos]) => ({
-      name: collection,
-      photos,
+
+    return Array.from(groups, ([name, collectionPhotos]) => ({
+      name,
+      photos: collectionPhotos,
     })).sort((a, b) =>
       b.photos[0].date.localeCompare(a.photos[0].date, "zh-Hant"),
     );
   }, [photos]);
+
+  const selectedCollection =
+    collectionGroup.find((collection) => collection.name === collectionName) ??
+    null;
 
   const visiblePhotos = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
 
     const filteredPhotos = photos.filter((photo) => {
       const matchesCollection =
-        !collectionName || photo.collections?.includes(collectionName);
+        isEditMode ||
+        !collectionName ||
+        photo.collections?.includes(collectionName);
 
       const searchableText = [photo.title, photo.summary, photo.description]
         .filter(Boolean)
@@ -59,7 +66,7 @@ export function useDistrictFilters(
           return a.title.localeCompare(b.title, "zh-Hant");
       }
     });
-  }, [photos, keyword, collectionName, sort]);
+  }, [photos, keyword, collectionName, sort, isEditMode]);
 
   function toggleCollection(collection: string) {
     setCollectionName((current) => (current === collection ? "" : collection));
@@ -76,6 +83,7 @@ export function useDistrictFilters(
     setCollectionName,
     toggleCollection,
 
+    selectedCollection,
     collectionGroup,
     visiblePhotos,
   };

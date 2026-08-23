@@ -9,7 +9,7 @@ export type Photo = {
   collections?: string[];
 };
 
-export type CollectionGroup = {
+export type Collection = {
   name: string;
   photos: Photo[];
 };

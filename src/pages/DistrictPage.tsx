@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionBar } from "../components/district/CollectionBar";
+import { CollectionManageToolbar } from "../components/district/CollectionManageToolbar";
 import { DistrictToolbar } from "../components/district/DistrictToolbar";
-import { useDistrictFilters } from "../hooks/useDistrictFilters";
+import { useDistrictState } from "../hooks/useDistrictState";
 import { useDistrictEditor } from "../hooks/useDistrictEditor";
 import { PhotoGrid } from "../components/district/PhotoGrid";
 import type { TitleBarButton } from "../types/title-bar.type";
@@ -45,18 +47,21 @@ function DistrictContent({
   district,
   initialCollectionName,
 }: DistrictContentProps) {
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const {
     currentDistrict,
     draftDistrict,
-    isEditing,
     startEditing,
     cancelEditing,
     updateDescription,
+    renameCollection,
+    removeCollection,
     saveChanges,
   } = useDistrictEditor(district);
 
   const displayedDistrict =
-    isEditing && draftDistrict ? draftDistrict : currentDistrict;
+    isEditMode && draftDistrict ? draftDistrict : currentDistrict;
 
   const {
     keyword,
@@ -64,51 +69,115 @@ function DistrictContent({
     sort,
     setSort,
     collectionName,
+    setCollectionName,
     toggleCollection,
+    selectedCollection,
     collectionGroup,
     visiblePhotos,
-  } = useDistrictFilters(displayedDistrict.photos, initialCollectionName);
+  } = useDistrictState(
+    displayedDistrict.photos,
+    isEditMode,
+    initialCollectionName,
+  );
 
   const isDistrictEmpty = !displayedDistrict.photos.length;
 
+  function handleStartEditing() {
+    startEditing();
+    setIsEditMode(true);
+  }
+
+  function handleCancelEditing() {
+    cancelEditing();
+    setIsEditMode(false);
+    setCollectionName("");
+  }
+
+  function handleSaveChanges() {
+    saveChanges();
+    setIsEditMode(false);
+    setCollectionName("");
+  }
+
+  function handleRenameCollection(currentName: string) {
+    const nextName = window.prompt("修改 Collection 名稱", currentName);
+
+    if (nextName === null) return;
+
+    const normalizedName = nextName.trim();
+
+    if (!normalizedName || normalizedName === currentName) return;
+
+    renameCollection(currentName, normalizedName);
+    setCollectionName(normalizedName);
+  }
+
+  function handleRemoveCollection(collectionName: string, photoCount: number) {
+    const confirmed = window.confirm(
+      `要從 ${photoCount} 張照片中移除「${collectionName}」嗎？\n\n` +
+        "這不會刪除照片，只會移除此 Collection 標記。",
+    );
+
+    if (!confirmed) return;
+
+    removeCollection(collectionName);
+    setCollectionName("");
+  }
+
+  console.log("collectionName", collectionName);
+
   return (
-    <main>
+    <main className="grid gap-4">
       {/* 標題列 */}
       <TitleBarContent
         districtName={displayedDistrict.id}
         description={
-          isEditing ? "對於這個地方，你想說..." : displayedDistrict.description
+          isEditMode ? "對於這個地方，你想說..." : displayedDistrict.description
         }
-        isEditing={isEditing}
-        onStartEditing={startEditing}
-        onCancelEdit={cancelEditing}
-        onSaveEdit={saveChanges}
+        isEditing={isEditMode}
+        onStartEditing={handleStartEditing}
+        onCancelEdit={handleCancelEditing}
+        onSaveEdit={handleSaveChanges}
       />
 
-      {isEditing && (
+      {isEditMode && (
         <textarea
           value={draftDistrict?.description ?? ""}
           onChange={(event) => updateDescription(event.target.value)}
           rows={3}
           autoFocus
-          className="w-full rounded border text-sm border-stone-500 bg-white 
-              mt-2 mx-2 px-2 pt-2 text-stone-700 outline-none"
+          className="rounded border border-stone-500 bg-white px-2 py-2 
+            text-sm text-stone-700 outline-none"
         />
       )}
 
-      {/* 橫向圖片列 */}
+      {/* 橫向 Collection 列 */}
       <CollectionBar
+        key={isEditMode ? "editing" : "browse"}
         collectionGroup={collectionGroup}
-        collectionName={collectionName}
+        selectedCollectionName={collectionName}
         onSelect={toggleCollection}
       />
+
+      {/* Edit mode 的 Collection 管理列 */}
+      {isEditMode && selectedCollection && (
+        <CollectionManageToolbar
+          collection={selectedCollection}
+          onRename={handleRenameCollection}
+          onRemove={handleRemoveCollection}
+        />
+      )}
+
       {/* 搜尋、篩選與排序列 */}
-      <DistrictToolbar
-        keyword={keyword}
-        sort={sort}
-        onKeywordChange={setKeyword}
-        onSortChange={setSort}
-      />
+      {!isEditMode && (
+        <DistrictToolbar
+          keyword={keyword}
+          sort={sort}
+          onKeywordChange={setKeyword}
+          onSortChange={setSort}
+        />
+      )}
+
       {/* 景點卡片區 */}
       {isDistrictEmpty && (
         <EmptyState title="" description="你來早了 這裡什麼都沒有" />
