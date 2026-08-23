@@ -30,7 +30,7 @@ export function DistrictToolbar({
       >
         <option value="newest">最新</option>
         <option value="oldest">最舊</option>
-        <option value="title">名稱 A–Z</option>
+        <option value="title">名稱</option>
       </select>
     </section>
   );

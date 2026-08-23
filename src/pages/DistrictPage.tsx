@@ -11,6 +11,7 @@ import type { TitleBarButton } from "../types/title-bar.type";
 import { TitleBar } from "../components/common/TitleBar";
 import type { District } from "../types/district";
 import { EmptyState } from "../components/common/EmptyState";
+import { PhotoGridToolbar } from "../components/district/PhotoGridToolbar";
 
 export function DistrictPage() {
   const { districtId } = useParams();
@@ -183,6 +184,12 @@ function DistrictContent({
       {/* 景點卡片區 */}
       {isDistrictEmpty && (
         <EmptyState title="" description="你來早了 這裡什麼都沒有" />
+      )}
+      {!isDistrictEmpty && (
+        <PhotoGridToolbar
+          photoCount={visiblePhotos.length}
+          isEditing={isEditMode}
+        />
       )}
 
       {!isDistrictEmpty && (

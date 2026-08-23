@@ -20,6 +20,8 @@ export function CollectionItem({
       <img
         src={collection.photos[0].image}
         alt={collection.photos[0].title}
+        loading="lazy"
+        decoding="async"
         className="collection-item h-18 w-18 rounded-full bg-stone-200 sm:h-24 sm:w-24"
       />
       <p className="truncate text-xs mt-1 w-18 sm:w-24">{collection.name}</p>

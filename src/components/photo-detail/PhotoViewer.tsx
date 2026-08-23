@@ -11,6 +11,8 @@ export function PhotoViewer({ photo }: PhotoViewerProps) {
         src={photo.image}
         alt={photo.title}
         className="h-full w-full object-contain"
+        loading="lazy"
+        decoding="async"
       />
     </section>
   );
