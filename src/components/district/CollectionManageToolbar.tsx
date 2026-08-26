@@ -12,6 +12,28 @@ export function CollectionManageToolbar({
   onRename,
   onRemove,
 }: CollectionManageToolbarProps) {
+  const buttons = [
+    {
+      id: `remove-${collection.name}`,
+      icon: "bi-plus-square",
+      onClick: () => {},
+    },
+    {
+      id: `remove-${collection.name}`,
+      icon: "bi-dash-square",
+      onClick: () => {},
+    },
+    {
+      id: `rename-${collection.name}`,
+      icon: "bi-pencil-square",
+      onClick: () => onRename(collection.name),
+    },
+    {
+      id: `remove-${collection.name}`,
+      icon: "bi-trash3 text-red-700",
+      onClick: () => onRemove(collection.name, collection.photos.length),
+    },
+  ];
   return (
     <section
       className="flex flex-wrap items-center justify-between py-3
@@ -28,21 +50,9 @@ export function CollectionManageToolbar({
       </p>
 
       <div className="flex items-center gap-2">
-        <Button
-          button={{
-            id: `rename-${collection.name}`,
-            icon: "bi-pencil-square",
-            onClick: () => onRename(collection.name),
-          }}
-        />
-
-        <Button
-          button={{
-            id: `remove-${collection.name}`,
-            icon: "bi-trash3 text-red-700",
-            onClick: () => onRemove(collection.name, collection.photos.length),
-          }}
-        />
+        {buttons.map((button) => (
+          <Button button={button} />
+        ))}
       </div>
     </section>
   );

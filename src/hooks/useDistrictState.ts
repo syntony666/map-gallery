@@ -4,6 +4,7 @@ import type {
   Photo,
   SortOption,
 } from "../types/photo.type";
+import type { PageMode } from "../types/title-bar.type";
 
 export function useDistrictState(
   photos: Photo[],
@@ -14,6 +15,7 @@ export function useDistrictState(
   const [keyword, setKeyword] = useState("");
   const [collectionName, setCollectionName] = useState(initialCollectionName);
   const [sort, setSort] = useState<SortOption>("newest");
+  const [pageMode, setPageMode] = useState<PageMode>("browse");
 
   const collectionGroup = useMemo(() => {
     const groups = new Map<string, Photo[]>();
@@ -92,6 +94,9 @@ export function useDistrictState(
 
     sort,
     setSort,
+
+    pageMode,
+    setPageMode,
 
     collectionName,
     setCollectionName,

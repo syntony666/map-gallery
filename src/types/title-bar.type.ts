@@ -5,3 +5,9 @@ export type TitleBarButton = {
   disabled?: boolean;
   icon?: string;
 };
+
+export type PageMode =
+  | "editDistrict"
+  | "editCollection"
+  | "editPhoto"
+  | "browse";

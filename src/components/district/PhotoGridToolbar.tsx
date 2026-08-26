@@ -16,6 +16,11 @@ export function PhotoGridToolbar({
           icon: "bi-plus-lg",
           onClick: () => alert("上傳功能尚未開放"),
         },
+        {
+          id: "addPhoto",
+          icon: "bi-trash3",
+          onClick: () => alert("上傳功能尚未開放"),
+        },
       ];
   return (
     <section className="flex items-center justify-between">

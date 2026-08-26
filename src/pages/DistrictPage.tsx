@@ -257,6 +257,13 @@ function TitleBarContent({
     {
       id: "manage",
       icon: "bi-pencil-square",
+      label: "編輯說明",
+      onClick: onStartEditing ?? (() => alert("非預期操作")),
+    },
+    {
+      id: "manage",
+      icon: "bi-journals",
+      label: "編輯相簿",
       onClick: onStartEditing ?? (() => alert("非預期操作")),
     },
   ];
