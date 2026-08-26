@@ -5,9 +5,18 @@ import { PhotoCard } from "./PhotoCard";
 export type PhotoGridProps = {
   district: string;
   photos: Photo[];
+  isEditMode?: boolean;
+  selectedPhotoIds?: Set<string>;
+  onTogglePhotoSelection?: (photoId: string) => void;
 };
 
-export function PhotoGrid({ district, photos }: PhotoGridProps) {
+export function PhotoGrid({
+  district,
+  photos,
+  isEditMode = false,
+  selectedPhotoIds = new Set(),
+  onTogglePhotoSelection,
+}: PhotoGridProps) {
   return (
     <section>
       {photos.length === 0 ? (
@@ -15,7 +24,14 @@ export function PhotoGrid({ district, photos }: PhotoGridProps) {
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {photos.map((photo) => (
-            <PhotoCard districtName={district} photo={photo} />
+            <PhotoCard
+              key={photo.id}
+              districtName={district}
+              photo={photo}
+              isEditMode={isEditMode}
+              isSelected={selectedPhotoIds.has(photo.id)}
+              onToggleSelection={() => onTogglePhotoSelection?.(photo.id)}
+            />
           ))}
         </div>
       )}

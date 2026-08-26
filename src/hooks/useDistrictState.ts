@@ -1,10 +1,15 @@
 import { useMemo, useState } from "react";
-import type { Photo, SortOption } from "../types/photo.type";
+import type {
+  CollectionPhotoAction,
+  Photo,
+  SortOption,
+} from "../types/photo.type";
 
 export function useDistrictState(
   photos: Photo[],
   isEditMode: boolean,
   initialCollectionName = "",
+  collectionPhotoAction: CollectionPhotoAction = null,
 ) {
   const [keyword, setKeyword] = useState("");
   const [collectionName, setCollectionName] = useState(initialCollectionName);
@@ -38,10 +43,19 @@ export function useDistrictState(
     const normalizedKeyword = keyword.trim().toLowerCase();
 
     const filteredPhotos = photos.filter((photo) => {
-      const matchesCollection =
-        isEditMode ||
-        !collectionName ||
-        photo.collections?.includes(collectionName);
+      const isInSelectedCollection =
+        photo.collections?.includes(collectionName) ?? false;
+
+      const matchesCollection = (() => {
+        if (!collectionName) {
+          return true;
+        }
+
+        if (collectionPhotoAction === "add") {
+          return !isInSelectedCollection;
+        }
+        return isInSelectedCollection;
+      })();
 
       const searchableText = [photo.title, photo.summary, photo.description]
         .filter(Boolean)

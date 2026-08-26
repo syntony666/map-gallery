@@ -12,6 +12,7 @@ import { TitleBar } from "../components/common/TitleBar";
 import type { District } from "../types/district";
 import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/district/PhotoGridToolbar";
+import { PhotoSelectionToolbar } from "../components/district/PhotoSelectionToolbar";
 
 export function DistrictPage() {
   const { districtId } = useParams();
@@ -49,6 +50,9 @@ function DistrictContent({
   initialCollectionName,
 }: DistrictContentProps) {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   const {
     currentDistrict,
@@ -83,21 +87,42 @@ function DistrictContent({
 
   const isDistrictEmpty = !displayedDistrict.photos.length;
 
+  function clearPhotoSelection() {
+    setSelectedPhotoIds(new Set());
+  }
+
+  function togglePhotoSelection(photoId: string) {
+    setSelectedPhotoIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(photoId)) {
+        next.delete(photoId);
+      } else {
+        next.add(photoId);
+      }
+
+      return next;
+    });
+  }
+
   function handleStartEditing() {
     startEditing();
     setIsEditMode(true);
+    clearPhotoSelection();
   }
 
   function handleCancelEditing() {
     cancelEditing();
     setIsEditMode(false);
     setCollectionName("");
+    clearPhotoSelection();
   }
 
   function handleSaveChanges() {
     saveChanges();
     setIsEditMode(false);
     setCollectionName("");
+    clearPhotoSelection();
   }
 
   function handleRenameCollection(currentName: string) {
@@ -124,8 +149,6 @@ function DistrictContent({
     removeCollection(collectionName);
     setCollectionName("");
   }
-
-  console.log("collectionName", collectionName);
 
   return (
     <main className="grid gap-4">
@@ -185,6 +208,7 @@ function DistrictContent({
       {isDistrictEmpty && (
         <EmptyState title="" description="你來早了 這裡什麼都沒有" />
       )}
+
       {!isDistrictEmpty && (
         <PhotoGridToolbar
           photoCount={visiblePhotos.length}
@@ -192,8 +216,21 @@ function DistrictContent({
         />
       )}
 
+      {!isDistrictEmpty && selectedPhotoIds.size > 0 && (
+        <PhotoSelectionToolbar
+          selectedCount={selectedPhotoIds.size}
+          onClearSelection={clearPhotoSelection}
+        />
+      )}
+
       {!isDistrictEmpty && (
-        <PhotoGrid district={displayedDistrict.id} photos={visiblePhotos} />
+        <PhotoGrid
+          district={displayedDistrict.id}
+          photos={visiblePhotos}
+          isEditMode={isEditMode}
+          selectedPhotoIds={selectedPhotoIds}
+          onTogglePhotoSelection={togglePhotoSelection}
+        />
       )}
     </main>
   );
