@@ -4,18 +4,15 @@ import type {
   Photo,
   SortOption,
 } from "../types/photo.type";
-import type { PageMode } from "../types/title-bar.type";
 
 export function useDistrictState(
   photos: Photo[],
-  isEditMode: boolean,
   initialCollectionName = "",
   collectionPhotoAction: CollectionPhotoAction = null,
 ) {
   const [keyword, setKeyword] = useState("");
   const [collectionName, setCollectionName] = useState(initialCollectionName);
   const [sort, setSort] = useState<SortOption>("newest");
-  const [pageMode, setPageMode] = useState<PageMode>("browse");
 
   const collectionGroup = useMemo(() => {
     const groups = new Map<string, Photo[]>();
@@ -82,7 +79,7 @@ export function useDistrictState(
           return a.title.localeCompare(b.title, "zh-Hant");
       }
     });
-  }, [photos, keyword, collectionName, sort, isEditMode]);
+  }, [photos, keyword, collectionName, sort, collectionPhotoAction]);
 
   function toggleCollection(collection: string) {
     setCollectionName((current) => (current === collection ? "" : collection));
@@ -94,9 +91,6 @@ export function useDistrictState(
 
     sort,
     setSort,
-
-    pageMode,
-    setPageMode,
 
     collectionName,
     setCollectionName,

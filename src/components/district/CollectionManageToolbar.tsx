@@ -1,5 +1,6 @@
+import type { ButtonActionGroup } from "../../types/button.type";
 import type { Collection } from "../../types/photo.type";
-import { Button } from "../common/Button";
+import { Toolbar } from "../common/Toolbar";
 
 type CollectionManageToolbarProps = {
   collection: Collection;
@@ -12,48 +13,51 @@ export function CollectionManageToolbar({
   onRename,
   onRemove,
 }: CollectionManageToolbarProps) {
-  const buttons = [
+  const buttons: ButtonActionGroup[] = [
     {
-      id: `remove-${collection.name}`,
-      icon: "bi-plus-square",
-      onClick: () => {},
+      id: "collection-photo-edit",
+      buttons: [
+        {
+          id: `${collection.name}-add-photo`,
+          label: "加入照片",
+          icon: "bi-plus-square",
+          onClick: () => {},
+        },
+        {
+          id: `${collection.name}-remove-photo`,
+          label: "移除照片",
+          icon: "bi-dash-square",
+          onClick: () => {},
+        },
+      ],
     },
     {
-      id: `remove-${collection.name}`,
-      icon: "bi-dash-square",
-      onClick: () => {},
-    },
-    {
-      id: `rename-${collection.name}`,
-      icon: "bi-pencil-square",
-      onClick: () => onRename(collection.name),
-    },
-    {
-      id: `remove-${collection.name}`,
-      icon: "bi-trash3 text-red-700",
-      onClick: () => onRemove(collection.name, collection.photos.length),
+      id: "collection-meta-edit",
+      buttons: [
+        {
+          id: `rename-${collection.name}`,
+          label: "更改名稱",
+          icon: "bi-pencil-square",
+          onClick: () => onRename(collection.name),
+        },
+        {
+          id: `remove-${collection.name}`,
+          label: "刪除相簿",
+          icon: "bi-trash3",
+          variant: "danger",
+          onClick: () => onRemove(collection.name, collection.photos.length),
+        },
+      ],
     },
   ];
   return (
-    <section
-      className="flex flex-wrap items-center justify-between py-3
-        border-y border-stone-400"
-    >
-      <p className="text-sm text-stone-500">
-        正在編輯：
-        <span className="ml-1 font-medium text-stone-700">
-          {collection.name}
-        </span>
-        <span className="ml-1 text-stone-400">
-          ({collection.photos.length} 張照片)
-        </span>
-      </p>
-
-      <div className="flex items-center gap-2">
-        {buttons.map((button) => (
-          <Button button={button} />
-        ))}
-      </div>
-    </section>
+    <Toolbar
+      label="正在編輯："
+      value={collection.name}
+      meta={`${collection.photos.length} 張照片`}
+      buttonGroups={buttons}
+      mobileGroupIcon="bi-pencil-square"
+      mobileGroupLabel="管理相簿"
+    />
   );
 }

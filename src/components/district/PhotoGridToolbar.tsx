@@ -12,12 +12,12 @@ export function PhotoGridToolbar({
     ? []
     : [
         {
-          id: "addPhoto",
+          id: "photo-add",
           icon: "bi-plus-lg",
           onClick: () => alert("上傳功能尚未開放"),
         },
         {
-          id: "addPhoto",
+          id: "phtot-delete",
           icon: "bi-trash3",
           onClick: () => alert("上傳功能尚未開放"),
         },

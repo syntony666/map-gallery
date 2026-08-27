@@ -1,18 +1,23 @@
-import type { TitleBarButton } from "../../types/title-bar.type";
-import { Button } from "./Button";
+import type {
+  ButtonActionGroup,
+  ButtonGroupMobileOptions,
+} from "../../types/button.type";
+import { ButtonGroup } from "./ButtonGroup";
 
 type TitleBarComponentProps = {
   districtName: string;
   description?: string;
   onBack: () => void;
-  buttons?: TitleBarButton[];
+  buttonGroup?: ButtonActionGroup[];
+  mobileActions?: ButtonGroupMobileOptions;
 };
 
 export function TitleBar({
   districtName,
   description,
   onBack,
-  buttons = [],
+  buttonGroup = [],
+  mobileActions = {},
 }: TitleBarComponentProps) {
   return (
     <header>
@@ -29,13 +34,7 @@ export function TitleBar({
           </span>
         </button>
 
-        {buttons.length > 0 && (
-          <div className="flex shrink-0 items-center gap-2">
-            {buttons.map((button) => (
-              <Button button={button} />
-            ))}
-          </div>
-        )}
+        <ButtonGroup groups={buttonGroup} {...mobileActions} />
       </div>
 
       {description && (

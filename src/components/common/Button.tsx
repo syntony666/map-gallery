@@ -6,9 +6,10 @@ type ButtonProps = {
     onClick: () => void;
     disabled?: boolean;
   };
+  iconOnly?: boolean;
 };
 
-export function Button({ button }: ButtonProps) {
+export function Button({ button, iconOnly }: ButtonProps) {
   return (
     <button
       key={button.id}
@@ -20,7 +21,9 @@ export function Button({ button }: ButtonProps) {
       title={button.label}
     >
       {button.icon && <i className={`bi ${button.icon}`}></i>}
-      {button.label && <span className="ms-2">{button.label}</span>}
+      {button.label && !iconOnly && (
+        <span className="ms-2">{button.label}</span>
+      )}
     </button>
   );
 }

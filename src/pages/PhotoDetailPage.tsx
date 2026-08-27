@@ -4,7 +4,7 @@ import { TitleBar } from "../components/common/TitleBar";
 import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
 import type { Photo } from "../types/photo.type";
-import type { TitleBarButton } from "../types/title-bar.type";
+import type { ButtonActionGroup } from "../types/button.type";
 
 export function PhotoDetailPage() {
   const { districtId, photoId } = useParams();
@@ -51,21 +51,27 @@ function PhotoDetailContent({
 }: PhotoDetailContentProps) {
   const navigate = useNavigate();
 
-  const titleButtons: TitleBarButton[] = [
+  const titleButtons: ButtonActionGroup[] = [
     {
-      id: "manage",
-      label: "",
-      icon: "bi-pencil-square",
-      onClick: () => {
-        alert("編輯模式未實作");
-      },
+      id: "photo-detail",
+      buttons: [
+        {
+          id: "manage-photo-detail",
+          label: "",
+          icon: "bi-pencil-square",
+          onClick: () => {
+            alert("編輯模式未實作");
+          },
+        },
+      ],
     },
   ];
   return (
     <main>
       <TitleBar
         districtName={!isError ? districtName : "回到地圖"}
-        buttons={!isError ? titleButtons : undefined}
+        buttonGroup={!isError ? titleButtons : []}
+        mobileActions={{ mobileMode: "inline" }}
         onBack={() => navigate(!isError ? `/district/${districtName}` : "/")}
       />
 

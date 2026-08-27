@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionBar } from "../components/district/CollectionBar";
@@ -7,12 +7,13 @@ import { DistrictToolbar } from "../components/district/DistrictToolbar";
 import { useDistrictState } from "../hooks/useDistrictState";
 import { useDistrictEditor } from "../hooks/useDistrictEditor";
 import { PhotoGrid } from "../components/district/PhotoGrid";
-import type { TitleBarButton } from "../types/title-bar.type";
 import { TitleBar } from "../components/common/TitleBar";
 import type { District } from "../types/district";
 import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/district/PhotoGridToolbar";
 import { PhotoSelectionToolbar } from "../components/district/PhotoSelectionToolbar";
+import type { ButtonActionGroup } from "../types/button.type";
+import type { PageMode } from "../types/title-bar.type";
 
 export function DistrictPage() {
   const { districtId } = useParams();
@@ -49,10 +50,11 @@ function DistrictContent({
   district,
   initialCollectionName,
 }: DistrictContentProps) {
-  const [isEditMode, setIsEditMode] = useState(false);
   const [selectedPhotoIds, setSelectedPhotoIds] = useState<Set<string>>(
     () => new Set(),
   );
+  const [pageMode, setPageMode] = useState<PageMode>("browse");
+  const isEditMode = useMemo(() => pageMode !== "browse", [pageMode]);
 
   const {
     currentDistrict,
@@ -79,11 +81,7 @@ function DistrictContent({
     selectedCollection,
     collectionGroup,
     visiblePhotos,
-  } = useDistrictState(
-    displayedDistrict.photos,
-    isEditMode,
-    initialCollectionName,
-  );
+  } = useDistrictState(displayedDistrict.photos, initialCollectionName);
 
   const isDistrictEmpty = !displayedDistrict.photos.length;
 
@@ -103,26 +101,6 @@ function DistrictContent({
 
       return next;
     });
-  }
-
-  function handleStartEditing() {
-    startEditing();
-    setIsEditMode(true);
-    clearPhotoSelection();
-  }
-
-  function handleCancelEditing() {
-    cancelEditing();
-    setIsEditMode(false);
-    setCollectionName("");
-    clearPhotoSelection();
-  }
-
-  function handleSaveChanges() {
-    saveChanges();
-    setIsEditMode(false);
-    setCollectionName("");
-    clearPhotoSelection();
   }
 
   function handleRenameCollection(currentName: string) {
@@ -150,21 +128,45 @@ function DistrictContent({
     setCollectionName("");
   }
 
+  const titleBarActions: TitleBarActions = {
+    onEditDistrict: () => {
+      startEditing();
+      setPageMode("editDistrict");
+    },
+    onEditAlbum: () => {
+      startEditing();
+      setPageMode("editCollection");
+      clearPhotoSelection();
+    },
+    onCancelEdit: () => {
+      cancelEditing();
+      setPageMode("browse");
+      setCollectionName("");
+      clearPhotoSelection();
+    },
+    onSaveEdit: () => {
+      saveChanges();
+      setPageMode("browse");
+      setCollectionName("");
+      clearPhotoSelection();
+    },
+  };
+
   return (
     <main className="grid gap-4">
       {/* 標題列 */}
       <TitleBarContent
         districtName={displayedDistrict.id}
         description={
-          isEditMode ? "對於這個地方，你想說..." : displayedDistrict.description
+          pageMode === "editDistrict"
+            ? "對於這個地方，你想說..."
+            : displayedDistrict.description
         }
         isEditing={isEditMode}
-        onStartEditing={handleStartEditing}
-        onCancelEdit={handleCancelEditing}
-        onSaveEdit={handleSaveChanges}
+        action={titleBarActions}
       />
 
-      {isEditMode && (
+      {pageMode === "editDistrict" && (
         <textarea
           value={draftDistrict?.description ?? ""}
           onChange={(event) => updateDescription(event.target.value)}
@@ -177,14 +179,14 @@ function DistrictContent({
 
       {/* 橫向 Collection 列 */}
       <CollectionBar
-        key={isEditMode ? "editing" : "browse"}
+        key={pageMode === "editCollection" ? "editing" : "browse"}
         collectionGroup={collectionGroup}
         selectedCollectionName={collectionName}
         onSelect={toggleCollection}
       />
 
       {/* Edit mode 的 Collection 管理列 */}
-      {isEditMode && selectedCollection && (
+      {pageMode === "editCollection" && selectedCollection && (
         <CollectionManageToolbar
           collection={selectedCollection}
           onRename={handleRenameCollection}
@@ -227,7 +229,7 @@ function DistrictContent({
         <PhotoGrid
           district={displayedDistrict.id}
           photos={visiblePhotos}
-          isEditMode={isEditMode}
+          isEditMode={pageMode === "editPhoto"}
           selectedPhotoIds={selectedPhotoIds}
           onTogglePhotoSelection={togglePhotoSelection}
         />
@@ -236,64 +238,90 @@ function DistrictContent({
   );
 }
 
+type TitleBarActions = {
+  onEditDistrict?: () => void;
+  onEditAlbum?: () => void;
+  onCancelEdit?: () => void;
+  onSaveEdit?: () => void;
+};
+
 function TitleBarContent({
   districtName,
   description,
   isEditing = false,
-  onStartEditing,
-  onCancelEdit,
-  onSaveEdit,
+  action,
 }: {
   districtName: string;
   description?: string;
   isEditing?: boolean;
-  onStartEditing?: () => void;
-  onCancelEdit?: () => void;
-  onSaveEdit?: () => void;
+  action?: TitleBarActions;
 }) {
   const navigate = useNavigate();
+  console.log("action", action);
 
-  const browseButtons: TitleBarButton[] = [
+  if (!action) {
+    return (
+      <TitleBar
+        districtName={districtName.length !== 0 ? districtName : "回到地圖"}
+        description={description}
+        onBack={() => navigate("/")}
+        buttonGroup={[]}
+      />
+    );
+  }
+
+  const browseButtons: ButtonActionGroup[] = [
     {
-      id: "manage",
-      icon: "bi-pencil-square",
-      label: "編輯說明",
-      onClick: onStartEditing ?? (() => alert("非預期操作")),
-    },
-    {
-      id: "manage",
-      icon: "bi-journals",
-      label: "編輯相簿",
-      onClick: onStartEditing ?? (() => alert("非預期操作")),
+      id: "title-browser",
+      buttons: [
+        {
+          id: "manage-description",
+          icon: "bi-pencil-square",
+          label: "編輯說明",
+          onClick: action.onEditDistrict ?? (() => alert("非預期操作")),
+        },
+        {
+          id: "manage-album",
+          icon: "bi-journals",
+          label: "編輯相簿",
+          onClick: action.onEditAlbum ?? (() => alert("非預期操作")),
+        },
+      ],
     },
   ];
 
-  const editButtons: TitleBarButton[] = [
+  const editButtons: ButtonActionGroup[] = [
     {
-      id: "cancel",
-      icon: "bi-x-lg text-red-700",
-      onClick: onCancelEdit ?? (() => alert("非預期操作")),
-    },
-    {
-      id: "save",
-      icon: "bi-check-lg text-emerald-700",
-      onClick: onSaveEdit ?? (() => alert("非預期操作")),
+      id: "title-edit",
+      buttons: [
+        {
+          id: "cancel",
+          label: "取消",
+          icon: "bi-x-lg text-red-700",
+          variant: "danger",
+          onClick: action.onCancelEdit ?? (() => alert("非預期操作")),
+        },
+        {
+          id: "save",
+          label: "儲存",
+          variant: "primary",
+          icon: "bi-check-lg text-emerald-700",
+          onClick: action.onSaveEdit ?? (() => alert("非預期操作")),
+        },
+      ],
     },
   ];
 
   const buttons =
-    districtName.length === 0
-      ? undefined
-      : isEditing
-        ? editButtons
-        : browseButtons;
+    districtName.length === 0 ? [] : isEditing ? editButtons : browseButtons;
 
   return (
     <TitleBar
       districtName={districtName.length !== 0 ? districtName : "回到地圖"}
       description={description}
       onBack={() => navigate("/")}
-      buttons={buttons}
+      buttonGroup={buttons}
+      mobileActions={{ mobileMode: "inline" }}
     />
   );
 }
