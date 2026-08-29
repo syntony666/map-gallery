@@ -13,6 +13,6 @@ export type Collection = {
   photos: Photo[];
 };
 
-export type CollectionPhotoAction = "add" | "remove" | null;
+export type CollectionPhotoMode = "add" | "remove" | null;
 
 export type SortOption = "newest" | "oldest" | "title";

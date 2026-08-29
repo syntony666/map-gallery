@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type {
-  CollectionPhotoAction,
+  CollectionPhotoMode,
   Photo,
   SortOption,
 } from "../types/photo.type";
@@ -8,7 +8,7 @@ import type {
 export function useDistrictState(
   photos: Photo[],
   initialCollectionName = "",
-  collectionPhotoAction: CollectionPhotoAction = null,
+  collectionPhotoMode: CollectionPhotoMode = null,
 ) {
   const [keyword, setKeyword] = useState("");
   const [collectionName, setCollectionName] = useState(initialCollectionName);
@@ -50,7 +50,7 @@ export function useDistrictState(
           return true;
         }
 
-        if (collectionPhotoAction === "add") {
+        if (collectionPhotoMode === "add") {
           return !isInSelectedCollection;
         }
         return isInSelectedCollection;
@@ -79,7 +79,7 @@ export function useDistrictState(
           return a.title.localeCompare(b.title, "zh-Hant");
       }
     });
-  }, [photos, keyword, collectionName, sort, collectionPhotoAction]);
+  }, [photos, keyword, collectionName, sort, collectionPhotoMode]);
 
   function toggleCollection(collection: string) {
     setCollectionName((current) => (current === collection ? "" : collection));

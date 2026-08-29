@@ -32,12 +32,11 @@ export function Toolbar({
     <section
       className={[
         "flex flex-wrap items-center justify-between gap-3",
-        "border-y border-stone-300 bg-stone-50/70 py-3",
-        "text-sm",
+        "border-y border-stone-300 text-sm h-15",
         className,
       ].join(" ")}
     >
-      <p className="min-w-0 flex-1 truncate text-stone-500">
+      <p className="min-w-0 flex-1 truncate text-stone-500 mx-2">
         <span>{label}</span>
 
         {value !== undefined && value !== "" && (
@@ -52,6 +51,7 @@ export function Toolbar({
         mobileMode={mobileMode}
         mobileGroupIcon={mobileGroupIcon}
         mobileGroupLabel={mobileGroupLabel}
+        classname="mx-2"
       />
     </section>
   );

@@ -2,7 +2,10 @@ import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionBar } from "../components/district/CollectionBar";
-import { CollectionManageToolbar } from "../components/district/CollectionManageToolbar";
+import {
+  CollectionManageToolbar,
+  type CollectionManageToolbarAction,
+} from "../components/district/CollectionManageToolbar";
 import { DistrictToolbar } from "../components/district/DistrictToolbar";
 import { useDistrictState } from "../hooks/useDistrictState";
 import { useDistrictEditor } from "../hooks/useDistrictEditor";
@@ -14,6 +17,7 @@ import { PhotoGridToolbar } from "../components/district/PhotoGridToolbar";
 import { PhotoSelectionToolbar } from "../components/district/PhotoSelectionToolbar";
 import type { ButtonActionGroup } from "../types/button.type";
 import type { PageMode } from "../types/title-bar.type";
+import type { CollectionPhotoMode } from "../types/photo.type";
 
 export function DistrictPage() {
   const { districtId } = useParams();
@@ -56,6 +60,9 @@ function DistrictContent({
   const [pageMode, setPageMode] = useState<PageMode>("browse");
   const isEditMode = useMemo(() => pageMode !== "browse", [pageMode]);
 
+  const [collectionPhotoMode, setCollectionPhotoMode] =
+    useState<CollectionPhotoMode>(null);
+
   const {
     currentDistrict,
     draftDistrict,
@@ -81,7 +88,11 @@ function DistrictContent({
     selectedCollection,
     collectionGroup,
     visiblePhotos,
-  } = useDistrictState(displayedDistrict.photos, initialCollectionName);
+  } = useDistrictState(
+    displayedDistrict.photos,
+    initialCollectionName,
+    collectionPhotoMode,
+  );
 
   const isDistrictEmpty = !displayedDistrict.photos.length;
 
@@ -101,31 +112,6 @@ function DistrictContent({
 
       return next;
     });
-  }
-
-  function handleRenameCollection(currentName: string) {
-    const nextName = window.prompt("修改 Collection 名稱", currentName);
-
-    if (nextName === null) return;
-
-    const normalizedName = nextName.trim();
-
-    if (!normalizedName || normalizedName === currentName) return;
-
-    renameCollection(currentName, normalizedName);
-    setCollectionName(normalizedName);
-  }
-
-  function handleRemoveCollection(collectionName: string, photoCount: number) {
-    const confirmed = window.confirm(
-      `要從 ${photoCount} 張照片中移除「${collectionName}」嗎？\n\n` +
-        "這不會刪除照片，只會移除此 Collection 標記。",
-    );
-
-    if (!confirmed) return;
-
-    removeCollection(collectionName);
-    setCollectionName("");
   }
 
   const titleBarActions: TitleBarActions = {
@@ -152,8 +138,49 @@ function DistrictContent({
     },
   };
 
+  const collectionManageToolbarActions: CollectionManageToolbarAction = {
+    onRename(collectionName) {
+      const nextName = window.prompt("修改相簿名稱", collectionName);
+
+      if (nextName === null) return;
+
+      const normalizedName = nextName.trim();
+
+      if (!normalizedName || normalizedName === collectionName) return;
+
+      renameCollection(collectionName, normalizedName);
+      setCollectionName(normalizedName);
+    },
+    onRemove(collectionName, photoCount) {
+      const confirmed = window.confirm(
+        `要從 ${photoCount} 張照片中移除「${collectionName}」嗎？\n\n` +
+          "這不會刪除照片，只會移除此照片的相簿標記。",
+      );
+
+      if (!confirmed) return;
+
+      removeCollection(collectionName);
+      setCollectionName("");
+    },
+    onAddPhoto() {
+      setCollectionPhotoMode("add");
+    },
+    onRemovePhoto() {
+      setCollectionPhotoMode("remove");
+    },
+    onConfirmPhotoSelection() {
+      setCollectionPhotoMode(null);
+    },
+    onRejectPhotoSelection() {
+      setCollectionPhotoMode(null);
+    },
+  };
+
   return (
     <main className="grid gap-4">
+      <div>
+        {pageMode} {collectionPhotoMode}
+      </div>
       {/* 標題列 */}
       <TitleBarContent
         districtName={displayedDistrict.id}
@@ -166,7 +193,8 @@ function DistrictContent({
         action={titleBarActions}
       />
 
-      {pageMode === "editDistrict" && (
+      {pageMode === "editDistrict" ? (
+        /* 說明編輯區 編輯時相簿列隱藏 */
         <textarea
           value={draftDistrict?.description ?? ""}
           onChange={(event) => updateDescription(event.target.value)}
@@ -175,26 +203,26 @@ function DistrictContent({
           className="rounded border border-stone-500 bg-white px-2 py-2 
             text-sm text-stone-700 outline-none"
         />
-      )}
-
-      {/* 橫向 Collection 列 */}
-      <CollectionBar
-        key={pageMode === "editCollection" ? "editing" : "browse"}
-        collectionGroup={collectionGroup}
-        selectedCollectionName={collectionName}
-        onSelect={toggleCollection}
-      />
-
-      {/* Edit mode 的 Collection 管理列 */}
-      {pageMode === "editCollection" && selectedCollection && (
-        <CollectionManageToolbar
-          collection={selectedCollection}
-          onRename={handleRenameCollection}
-          onRemove={handleRemoveCollection}
+      ) : (
+        /* 橫向相簿列 */
+        <CollectionBar
+          key={pageMode === "editCollection" ? "editing" : "browse"}
+          collectionGroup={collectionGroup}
+          selectedCollectionName={collectionName}
+          onSelect={toggleCollection}
         />
       )}
 
-      <div className="border-b border-stone-200 -mt-4 pb-4 height" />
+      {/* Edit mode 的 Collection 管理列 */}
+      {pageMode === "editCollection" ? (
+        <CollectionManageToolbar
+          collection={selectedCollection}
+          isPhotoEditing={!!collectionPhotoMode}
+          action={collectionManageToolbarActions}
+        />
+      ) : (
+        <div className="border-b border-stone-200 -mt-4 pb-4 height" />
+      )}
 
       {/* 搜尋、篩選與排序列 */}
       {!isEditMode && (
@@ -229,7 +257,7 @@ function DistrictContent({
         <PhotoGrid
           district={displayedDistrict.id}
           photos={visiblePhotos}
-          isEditMode={pageMode === "editPhoto"}
+          isEditMode={!!collectionPhotoMode}
           selectedPhotoIds={selectedPhotoIds}
           onTogglePhotoSelection={togglePhotoSelection}
         />

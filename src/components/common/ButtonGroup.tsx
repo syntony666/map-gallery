@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type HTMLAttributes } from "react";
 import { ActionSheet } from "./ActionSheet";
 import { Button } from "./Button";
 import type {
@@ -8,6 +8,7 @@ import type {
 } from "../../types/button.type";
 
 type ButtonGroupProps = {
+  classname?: HTMLAttributes<HTMLDivElement>["className"];
   groups: ButtonActionGroup[];
   mobileMode?: ButtonGroupMobileMode;
   mobileGroupIcon?: string;
@@ -19,6 +20,7 @@ export function ButtonGroup({
   mobileMode = "menu",
   mobileGroupIcon = "bi-three-dots",
   mobileGroupLabel = "更多操作",
+  classname = "",
 }: ButtonGroupProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -39,7 +41,9 @@ export function ButtonGroup({
 
   return (
     <>
-      <div className="hidden items-center gap-2 sm:flex">
+      <div
+        className={["hidden items-center gap-2 sm:flex", classname].join(" ")}
+      >
         {nonEmptyGroups.map((group, index) => (
           <div
             key={group.id}

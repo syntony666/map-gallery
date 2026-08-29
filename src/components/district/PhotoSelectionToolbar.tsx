@@ -1,4 +1,5 @@
-import { Button } from "../common/Button";
+import type { ButtonActionGroup } from "../../types/button.type";
+import { Toolbar } from "../common/Toolbar";
 
 type PhotoSelectionToolbarProps = {
   selectedCount: number;
@@ -9,23 +10,25 @@ export function PhotoSelectionToolbar({
   selectedCount,
   onClearSelection,
 }: PhotoSelectionToolbarProps) {
-  return (
-    <section className="flex flex-wrap items-center justify-between gap-3 py-3 border-y border-stone-400">
-      <p className="text-sm text-stone-500">
-        已選取：
-        <span className="ml-1 font-medium text-stone-700">
-          {selectedCount} 張照片
-        </span>
-      </p>
-
-      <Button
-        button={{
+  const buttons: ButtonActionGroup[] = [
+    {
+      id: "photo-selection",
+      buttons: [
+        {
           id: "clear-photo-selection",
           label: "取消選取",
-          icon: "bi-x-lg text-red-700",
+          icon: "bi-x-lg",
           onClick: onClearSelection,
-        }}
-      />
-    </section>
+        },
+      ],
+    },
+  ];
+  return (
+    <Toolbar
+      label={"已選取："}
+      value={`${selectedCount} 張照片`}
+      buttonGroups={buttons}
+      mobileMode="inline"
+    />
   );
 }

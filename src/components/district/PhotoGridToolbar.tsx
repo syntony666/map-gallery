@@ -1,3 +1,4 @@
+import type { ButtonConfig } from "../../types/button.type";
 import { Button } from "../common/Button";
 
 type PhotoGridToolbarProps = {
@@ -8,16 +9,18 @@ export function PhotoGridToolbar({
   photoCount,
   isEditing,
 }: PhotoGridToolbarProps) {
-  const buttons = isEditing
+  const buttons: ButtonConfig[] = isEditing
     ? []
     : [
         {
           id: "photo-add",
+          label: "",
           icon: "bi-plus-lg",
           onClick: () => alert("上傳功能尚未開放"),
         },
         {
           id: "phtot-delete",
+          label: "",
           icon: "bi-trash3",
           onClick: () => alert("上傳功能尚未開放"),
         },
