@@ -196,9 +196,6 @@ function DistrictContent({
 
   return (
     <main className="grid gap-4">
-      <div>
-        {pageMode} {collectionPhotoMode}
-      </div>
       {/* 標題列 */}
       <TitleBarContent
         districtName={displayedDistrict.id}
@@ -231,7 +228,7 @@ function DistrictContent({
         />
       )}
 
-      {/* Edit mode 的 Collection 管理列 */}
+      {/* Edit mode 的相簿管理列 */}
       {pageMode === "editCollection" ? (
         <CollectionManageToolbar
           collection={selectedCollection}
