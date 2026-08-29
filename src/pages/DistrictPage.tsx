@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import districts from "../data/districts.json";
 import { CollectionBar } from "../components/district/CollectionBar";
@@ -58,23 +58,23 @@ function DistrictContent({
     () => new Set(),
   );
   const [pageMode, setPageMode] = useState<PageMode>("browse");
-  const isEditMode = useMemo(() => pageMode !== "browse", [pageMode]);
+  const isEditMode = pageMode !== "browse";
 
   const [collectionPhotoMode, setCollectionPhotoMode] =
     useState<CollectionPhotoMode>(null);
 
-const {
-  currentDistrict,
-  draftDistrict,
-  startEditing,
-  cancelEditing,
-  updateDescription,
-  renameCollection,
-  removeCollection,
-  addPhotosToCollection,
-  removePhotosFromCollection,
-  saveChanges,
-} = useDistrictEditor(district);
+  const {
+    currentDistrict,
+    draftDistrict,
+    startEditing,
+    cancelEditing,
+    updateDescription,
+    renameCollection,
+    removeCollection,
+    addPhotosToCollection,
+    removePhotosFromCollection,
+    saveChanges,
+  } = useDistrictEditor(district);
 
   const displayedDistrict =
     isEditMode && draftDistrict ? draftDistrict : currentDistrict;
@@ -303,7 +303,6 @@ function TitleBarContent({
   action?: TitleBarActions;
 }) {
   const navigate = useNavigate();
-  console.log("action", action);
 
   if (!action) {
     return (
