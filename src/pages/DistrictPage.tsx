@@ -63,16 +63,18 @@ function DistrictContent({
   const [collectionPhotoMode, setCollectionPhotoMode] =
     useState<CollectionPhotoMode>(null);
 
-  const {
-    currentDistrict,
-    draftDistrict,
-    startEditing,
-    cancelEditing,
-    updateDescription,
-    renameCollection,
-    removeCollection,
-    saveChanges,
-  } = useDistrictEditor(district);
+const {
+  currentDistrict,
+  draftDistrict,
+  startEditing,
+  cancelEditing,
+  updateDescription,
+  renameCollection,
+  removeCollection,
+  addPhotosToCollection,
+  removePhotosFromCollection,
+  saveChanges,
+} = useDistrictEditor(district);
 
   const displayedDistrict =
     isEditMode && draftDistrict ? draftDistrict : currentDistrict;
@@ -119,7 +121,7 @@ function DistrictContent({
       startEditing();
       setPageMode("editDistrict");
     },
-    onEditAlbum: () => {
+    onEditCollection: () => {
       startEditing();
       setPageMode("editCollection");
       clearPhotoSelection();
@@ -163,15 +165,31 @@ function DistrictContent({
       setCollectionName("");
     },
     onAddPhoto() {
+      clearPhotoSelection();
       setCollectionPhotoMode("add");
     },
     onRemovePhoto() {
+      clearPhotoSelection();
       setCollectionPhotoMode("remove");
     },
     onConfirmPhotoSelection() {
+      if (!selectedCollection || !collectionPhotoMode) {
+        return;
+      }
+
+      if (collectionPhotoMode === "add") {
+        addPhotosToCollection(selectedCollection.name, selectedPhotoIds);
+      }
+
+      if (collectionPhotoMode === "remove") {
+        removePhotosFromCollection(selectedCollection.name, selectedPhotoIds);
+      }
+
+      clearPhotoSelection();
       setCollectionPhotoMode(null);
     },
     onRejectPhotoSelection() {
+      clearPhotoSelection();
       setCollectionPhotoMode(null);
     },
   };
@@ -268,7 +286,7 @@ function DistrictContent({
 
 type TitleBarActions = {
   onEditDistrict?: () => void;
-  onEditAlbum?: () => void;
+  onEditCollection?: () => void;
   onCancelEdit?: () => void;
   onSaveEdit?: () => void;
 };
@@ -312,7 +330,7 @@ function TitleBarContent({
           id: "manage-album",
           icon: "bi-journals",
           label: "編輯相簿",
-          onClick: action.onEditAlbum ?? (() => alert("非預期操作")),
+          onClick: action.onEditCollection ?? (() => alert("非預期操作")),
         },
       ],
     },

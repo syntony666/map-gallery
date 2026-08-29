@@ -65,6 +65,59 @@ export function useDistrictEditor(district: District) {
       };
     });
   }
+  function addPhotosToCollection(
+    collectionName: string,
+    photoIds: Set<string>,
+  ) {
+    if (!collectionName || photoIds.size === 0) return;
+
+    setDraftDistrict((current) => {
+      if (!current) return current;
+
+      return {
+        ...current,
+        photos: current.photos.map((photo) => {
+          if (!photoIds.has(photo.id)) {
+            return photo;
+          }
+
+          return {
+            ...photo,
+            collections: [
+              ...new Set([...(photo.collections ?? []), collectionName]),
+            ],
+          };
+        }),
+      };
+    });
+  }
+
+  function removePhotosFromCollection(
+    collectionName: string,
+    photoIds: Set<string>,
+  ) {
+    if (!collectionName || photoIds.size === 0) return;
+
+    setDraftDistrict((current) => {
+      if (!current) return current;
+
+      return {
+        ...current,
+        photos: current.photos.map((photo) => {
+          if (!photoIds.has(photo.id)) {
+            return photo;
+          }
+
+          return {
+            ...photo,
+            collections: photo.collections?.filter(
+              (collection) => collection !== collectionName,
+            ),
+          };
+        }),
+      };
+    });
+  }
 
   function saveChanges() {
     if (!draftDistrict) return;
@@ -81,6 +134,8 @@ export function useDistrictEditor(district: District) {
     updateDescription,
     renameCollection,
     removeCollection,
+    addPhotosToCollection,
+    removePhotosFromCollection,
     saveChanges,
   };
 }
