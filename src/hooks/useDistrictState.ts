@@ -92,7 +92,6 @@ export function useDistrictState(
     sort,
     setSort,
 
-    collectionName,
     setCollectionName,
     toggleCollection,
 

@@ -3,12 +3,12 @@ import type { Collection } from "../../types/photo.type";
 import { Toolbar } from "../common/Toolbar";
 
 export type CollectionManageToolbarAction = {
-  onRename: (collectionName: string) => void;
-  onRemove: (collectionName: string, photoCount: number) => void;
-  onAddPhoto: () => void;
-  onRemovePhoto: () => void;
-  onConfirmPhotoSelection: () => void;
-  onRejectPhotoSelection: () => void;
+  onCollectionRename: (collectionName: string) => void;
+  onCollectionRemove: (collectionName: string, photoCount: number) => void;
+  onAddCollectionPhoto: () => void;
+  onRemoveCollectionPhoto: () => void;
+  onConfirmCollectionPhotoSelection: () => void;
+  onRejectCollectionPhotoSelection: () => void;
 };
 
 type CollectionManageToolbarProps = {
@@ -35,14 +35,14 @@ export function CollectionManageToolbar({
               label: "確認",
               icon: "bi-check-circle-fill",
               variant: "primary",
-              onClick: () => action.onConfirmPhotoSelection(),
+              onClick: () => action.onConfirmCollectionPhotoSelection(),
             },
             {
               id: "photo-reject",
               label: "取消",
               icon: "bi-x-circle-fill",
               variant: "danger",
-              onClick: () => action.onRejectPhotoSelection(),
+              onClick: () => action.onRejectCollectionPhotoSelection(),
             },
           ],
         },
@@ -55,13 +55,13 @@ export function CollectionManageToolbar({
               id: `${collection.name}-add-photo`,
               label: "加入照片",
               icon: "bi-plus-square",
-              onClick: () => action.onAddPhoto(),
+              onClick: () => action.onAddCollectionPhoto(),
             },
             {
               id: `${collection.name}-remove-photo`,
               label: "移除照片",
               icon: "bi-dash-square",
-              onClick: () => action.onRemovePhoto(),
+              onClick: () => action.onRemoveCollectionPhoto(),
             },
           ],
         },
@@ -72,7 +72,7 @@ export function CollectionManageToolbar({
               id: `rename-${collection.name}`,
               label: "更改名稱",
               icon: "bi-pencil-square",
-              onClick: () => action.onRename(collection.name),
+              onClick: () => action.onCollectionRename(collection.name),
             },
             {
               id: `remove-${collection.name}`,
@@ -80,7 +80,10 @@ export function CollectionManageToolbar({
               icon: "bi-trash3",
               variant: "danger",
               onClick: () =>
-                action.onRemove(collection.name, collection.photos.length),
+                action.onCollectionRemove(
+                  collection.name,
+                  collection.photos.length,
+                ),
             },
           ],
         },
