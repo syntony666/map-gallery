@@ -19,7 +19,7 @@ export function PhotoGridToolbar({
           onClick: () => alert("上傳功能尚未開放"),
         },
         {
-          id: "phtot-delete",
+          id: "photo-delete",
           label: "",
           icon: "bi-trash3",
           onClick: () => alert("上傳功能尚未開放"),
