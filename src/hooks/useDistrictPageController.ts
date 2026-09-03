@@ -42,14 +42,20 @@ export function useDistrictPageController({
     UIState.collectionPhotoMode,
   );
 
-  const isEditing = UIState.mode !== "browse";
+  const isEditMode = UIState.mode !== "browse";
 
-  const isEditingDistrict = UIState.mode === "editDistrict";
+  const isDistrictEditMode = UIState.mode === "districtEdit";
 
-  const isEditingCollection =
-    UIState.mode === "editCollection" || UIState.mode === "selectingPhotos";
+  const isCollectionEditMode =
+    UIState.mode === "collectionEdit" ||
+    UIState.mode === "collectionPhotoSelect";
 
-  const isSelectingCollectionPhotos = UIState.mode === "selectingPhotos";
+  const isCollectionPhotoSelectMode = UIState.mode === "collectionPhotoSelect";
+
+  const isPhotoDeleteSelectMode = UIState.mode === "photoDeleteSelect";
+
+  const isPhotoSelectMode =
+    isCollectionPhotoSelectMode || isPhotoDeleteSelectMode;
 
   function resetPageUI() {
     districtState.setCollectionName("");
@@ -79,14 +85,14 @@ export function useDistrictPageController({
 
   function onAddCollectionPhoto() {
     dispatch({
-      type: "START_PHOTO_SELECTION",
+      type: "START_COLLECTION_PHOTO_SELECT",
       collectionPhotoMode: "add",
     });
   }
 
   function onRemoveCollectionPhoto() {
     dispatch({
-      type: "START_PHOTO_SELECTION",
+      type: "START_COLLECTION_PHOTO_SELECT",
       collectionPhotoMode: "remove",
     });
   }
@@ -150,6 +156,30 @@ export function useDistrictPageController({
     editor.removeCollection(collectionName);
     districtState.setCollectionName("");
   }
+   
+  function startPhotoDeleteSelect() {
+    editor.startEditing();
+    dispatch({ type: "START_PHOTO_DELETE_SELECT" });
+  }
+
+  function confirmPhotoDelete() {
+    const photoIds = UIState.selectedPhotoIds;
+
+    if (photoIds.size === 0) return;
+
+    const isConfirmed = window.confirm(
+      `確定要刪除已選取的 ${photoIds.size} 張照片嗎？`,
+    );
+
+    if (!isConfirmed) return;
+
+    editor.deletePhotos(photoIds);
+    dispatch({ type: "CONFIRM_PHOTO_DELETE" });
+  }
+
+  function cancelPhotoDelete() {
+    dispatch({ type: "CANCEL_PHOTO_DELETE" });
+  }
 
   const titleBarActions: TitleBarActions = {
     onEditDistrict: startDistrictEdit,
@@ -185,10 +215,12 @@ export function useDistrictPageController({
     },
 
     UI: {
-      isEditing,
-      isEditingDistrict,
-      isEditingCollection,
-      isSelectingCollectionPhotos,
+      isEditMode,
+      isDistrictEditMode,
+      isCollectionEditMode,
+      isCollectionPhotoSelectMode,
+      isPhotoDeleteSelectMode,
+      isPhotoSelectMode,
       collectionPhotoMode: UIState.collectionPhotoMode,
       selectedPhotoIds: UIState.selectedPhotoIds,
     },
@@ -197,6 +229,9 @@ export function useDistrictPageController({
       updateDescription: editor.updateDescription,
       togglePhotoSelection,
       clearPhotoSelection,
+      startPhotoDeleteSelect,
+      confirmPhotoDelete,
+      cancelPhotoDelete,
       titleBar: titleBarActions,
       collectionToolbar: collectionManageToolbarActions,
     },

@@ -53,6 +53,7 @@ function DistrictContent({
   });
 
   const isDistrictEmpty = !district.displayed.photos.length;
+  const navigate = useNavigate();
 
   return (
     <main className="grid gap-4">
@@ -60,15 +61,16 @@ function DistrictContent({
       <TitleBarContent
         districtName={district.displayed.id}
         description={
-          UI.isEditingDistrict
+          UI.isDistrictEditMode
             ? "對於這個地方，你想說..."
             : district.displayed.description
         }
-        isEditing={UI.isEditing}
+        isEditMode={UI.isEditMode}
+        showActions={!UI.isPhotoDeleteSelectMode}
         action={actions.titleBar}
       />
 
-      {UI.isEditingDistrict ? (
+      {UI.isDistrictEditMode ? (
         /* 說明編輯區 編輯時相簿列隱藏 */
         <textarea
           value={district.draft?.description ?? ""}
@@ -81,7 +83,7 @@ function DistrictContent({
       ) : (
         /* 橫向相簿列 */
         <CollectionBar
-          key={UI.isEditingCollection ? "editing" : "browse"}
+          key={UI.isCollectionEditMode ? "editing" : "browse"}
           collectionGroup={filters.collectionGroup}
           selectedCollectionName={
             filters.selectedCollection ? filters.selectedCollection.name : ""
@@ -91,10 +93,10 @@ function DistrictContent({
       )}
 
       {/* Edit mode 的相簿管理列 */}
-      {UI.isEditingCollection ? (
+      {UI.isCollectionEditMode ? (
         <CollectionManageToolbar
           collection={filters.selectedCollection}
-          isPhotoEditing={!!UI.collectionPhotoMode}
+          isCollectionPhotoSelectMode={!!UI.collectionPhotoMode}
           action={actions.collectionToolbar}
         />
       ) : (
@@ -102,7 +104,7 @@ function DistrictContent({
       )}
 
       {/* 搜尋、篩選與排序列 */}
-      {!UI.isEditing && (
+      {!UI.isEditMode && (
         <DistrictToolbar
           keyword={filters.keyword}
           sort={filters.sort}
@@ -119,14 +121,20 @@ function DistrictContent({
       {!isDistrictEmpty && (
         <PhotoGridToolbar
           photoCount={filters.visiblePhotos.length}
-          isEditing={UI.isEditing}
+          showActions={!UI.isEditMode}
+          action={{
+            onAddPhoto: () =>
+              navigate(`/district/${district.displayed.id}/photo/new`),
+            onDeletePhoto: actions.startPhotoDeleteSelect,
+          }}
         />
       )}
 
-      {!isDistrictEmpty && UI.selectedPhotoIds.size > 0 && (
+      {UI.isPhotoDeleteSelectMode && (
         <PhotoSelectionToolbar
           selectedCount={UI.selectedPhotoIds.size}
-          onClearSelection={actions.clearPhotoSelection}
+          onConfirmDelete={actions.confirmPhotoDelete}
+          onCancel={actions.cancelPhotoDelete}
         />
       )}
 
@@ -134,7 +142,7 @@ function DistrictContent({
         <PhotoGrid
           district={district.displayed.id}
           photos={filters.visiblePhotos}
-          isEditMode={!!UI.collectionPhotoMode}
+          isSelectionMode={!!UI.isPhotoSelectMode}
           selectedPhotoIds={UI.selectedPhotoIds}
           onTogglePhotoSelection={actions.togglePhotoSelection}
         />
@@ -153,12 +161,14 @@ type TitleBarActions = {
 function TitleBarContent({
   districtName,
   description,
-  isEditing = false,
+  isEditMode = false,
+  showActions = true,
   action,
 }: {
   districtName: string;
   description?: string;
-  isEditing?: boolean;
+  isEditMode?: boolean;
+  showActions?: boolean;
   action?: TitleBarActions;
 }) {
   const navigate = useNavigate();
@@ -217,7 +227,11 @@ function TitleBarContent({
   ];
 
   const buttons =
-    districtName.length === 0 ? [] : isEditing ? editButtons : browseButtons;
+    districtName.length === 0 || !showActions
+      ? []
+      : isEditMode
+        ? editButtons
+        : browseButtons;
 
   return (
     <TitleBar

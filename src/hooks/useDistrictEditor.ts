@@ -67,7 +67,7 @@ export function useDistrictEditor(district: District) {
   }
   function addPhotosToCollection(
     collectionName: string,
-    photoIds: Set<string>,
+    photoIds: ReadonlySet<string>,
   ) {
     if (!collectionName || photoIds.size === 0) return;
 
@@ -94,7 +94,7 @@ export function useDistrictEditor(district: District) {
 
   function removePhotosFromCollection(
     collectionName: string,
-    photoIds: Set<string>,
+    photoIds: ReadonlySet<string>,
   ) {
     if (!collectionName || photoIds.size === 0) return;
 
@@ -119,6 +119,30 @@ export function useDistrictEditor(district: District) {
     });
   }
 
+  function removePhotos(photoIds: ReadonlySet<string>) {
+    if (photoIds.size === 0) return;
+
+    setDraftDistrict((draft) => {
+      if (!draft) return draft;
+
+      return {
+        ...draft,
+        photos: draft.photos.filter((photo) => !photoIds.has(photo.id)),
+      };
+    });
+  }
+
+  function deletePhotos(photoIds: ReadonlySet<string>) {
+    if (photoIds.size === 0) return;
+
+    setCurrentDistrict((current) => ({
+      ...current,
+      photos: current.photos.filter((photo) => !photoIds.has(photo.id)),
+    }));
+
+    setDraftDistrict(null);
+  }
+
   function saveChanges() {
     if (!draftDistrict) return;
 
@@ -136,6 +160,8 @@ export function useDistrictEditor(district: District) {
     removeCollection,
     addPhotosToCollection,
     removePhotosFromCollection,
+    removePhotos,
+    deletePhotos,
     saveChanges,
   };
 }

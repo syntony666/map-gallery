@@ -5,15 +5,15 @@ import { PhotoCard } from "./PhotoCard";
 export type PhotoGridProps = {
   district: string;
   photos: Photo[];
-  isEditMode?: boolean;
-  selectedPhotoIds?: Set<string>;
+  isSelectionMode?: boolean;
+  selectedPhotoIds?: ReadonlySet<string>;
   onTogglePhotoSelection?: (photoId: string) => void;
 };
 
 export function PhotoGrid({
   district,
   photos,
-  isEditMode = false,
+  isSelectionMode = false,
   selectedPhotoIds = new Set(),
   onTogglePhotoSelection,
 }: PhotoGridProps) {
@@ -28,7 +28,7 @@ export function PhotoGrid({
               key={photo.id}
               districtName={district}
               photo={photo}
-              isEditMode={isEditMode}
+              isSelectionMode={isSelectionMode}
               isSelected={selectedPhotoIds.has(photo.id)}
               onToggleSelection={() => onTogglePhotoSelection?.(photo.id)}
             />

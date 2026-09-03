@@ -13,19 +13,19 @@ export type CollectionManageToolbarAction = {
 
 type CollectionManageToolbarProps = {
   collection: Collection | null;
-  isPhotoEditing: boolean;
+  isCollectionPhotoSelectMode: boolean;
   action: CollectionManageToolbarAction;
 };
 
 export function CollectionManageToolbar({
   collection,
-  isPhotoEditing,
+  isCollectionPhotoSelectMode,
   action,
 }: CollectionManageToolbarProps) {
   if (!collection) {
     return <Toolbar label="請選取上方相簿..." />;
   }
-  const buttons: ButtonActionGroup[] = isPhotoEditing
+  const buttons: ButtonActionGroup[] = isCollectionPhotoSelectMode
     ? [
         {
           id: "collection-photo-selection",
@@ -88,7 +88,7 @@ export function CollectionManageToolbar({
           ],
         },
       ];
-  return isPhotoEditing ? (
+  return isCollectionPhotoSelectMode ? (
     <Toolbar
       label="正在編輯："
       value={collection.name}

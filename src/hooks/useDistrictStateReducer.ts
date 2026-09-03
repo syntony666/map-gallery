@@ -2,9 +2,10 @@ import type { CollectionPhotoMode } from "../types/photo.type";
 
 export type DistrictPageMode =
   | "browse"
-  | "editDistrict"
-  | "editCollection"
-  | "selectingPhotos";
+  | "districtEdit"
+  | "collectionEdit"
+  | "collectionPhotoSelect"
+  | "photoDeleteSelect";
 
 export type DistrictPageUIState = {
   mode: DistrictPageMode;
@@ -16,15 +17,19 @@ export type DistrictPageUIAction =
   | { type: "START_DISTRICT_EDIT" }
   | { type: "START_COLLECTION_EDIT" }
   | {
-      type: "START_PHOTO_SELECTION";
+      type: "START_COLLECTION_PHOTO_SELECT";
       collectionPhotoMode: Exclude<CollectionPhotoMode, null>;
     }
+  | { type: "START_PHOTO_DELETE_SELECT" }
   | { type: "TOGGLE_PHOTO_SELECTION"; photoId: string }
   | { type: "CLEAR_PHOTO_SELECTION" }
   | { type: "CONFIRM_PHOTO_SELECTION" }
   | { type: "CANCEL_PHOTO_SELECTION" }
+  | { type: "CONFIRM_PHOTO_DELETE" }
+  | { type: "CANCEL_PHOTO_DELETE" }
   | { type: "SAVE_EDIT" }
-  | { type: "CANCEL_EDIT" };
+  | { type: "CANCEL_EDIT" }
+  | { type: "EXIT_EDIT" };
 
 export const initialDistrictPageUIState: DistrictPageUIState = {
   mode: "browse",
@@ -42,7 +47,7 @@ function createBrowseState(): DistrictPageUIState {
 
 function createCollectionEditState(): DistrictPageUIState {
   return {
-    mode: "editCollection",
+    mode: "collectionEdit",
     collectionPhotoMode: null,
     selectedPhotoIds: new Set(),
   };
@@ -55,7 +60,7 @@ export function districtPageReducer(
   switch (action.type) {
     case "START_DISTRICT_EDIT":
       return {
-        mode: "editDistrict",
+        mode: "districtEdit",
         collectionPhotoMode: null,
         selectedPhotoIds: new Set(),
       };
@@ -63,17 +68,32 @@ export function districtPageReducer(
     case "START_COLLECTION_EDIT":
       return createCollectionEditState();
 
-    case "START_PHOTO_SELECTION":
-      if (state.mode !== "editCollection") return state;
+    case "START_COLLECTION_PHOTO_SELECT":
+      if (state.mode !== "collectionEdit") return state;
 
       return {
-        mode: "selectingPhotos",
+        mode: "collectionPhotoSelect",
         collectionPhotoMode: action.collectionPhotoMode,
         selectedPhotoIds: new Set(),
       };
 
+    case "START_PHOTO_DELETE_SELECT":
+      if (state.mode !== "browse") {
+        return state;
+      }
+
+      return {
+        mode: "photoDeleteSelect",
+        collectionPhotoMode: null,
+        selectedPhotoIds: new Set(),
+      };
+
     case "TOGGLE_PHOTO_SELECTION": {
-      if (state.mode !== "selectingPhotos") return state;
+      if (
+        state.mode !== "collectionPhotoSelect" &&
+        state.mode !== "photoDeleteSelect"
+      )
+        return state;
 
       const selectedPhotoIds = new Set(state.selectedPhotoIds);
 
@@ -90,7 +110,12 @@ export function districtPageReducer(
     }
 
     case "CLEAR_PHOTO_SELECTION":
-      if (state.mode !== "selectingPhotos") return state;
+      if (
+        state.mode !== "collectionPhotoSelect" &&
+        state.mode !== "photoDeleteSelect"
+      ) {
+        return state;
+      }
 
       return {
         ...state,
@@ -99,9 +124,15 @@ export function districtPageReducer(
 
     case "CONFIRM_PHOTO_SELECTION":
     case "CANCEL_PHOTO_SELECTION":
-      if (state.mode !== "selectingPhotos") return state;
+      if (state.mode !== "collectionPhotoSelect") return state;
 
       return createCollectionEditState();
+
+    case "CONFIRM_PHOTO_DELETE":
+    case "CANCEL_PHOTO_DELETE":
+      if (state.mode !== "photoDeleteSelect") return state;
+
+      return createBrowseState();
 
     case "SAVE_EDIT":
     case "CANCEL_EDIT":

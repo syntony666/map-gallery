@@ -1,5 +1,5 @@
 export type PageMode =
-  | "editDistrict"
-  | "editCollection"
+  | "districtEdit"
+  | "collectionEdit"
   | "editPhoto"
   | "browse";

@@ -3,7 +3,7 @@ import type { Photo } from "../../types/photo.type";
 type PhotoCardProps = {
   districtName: string;
   photo: Photo;
-  isEditMode?: boolean;
+  isSelectionMode: boolean;
   isSelected?: boolean;
   onToggleSelection?: () => void;
 };
@@ -11,12 +11,12 @@ type PhotoCardProps = {
 export function PhotoCard({
   districtName,
   photo,
-  isEditMode = false,
+  isSelectionMode = false,
   isSelected = false,
   onToggleSelection,
 }: PhotoCardProps) {
   function handleClick() {
-    if (isEditMode) {
+    if (isSelectionMode) {
       onToggleSelection?.();
       return;
     }
@@ -29,14 +29,14 @@ export function PhotoCard({
       type="button"
       onClick={handleClick}
       className={`relative overflow-hidden rounded-xl bg-white text-left shadow-sm transition ${
-        isEditMode
+        isSelectionMode
           ? isSelected
             ? "ring-2 ring-stone-700 ring-offset-2"
             : "hover:ring-2 hover:ring-stone-300"
           : "hover:-translate-y-0.5 hover:shadow-md"
       }`}
     >
-      {isEditMode && (
+      {isSelectionMode && (
         <span
           className={`absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded border text-sm ${
             isSelected

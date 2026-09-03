@@ -3,22 +3,32 @@ import { Toolbar } from "../common/Toolbar";
 
 type PhotoSelectionToolbarProps = {
   selectedCount: number;
-  onClearSelection: () => void;
+  onConfirmDelete: () => void;
+  onCancel: () => void;
 };
 
 export function PhotoSelectionToolbar({
   selectedCount,
-  onClearSelection,
+  onConfirmDelete,
+  onCancel,
 }: PhotoSelectionToolbarProps) {
   const buttons: ButtonActionGroup[] = [
     {
-      id: "photo-selection",
+      id: "photo-delete-selection",
       buttons: [
         {
-          id: "clear-photo-selection",
-          label: "取消選取",
+          id: "cancel-photo-delete",
+          label: "取消",
           icon: "bi-x-lg",
-          onClick: onClearSelection,
+          onClick: onCancel,
+        },
+        {
+          id: "confirm-photo-delete",
+          label: `刪除 ${selectedCount} 張`,
+          icon: "bi-trash3",
+          variant: "danger",
+          disabled: selectedCount === 0,
+          onClick: onConfirmDelete,
         },
       ],
     },

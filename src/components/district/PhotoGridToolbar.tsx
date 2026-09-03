@@ -1,30 +1,38 @@
 import type { ButtonConfig } from "../../types/button.type";
 import { Button } from "../common/Button";
 
+export type PhotoGridToolbarAction = {
+  onAddPhoto: () => void;
+  onDeletePhoto: () => void;
+};
+
 type PhotoGridToolbarProps = {
   photoCount: number;
-  isEditing: boolean;
+  showActions: boolean;
+  action: PhotoGridToolbarAction;
 };
+
 export function PhotoGridToolbar({
   photoCount,
-  isEditing,
+  showActions,
+  action,
 }: PhotoGridToolbarProps) {
-  const buttons: ButtonConfig[] = isEditing
-    ? []
-    : [
+  const buttons: ButtonConfig[] = showActions
+    ? [
         {
           id: "photo-add",
           label: "",
           icon: "bi-plus-lg",
-          onClick: () => alert("上傳功能尚未開放"),
+          onClick: action.onAddPhoto,
         },
         {
           id: "photo-delete",
           label: "",
           icon: "bi-trash3",
-          onClick: () => alert("上傳功能尚未開放"),
+          onClick: action.onDeletePhoto,
         },
-      ];
+      ]
+    : [];
   return (
     <section className="flex items-center justify-between">
       <div className="flex items-center gap-2">
