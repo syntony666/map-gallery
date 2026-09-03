@@ -14,6 +14,7 @@
     "db:generate": "npm run db:generate --workspace=@map-gallery/api",
     "db:migrate": "npm run db:migrate --workspace=@map-gallery/api",
     "db:seed": "npm run db:seed --workspace=@map-gallery/api",
+    "db:seed:dev": "npm run db:seed:dev --workspace=@map-gallery/api",
     "init": "npm run db:migrate && npm run db:seed && npm run build",
     "prepare:production": "npm run typecheck && npm run build && npm run db:migrate",
     "start": "npm run start --workspace=@map-gallery/api"

@@ -1,0 +1,276 @@
+export type AreaContentSeed = {
+  areaId: string;
+  coverImage: string | null;
+  description: string | null;
+};
+
+export type PhotoSeed = {
+  id: string;
+  areaId: string;
+  title: string;
+  summary: string | null;
+  description: string | null;
+  image: string;
+  takenAt: string;
+};
+
+export type CollectionSeed = {
+  id: string;
+  areaId: string;
+  name: string;
+};
+
+export type PhotoCollectionSeed = {
+  photoId: string;
+  collectionId: string;
+};
+
+export const areaContentSeedData: readonly AreaContentSeed[] = [
+  {
+    areaId: "taipei-city",
+    coverImage:
+      "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=85",
+    description: "台北好貴 爛台北",
+  },
+  {
+    areaId: "new-taipei-city",
+    coverImage:
+      "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=85",
+    description: "跟台北市一樣爛",
+  },
+  {
+    areaId: "taichung-city",
+    coverImage:
+      "https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=1600&q=85",
+    description: "台中景點、建築、街區與旅行照片集合。",
+  },
+  {
+    areaId: "kaohsiung-city",
+    coverImage:
+      "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=85",
+    description: "高雄港灣、老街、藝術空間與城市日常照片集合。",
+  },
+  {
+    areaId: "lienchiang-county",
+    coverImage:
+      "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1600&q=85",
+    description: "馬祖群島的戰地遺跡、石屋聚落、海岸與島嶼日常。",
+  },
+];
+
+export const photoSeedData: readonly PhotoSeed[] = [
+  {
+    id: "taipei-001",
+    areaId: "taipei-city",
+    title: "台北 101",
+    takenAt: "2026-01-12T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1494587351196-bbf5f29cff42?auto=format&fit=crop&w=1600&q=85",
+    summary: "從信義區街角望向台北 101。",
+    description: "傍晚的台北 101 與信義商圈街景，可作為台北城市地標代表內容。",
+  },
+  {
+    id: "taipei-002",
+    areaId: "taipei-city",
+    title: "大稻埕碼頭",
+    takenAt: "2026-01-20T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1600&q=85",
+    summary: "河岸散步與夕陽時刻。",
+    description: "沿著淡水河河岸散步，記錄大稻埕碼頭黃昏的光線與城市輪廓。",
+  },
+  {
+    id: "taipei-003",
+    areaId: "taipei-city",
+    title: "西門町夜色",
+    takenAt: "2026-02-02T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1600&q=85",
+    summary: "人潮、招牌與台北夜生活。",
+    description: "西門町街頭的霓虹、行人與店家招牌，呈現熱鬧的夜間城市節奏。",
+  },
+  {
+    id: "taipei-004",
+    areaId: "taipei-city",
+    title: "象山步道",
+    takenAt: "2026-02-15T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1600&q=85",
+    summary: "俯瞰台北盆地與城市天際線。",
+    description:
+      "從象山步道的觀景點遠望信義區，適合做為城市與自然交界的照片紀錄。",
+  },
+  {
+    id: "taipei-005",
+    areaId: "taipei-city",
+    title: "北投圖書館",
+    takenAt: "2026-03-01T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1600&q=85",
+    summary: "木質建築與綠意交融。",
+    description:
+      "以自然採光、木材與周圍綠意為主題，記錄北投一帶較安靜的生活感。",
+  },
+  {
+    id: "taipei-006",
+    areaId: "taipei-city",
+    title: "華山文創園區",
+    takenAt: "2026-03-08T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1600&q=85",
+    summary: "舊酒廠建築與展演空間。",
+    description:
+      "保留工業建築紋理的文化園區，適合作為展覽、街拍與假日活動的紀錄。",
+  },
+  {
+    id: "taichung-001",
+    areaId: "taichung-city",
+    title: "高美濕地",
+    takenAt: "2026-01-08T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1600&q=85",
+    summary: "夕陽、潮間帶與風車的海岸景色。",
+    description: "高美濕地適合在日落前後拍攝，潮間帶倒影與遠方風車是常見構圖。",
+  },
+  {
+    id: "taichung-002",
+    areaId: "taichung-city",
+    title: "國家歌劇院",
+    takenAt: "2026-01-18T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=85",
+    summary: "曲牆空間與現代建築線條。",
+    description: "以室內光影與流線型結構為拍攝主題，呈現建築空間的層次。",
+  },
+  {
+    id: "taichung-003",
+    areaId: "taichung-city",
+    title: "審計新村",
+    takenAt: "2026-02-06T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=85",
+    summary: "老宿舍改造的文創街區。",
+    description:
+      "逛市集、咖啡店與小型選物店時，記錄舊建築與當代生活混合的氛圍。",
+  },
+  {
+    id: "taichung-004",
+    areaId: "taichung-city",
+    title: "彩虹眷村",
+    takenAt: "2026-02-22T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=1600&q=85",
+    summary: "彩繪牆面與鮮明色彩。",
+    description: "利用牆上的手繪圖案、色塊與人物互動，做出飽和明亮的旅行紀錄。",
+  },
+  {
+    id: "taichung-005",
+    areaId: "taichung-city",
+    title: "草悟道",
+    takenAt: "2026-03-10T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=85",
+    summary: "綠帶、散步與城市日常。",
+    description:
+      "連接美術館與勤美商圈的綠帶空間，適合收集假日下午的城市散步畫面。",
+  },
+  {
+    id: "kaohsiung-001",
+    areaId: "kaohsiung-city",
+    title: "駁二藝術特區",
+    takenAt: "2026-01-05T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1600&q=85",
+    summary: "倉庫、展覽與港邊藝術空間。",
+    description: "以舊港區倉庫的工業感、裝置藝術和步行人潮作為影像主題。",
+  },
+  {
+    id: "kaohsiung-002",
+    areaId: "kaohsiung-city",
+    title: "旗津海岸",
+    takenAt: "2026-01-29T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=85",
+    summary: "渡輪、海風與港口景色。",
+    description: "從鼓山搭渡輪前往旗津，沿線可拍攝港區船隻與島上的海岸風景。",
+  },
+  {
+    id: "kaohsiung-003",
+    areaId: "kaohsiung-city",
+    title: "蓮池潭龍虎塔",
+    takenAt: "2026-02-12T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1600&q=85",
+    summary: "湖畔寺廟與傳統建築。",
+    description: "以湖面、塔樓倒影和傳統建築色彩呈現高雄左營的歷史景觀。",
+  },
+  {
+    id: "kaohsiung-004",
+    areaId: "kaohsiung-city",
+    title: "衛武營夜景",
+    takenAt: "2026-03-03T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=85",
+    summary: "夜間燈光與大型公共空間。",
+    description: "在傍晚與夜間記錄衛武營建築外觀、戶外廣場與活動人潮。",
+  },
+  {
+    id: "lienchiang-001",
+    areaId: "lienchiang-county",
+    title: "芹壁聚落",
+    takenAt: "2026-01-15T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=85",
+    summary: "花崗岩石屋與山海聚落。",
+    description: "以石屋階梯、狹窄巷道與海灣視角，記錄北竿芹壁聚落的獨特樣貌。",
+  },
+  {
+    id: "lienchiang-002",
+    areaId: "lienchiang-county",
+    title: "北海坑道",
+    takenAt: "2026-02-09T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1600&q=85",
+    summary: "戰地坑道與水面倒影。",
+    description: "在坑道入口、石壁紋理與水道之間，保留馬祖戰地歷史的空間感。",
+  },
+  {
+    id: "lienchiang-003",
+    areaId: "lienchiang-county",
+    title: "東引燈塔",
+    takenAt: "2026-02-27T00:00:00.000Z",
+    image:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=85",
+    summary: "海崖、燈塔與東引海景。",
+    description:
+      "在海風強烈的岬角拍攝白色燈塔與開闊海面，保留離島旅行的空曠感。",
+  },
+];
+
+export const collectionSeedData: readonly CollectionSeed[] = [
+  { id: "taipei-city-landmarks", areaId: "taipei-city", name: "地標" },
+  { id: "taipei-city-evening", areaId: "taipei-city", name: "傍晚" },
+  { id: "taipei-city-123", areaId: "taipei-city", name: "123" },
+  { id: "taipei-city-8888", areaId: "taipei-city", name: "8888" },
+  { id: "taipei-city-night", areaId: "taipei-city", name: "夜晚" },
+  {
+    id: "taipei-city-natural-landscape",
+    areaId: "taipei-city",
+    name: "自然景觀",
+  },
+];
+
+export const photoCollectionSeedData: readonly PhotoCollectionSeed[] = [
+  { photoId: "taipei-001", collectionId: "taipei-city-landmarks" },
+  { photoId: "taipei-001", collectionId: "taipei-city-evening" },
+  { photoId: "taipei-001", collectionId: "taipei-city-123" },
+  { photoId: "taipei-001", collectionId: "taipei-city-8888" },
+  { photoId: "taipei-002", collectionId: "taipei-city-landmarks" },
+  { photoId: "taipei-002", collectionId: "taipei-city-evening" },
+  { photoId: "taipei-003", collectionId: "taipei-city-landmarks" },
+  { photoId: "taipei-003", collectionId: "taipei-city-night" },
+  {
+    photoId: "taipei-004",
+    collectionId: "taipei-city-natural-landscape",
+  },
+];
