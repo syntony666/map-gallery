@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+
+# SQLite database files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Vite
+apps/web/dist
+
+# TypeScript
+*.tsbuildinfo

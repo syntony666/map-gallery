@@ -1,36 +1,26 @@
 {
   "name": "map-gallery",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.2.2",
-    "leaflet": "^1.9.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-leaflet": "^5.0.0",
-    "react-router": "^8.3.0",
-    "tailwindcss": "^4.2.2"
+    "dev": "concurrently \"npm run dev --workspace=@map-gallery/web\" \"npm run dev --workspace=@map-gallery/api\"",
+    "dev:web": "npm run dev --workspace=@map-gallery/web",
+    "dev:api": "npm run dev --workspace=@map-gallery/api",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
-    "@types/leaflet": "^1.9.21",
-    "@types/node": "^24.12.2",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^9.39.4",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.4.0",
-    "typescript": "~6.0.2",
-    "typescript-eslint": "^8.58.0",
-    "vite": "^8.0.4"
+    "concurrently": "^9.1.2"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true,
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true,
+    "es5-ext": false,
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true
   }
 }
