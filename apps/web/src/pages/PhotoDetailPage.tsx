@@ -11,19 +11,20 @@ export function PhotoDetailPage() {
 
   const district = districts.find((district) => district.id === districtId);
 
-  const emptyPhoto = {
+  const emptyPhoto: Photo = {
     id: "0",
     title: "",
     summary: "找不到此照片 請返回到上一頁",
     date: "",
     image: "https://placehold.net/default.png",
+    collectionIds: [],
   };
 
   if (!district) {
     return <PhotoDetailContent districtName="" photo={emptyPhoto} isError />;
   }
 
-  const photo = district.photos.find((photo) => photo.id === photoId);
+  const photo = district.photos.find((photo) => photo.id === photoId) as Photo;
 
   if (!photo) {
     return (

@@ -30,8 +30,10 @@ const taiwanBounds: [[number, number], [number, number]] = [
   [27.0, 124.0],
 ];
 
-function getDistrictContent(id: string): DistrictContent | undefined {
-  return districts.find((district) => district.id === id);
+function getDistrictContent(id: string) {
+  return districts.find((district) => district.id === id) as
+    | DistrictContent
+    | undefined;
 }
 
 function getFeatureDistrictId(feature: GeoJSON.Feature | undefined): string {

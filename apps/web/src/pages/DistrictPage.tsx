@@ -73,7 +73,7 @@ function DistrictContent({
     <main className="grid gap-4">
       {/* 標題列 */}
       <TitleBarContent
-        districtName={district.displayed.id}
+        districtName={district.displayed.name}
         description={
           UI.isDistrictEditMode
             ? "對於這個地方，你想說..."
@@ -84,10 +84,10 @@ function DistrictContent({
         action={actions.titleBar}
       />
 
-      {UI.isDistrictEditMode ? (
+      {UI.isDistrictEditMode && district.draft ? (
         /* 說明編輯區 編輯時相簿列隱藏 */
         <textarea
-          value={district.draft?.description ?? ""}
+          value={district.draft.description ?? ""}
           onChange={(event) => actions.updateDescription(event.target.value)}
           rows={3}
           autoFocus
