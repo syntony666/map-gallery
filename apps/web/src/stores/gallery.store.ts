@@ -1,0 +1,217 @@
+import type {
+  AreaDataResponse,
+  AreaListDataResponse,
+  CollectionListDataResponse,
+  ErrorCode,
+  ErrorDataResponse,
+  PhotoDataResponse,
+  PhotoListDataResponse,
+} from "@map-gallery/shared";
+
+import type {
+  Area,
+  Collection,
+  GetPhotosQuery,
+  Photo,
+} from "../types/gallery.type";
+
+export type PhotoListResult = {
+  photos: Photo[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
+export class GalleryStoreError extends Error {
+  readonly status: number;
+  readonly code: ErrorCode | undefined;
+
+  constructor(status: number, message: string, code?: ErrorCode) {
+    super(message);
+    this.name = "GalleryStoreError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+async function requestData<T>(path: string): Promise<T> {
+  const response = await fetch(path);
+
+  const body = (await response.json().catch(() => null)) as
+    | T
+    | ErrorDataResponse
+    | null;
+
+  if (!response.ok) {
+    const errorResponse = body as ErrorDataResponse | null;
+
+    throw new GalleryStoreError(
+      response.status,
+      errorResponse?.error.message ?? `Request failed: ${response.status}`,
+      errorResponse?.error.code,
+    );
+  }
+
+  return body as T;
+}
+
+function toPhoto(
+  photo: PhotoListDataResponse["items"][number] | PhotoDataResponse,
+  collectionNamesById: Map<string, string> = new Map(),
+): Photo {
+  return {
+    id: photo.id,
+    title: photo.title,
+    date: photo.takenAt,
+    image: photo.image,
+    summary: photo.summary ?? undefined,
+    description:
+      "description" in photo ? (photo.description ?? undefined) : undefined,
+    collectionIds: photo.collectionIds
+      .map((collectionId) => collectionNamesById.get(collectionId))
+      .filter(
+        (collectionName): collectionName is string =>
+          collectionName !== undefined,
+      ),
+  };
+}
+
+function toCollection(
+  collection: CollectionListDataResponse["items"][number],
+  photos: Photo[],
+): Collection {
+  return {
+    id: collection.id,
+    name: collection.name,
+    photos: photos.filter((photo) =>
+      photo.collectionIds.includes(collection.name),
+    ),
+  };
+}
+
+function toArea(area: AreaDataResponse, photos: Photo[]): Area {
+  return {
+    id: area.id,
+    name: area.name,
+    coverImage: area.coverImage ?? undefined,
+    description: area.description ?? undefined,
+    photos,
+  };
+}
+
+function toSearchParams(
+  values: Record<string, string | number | undefined>,
+): string {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(values)) {
+    if (value === undefined || value === "") {
+      continue;
+    }
+
+    params.set(key, String(value));
+  }
+
+  const query = params.toString();
+
+  return query ? `?${query}` : "";
+}
+
+async function getAreaById(areaId: string): Promise<Area> {
+  const [areaResponse, collectionsResponse, photosResponse] = await Promise.all(
+    [
+      requestData<AreaDataResponse>(`/api/v1/areas/${areaId}`),
+      requestData<CollectionListDataResponse>(
+        `/api/v1/collections?areaId=${areaId}`,
+      ),
+      requestData<PhotoListDataResponse>(`/api/v1/photos?areaId=${areaId}`),
+    ],
+  );
+
+  const collectionNamesById = new Map(
+    collectionsResponse.items.map((collection) => [
+      collection.id,
+      collection.name,
+    ]),
+  );
+
+  const photos = photosResponse.items.map((photo) =>
+    toPhoto(photo, collectionNamesById),
+  );
+
+  return toArea(areaResponse, photos);
+}
+
+async function getCollectionsByAreaId(areaId: string): Promise<Collection[]> {
+  const [collectionsResponse, photosResponse] = await Promise.all([
+    requestData<CollectionListDataResponse>(
+      `/api/v1/collections?areaId=${areaId}`,
+    ),
+    requestData<PhotoListDataResponse>(`/api/v1/photos?areaId=${areaId}`),
+  ]);
+
+  const collectionNamesById = new Map(
+    collectionsResponse.items.map((collection) => [
+      collection.id,
+      collection.name,
+    ]),
+  );
+
+  const photos = photosResponse.items.map((photo) =>
+    toPhoto(photo, collectionNamesById),
+  );
+
+  return collectionsResponse.items.map((collection) =>
+    toCollection(collection, photos),
+  );
+}
+
+async function getPhotoById(photoId: string): Promise<Photo> {
+  const photoResponse = await requestData<PhotoDataResponse>(
+    `/api/v1/photos/${photoId}`,
+  );
+
+  return toPhoto(photoResponse);
+}
+
+async function getAreas(): Promise<Area[]> {
+  const response = await requestData<AreaListDataResponse>("/api/v1/areas");
+
+  return response.items.map((area) => ({
+    id: area.id,
+    name: area.name,
+    coverImage: area.coverImage ?? undefined,
+    description: area.description ?? undefined,
+    photos: [],
+  }));
+}
+
+async function getPhotos(query: GetPhotosQuery = {}): Promise<PhotoListResult> {
+  const response = await requestData<PhotoListDataResponse>(
+    `/api/v1/photos${toSearchParams({
+      areaId: query.areaId,
+      collectionId: query.collectionId,
+      keyword: query.keyword,
+      sort: query.sort,
+      page: query.page,
+      limit: query.limit,
+    })}`,
+  );
+
+  return {
+    photos: response.items.map((photo) => toPhoto(photo)),
+    page: response.pagination.page,
+    limit: response.pagination.limit,
+    total: response.pagination.total,
+    totalPages: response.pagination.totalPages,
+  };
+}
+
+export const galleryStore = {
+  getAreas,
+  getAreaById,
+  getCollectionsByAreaId,
+  getPhotoById,
+  getPhotos,
+};

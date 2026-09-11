@@ -1,4 +1,4 @@
-import type { Collection } from "../../types/photo.type";
+import type { Collection } from "../../types/gallery.type";
 import { EmptyState } from "../common/EmptyState";
 import { CollectionItem } from "./CollectionItem";
 import "./CollectionBar.css";

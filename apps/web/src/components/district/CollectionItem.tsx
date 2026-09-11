@@ -1,4 +1,4 @@
-import type { Collection } from "../../types/photo.type";
+import type { Collection } from "../../types/gallery.type";
 
 type CollectionItemProps = {
   collection: Collection;

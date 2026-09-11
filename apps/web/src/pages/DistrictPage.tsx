@@ -1,11 +1,9 @@
 import { useLocation, useNavigate, useParams } from "react-router";
-import districts from "../data/districts.json";
 import { CollectionBar } from "../components/district/CollectionBar";
 import { CollectionManageToolbar } from "../components/district/CollectionManageToolbar";
 import { DistrictToolbar } from "../components/district/DistrictToolbar";
 import { PhotoGrid } from "../components/district/PhotoGrid";
 import { TitleBar } from "../components/common/TitleBar";
-import type { District } from "../types/district";
 import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/district/PhotoGridToolbar";
 import { PhotoSelectionToolbar } from "../components/district/PhotoSelectionToolbar";
@@ -16,9 +14,7 @@ export function DistrictPage() {
   const { districtId } = useParams();
   const { state } = useLocation();
 
-  const district = districts.find((item) => item.id === districtId);
-
-  if (!district) {
+  if (!districtId) {
     return (
       <div>
         <TitleBarContent districtName="" />
@@ -32,38 +28,56 @@ export function DistrictPage() {
 
   return (
     <DistrictContent
-      district={district}
+      areaId={districtId}
       initialCollectionName={state?.collectionName ?? ""}
     />
   );
 }
 
 type DistrictContentProps = {
-  district: District;
+  areaId: string;
   initialCollectionName?: string;
 };
 
 function DistrictContent({
-  district: currentDistrict,
+  areaId: string,
   initialCollectionName,
 }: DistrictContentProps) {
-  const { district, filters, UI, actions } = useDistrictPageController({
-    district: currentDistrict,
+  const { error, district, filters, UI, actions } = useDistrictPageController({
+    areaId: string,
     initialCollectionName,
   });
 
-  const isDistrictEmpty = !district.displayed.photos.length;
+  const isDistrictEmpty = !district.displayed?.photos.length;
   const navigate = useNavigate();
+
+  if (error) {
+    return (
+      <div>
+        <TitleBarContent districtName="" />
+        <EmptyState title="無法載入行政區" description={error} />
+      </div>
+    );
+  }
+
+  if (!district.displayed) {
+    return (
+      <div>
+        <TitleBarContent districtName="" />
+        <EmptyState title="載入中…" />
+      </div>
+    );
+  }
 
   return (
     <main className="grid gap-4">
       {/* 標題列 */}
       <TitleBarContent
-        districtName={district.displayed.id}
+        districtName={district.displayed?.id}
         description={
           UI.isDistrictEditMode
             ? "對於這個地方，你想說..."
-            : district.displayed.description
+            : district.displayed?.description
         }
         isEditMode={UI.isEditMode}
         showActions={!UI.isPhotoDeleteSelectMode}

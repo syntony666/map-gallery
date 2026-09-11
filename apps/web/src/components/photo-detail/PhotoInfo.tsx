@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import type { Photo } from "../../types/photo.type";
+import type { Photo } from "../../types/gallery.type";
 
 type PhotoInfoProps = {
   districtName: string;
@@ -16,9 +16,9 @@ export function PhotoInfo({ districtName, photo }: PhotoInfoProps) {
         <time className="mt-1 block text-sm text-stone-500">{photo.date}</time>
       </div>
 
-      {photo.collections?.length && photo.collections.length > 0 && (
+      {photo.collectionIds?.length && photo.collectionIds.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2">
-          {photo.collections.map((collection) => (
+          {photo.collectionIds.map((collection) => (
             <button
               key={collection}
               type="button"

@@ -6,7 +6,7 @@ import pins from "../../data/pins.json";
 import districts from "../../data/districts.json";
 import { DistrictPopup, type DistrictPopupData } from "./DistrictPopup";
 import { DistrictHoverLabel } from "./DistrictHoverLabel";
-import type { Photo } from "../../types/photo.type";
+import type { Photo } from "../../types/gallery.type";
 
 type Pin = {
   id: string;

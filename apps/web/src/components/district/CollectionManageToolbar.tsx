@@ -1,5 +1,5 @@
 import type { ButtonActionGroup } from "../../types/button.type";
-import type { Collection } from "../../types/photo.type";
+import type { Collection } from "../../types/gallery.type";
 import { Toolbar } from "../common/Toolbar";
 
 export type CollectionManageToolbarAction = {

@@ -1,4 +1,4 @@
-import type { Photo } from "../../types/photo.type";
+import type { Photo } from "../../types/gallery.type";
 
 export type DistrictPopupData = {
   id: string;

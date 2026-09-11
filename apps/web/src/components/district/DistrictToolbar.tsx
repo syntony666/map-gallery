@@ -1,4 +1,4 @@
-import type { SortOption } from "../../types/photo.type";
+import type { SortOption } from "../../types/gallery.type";
 
 type PhotoToolbarProps = {
   keyword: string;

@@ -3,7 +3,7 @@ import type {
   CollectionPhotoMode,
   Photo,
   SortOption,
-} from "../types/photo.type";
+} from "../types/gallery.type";
 
 export function useDistrictState(
   photos: Photo[],
@@ -18,7 +18,7 @@ export function useDistrictState(
     const groups = new Map<string, Photo[]>();
 
     photos.forEach((photo) => {
-      photo.collections?.forEach((collection) => {
+      photo.collectionIds?.forEach((collection) => {
         const collectionPhotos = groups.get(collection) ?? [];
 
         collectionPhotos.push(photo);
@@ -43,7 +43,7 @@ export function useDistrictState(
 
     const filteredPhotos = photos.filter((photo) => {
       const isInSelectedCollection =
-        photo.collections?.includes(collectionName) ?? false;
+        photo.collectionIds.includes(collectionName) ?? false;
 
       const matchesCollection = (() => {
         if (!collectionName) {

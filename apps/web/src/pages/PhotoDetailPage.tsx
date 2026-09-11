@@ -3,7 +3,7 @@ import districts from "../data/districts.json";
 import { TitleBar } from "../components/common/TitleBar";
 import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
-import type { Photo } from "../types/photo.type";
+import type { Photo } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
 
 export function PhotoDetailPage() {

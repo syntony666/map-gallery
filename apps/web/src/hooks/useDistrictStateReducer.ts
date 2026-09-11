@@ -1,4 +1,4 @@
-import type { CollectionPhotoMode } from "../types/photo.type";
+import type { CollectionPhotoMode } from "../types/gallery.type";
 
 export type DistrictPageMode =
   | "browse"
