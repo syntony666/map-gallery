@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { areasRoute } from "./routes/areas";
 import { collectionsRoute } from "./routes/collections";
+import { photosRoute } from "./routes/photos";
 
 export const app = new Hono();
 
@@ -21,3 +22,4 @@ app.get("/api/v1/health", (context) => {
 
 app.route("/api/v1/areas", areasRoute);
 app.route("/api/v1/collections", collectionsRoute);
+app.route("/api/v1/photos", photosRoute);
