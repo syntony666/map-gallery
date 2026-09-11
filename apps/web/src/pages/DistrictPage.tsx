@@ -73,11 +73,11 @@ function DistrictContent({
     <main className="grid gap-4">
       {/* 標題列 */}
       <TitleBarContent
-        districtName={district.displayed?.id}
+        districtName={district.displayed.id}
         description={
           UI.isDistrictEditMode
             ? "對於這個地方，你想說..."
-            : district.displayed?.description
+            : district.displayed.description
         }
         isEditMode={UI.isEditMode}
         showActions={!UI.isPhotoDeleteSelectMode}
@@ -138,7 +138,7 @@ function DistrictContent({
           showActions={!UI.isEditMode}
           action={{
             onAddPhoto: () =>
-              navigate(`/district/${district.displayed.id}/photo/new`),
+              navigate(`/district/${district.displayed?.id}/photo/new`),
             onDeletePhoto: actions.startPhotoDeleteSelect,
           }}
         />

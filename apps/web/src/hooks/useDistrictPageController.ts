@@ -1,5 +1,4 @@
-import { useReducer } from "react";
-import type { District } from "../types/district";
+import { useEffect, useReducer, useState } from "react";
 import type { CollectionManageToolbarAction } from "../components/district/CollectionManageToolbar";
 import { useDistrictEditor } from "./useDistrictEditor";
 import { useDistrictState } from "./useDistrictState";
@@ -7,9 +6,11 @@ import {
   districtPageReducer,
   initialDistrictPageUIState,
 } from "./useDistrictStateReducer";
+import type { Area } from "../types/gallery.type";
+import { galleryStore } from "../stores/gallery.store";
 
 type UseDistrictPageControllerOptions = {
-  district: District;
+  areaId: string;
   initialCollectionName?: string;
 };
 
@@ -21,7 +22,7 @@ type TitleBarActions = {
 };
 
 export function useDistrictPageController({
-  district,
+  areaId,
   initialCollectionName,
 }: UseDistrictPageControllerOptions) {
   const [UIState, dispatch] = useReducer(
@@ -29,15 +30,40 @@ export function useDistrictPageController({
     initialDistrictPageUIState,
   );
 
-  const editor = useDistrictEditor(district);
+  const [sourceDistrict, setSourceDistrict] = useState<Area | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const editor = useDistrictEditor(sourceDistrict);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void galleryStore
+      .getAreaById(areaId)
+      .then((area) => {
+        if (cancelled) return;
+        setSourceDistrict(area);
+      })
+      .catch((reason: unknown) => {
+        if (cancelled) return;
+
+        setError(
+          reason instanceof Error ? reason.message : "無法載入行政區資料",
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [areaId]);
 
   const displayedDistrict =
     UIState.mode !== "browse" && editor.draftDistrict
       ? editor.draftDistrict
-      : editor.currentDistrict;
+      : sourceDistrict;
 
   const districtState = useDistrictState(
-    displayedDistrict.photos,
+    displayedDistrict?.photos ?? [],
     initialCollectionName,
     UIState.collectionPhotoMode,
   );
@@ -156,7 +182,7 @@ export function useDistrictPageController({
     editor.removeCollection(collectionName);
     districtState.setCollectionName("");
   }
-   
+
   function startPhotoDeleteSelect() {
     editor.startEditing();
     dispatch({ type: "START_PHOTO_DELETE_SELECT" });
@@ -198,6 +224,7 @@ export function useDistrictPageController({
   };
 
   return {
+    error,
     district: {
       displayed: displayedDistrict,
       draft: editor.draftDistrict,

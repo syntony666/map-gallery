@@ -1,12 +1,12 @@
 import { useState } from "react";
-import type { District } from "../types/district";
+import type { Area } from "../types/gallery.type";
 
-export function useDistrictEditor(district: District) {
-  const [currentDistrict, setCurrentDistrict] = useState(district);
-  const [draftDistrict, setDraftDistrict] = useState<District | null>(null);
+export function useDistrictEditor(area: Area | null) {
+  const [draftDistrict, setDraftDistrict] = useState<Area | null>(null);
 
   function startEditing() {
-    setDraftDistrict(structuredClone(currentDistrict));
+    if (!area) return;
+    setDraftDistrict(structuredClone(area));
   }
 
   function cancelEditing() {
@@ -36,15 +36,15 @@ export function useDistrictEditor(district: District) {
         ...current,
         photos: current.photos.map((photo) => ({
           ...photo,
-          collections: photo.collections?.includes(currentName)
+          collectionIds: photo.collectionIds?.includes(currentName)
             ? [
                 ...new Set(
-                  photo.collections.map((collection) =>
+                  photo.collectionIds.map((collection) =>
                     collection === currentName ? name : collection,
                   ),
                 ),
               ]
-            : photo.collections,
+            : photo.collectionIds,
         })),
       };
     });
@@ -58,7 +58,7 @@ export function useDistrictEditor(district: District) {
         ...current,
         photos: current.photos.map((photo) => ({
           ...photo,
-          collections: photo.collections?.filter(
+          collectionIds: photo.collectionIds?.filter(
             (collection) => collection !== collectionName,
           ),
         })),
@@ -83,8 +83,8 @@ export function useDistrictEditor(district: District) {
 
           return {
             ...photo,
-            collections: [
-              ...new Set([...(photo.collections ?? []), collectionName]),
+            collectionIds: [
+              ...new Set([...(photo.collectionIds ?? []), collectionName]),
             ],
           };
         }),
@@ -110,7 +110,7 @@ export function useDistrictEditor(district: District) {
 
           return {
             ...photo,
-            collections: photo.collections?.filter(
+            collectionIds: photo.collectionIds?.filter(
               (collection) => collection !== collectionName,
             ),
           };
@@ -135,10 +135,10 @@ export function useDistrictEditor(district: District) {
   function deletePhotos(photoIds: ReadonlySet<string>) {
     if (photoIds.size === 0) return;
 
-    setCurrentDistrict((current) => ({
-      ...current,
-      photos: current.photos.filter((photo) => !photoIds.has(photo.id)),
-    }));
+    // setCurrentDistrict((current) => ({
+    //   ...current,
+    //   photos: current.photos.filter((photo) => !photoIds.has(photo.id)),
+    // }));
 
     setDraftDistrict(null);
   }
@@ -146,12 +146,11 @@ export function useDistrictEditor(district: District) {
   function saveChanges() {
     if (!draftDistrict) return;
 
-    setCurrentDistrict(draftDistrict);
+    // setCurrentDistrict(draftDistrict);
     setDraftDistrict(null);
   }
 
   return {
-    currentDistrict,
     draftDistrict,
     startEditing,
     cancelEditing,
