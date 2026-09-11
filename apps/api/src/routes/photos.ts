@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, like, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
 import { areas, collections, photoCollections, photos } from "../db/schema";
@@ -45,10 +45,6 @@ function parseSort(value: string | undefined): SortDirection | null {
   }
 
   return null;
-}
-
-function escapeLikePattern(value: string): string {
-  return value.replace(/[\\%_]/g, "\\$&");
 }
 
 function getCollectionIdsByPhotoId(photoIds: readonly string[]) {
@@ -162,11 +158,11 @@ photosRoute.get("/", (context) => {
   }
 
   const keywordCondition = keyword
-    ? or(
-        like(photos.title, `%${escapeLikePattern(keyword)}%`),
-        like(photos.summary, `%${escapeLikePattern(keyword)}%`),
-        like(photos.description, `%${escapeLikePattern(keyword)}%`),
-      )
+    ? sql`(
+        ${photos.title} LIKE ${`%${keyword}%`}
+        OR COALESCE(${photos.summary}, '') LIKE ${`%${keyword}%`}
+        OR COALESCE(${photos.description}, '') LIKE ${`%${keyword}%`}
+      )`
     : undefined;
 
   const whereClause = collectionId
