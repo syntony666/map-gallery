@@ -1,11 +1,6 @@
-import type { Photo } from "../../types/gallery.type";
+import type { Area } from "../../types/gallery.type";
 
-export type AreaPopupData = {
-  id: string;
-  coverImage?: string;
-  description?: string;
-  photos: Photo[];
-};
+export type AreaPopupData = Area;
 
 type AreaPopupProps = {
   area: AreaPopupData | null;
@@ -19,13 +14,15 @@ export function AreaPopup({ area }: AreaPopupProps) {
       </div>
     );
   }
+
   return (
     <div style={{ width: "220px" }}>
-      <h3 style={{ margin: "0 0 8px", fontSize: "18px" }}>{area.id}</h3>
+      <h3 style={{ margin: "0 0 8px", fontSize: "18px" }}>{area.name}</h3>
+
       {area.coverImage && (
         <img
           src={area.coverImage}
-          alt={area.id}
+          alt={area.name}
           style={{
             width: "100%",
             height: "120px",
@@ -35,11 +32,13 @@ export function AreaPopup({ area }: AreaPopupProps) {
           }}
         />
       )}
+
       <p style={{ margin: "0 0 8px", fontSize: "14px", lineHeight: 1.5 }}>
-        {area?.description || "尚無介紹內容"}
+        {area.description || "尚無介紹內容"}
       </p>
+
       <div className="flex items-center justify-between">
-        <p className="text-xs text-gray-500">項目數：{area.photos.length}</p>
+        <p className="text-xs text-gray-500">項目數：{area.photoCount}</p>
 
         <button
           type="button"

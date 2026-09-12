@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 import type { LatLngExpression, Layer, LeafletMouseEvent } from "leaflet";
 import taiwanCounties from "../../data/twcounty.json";
 import pins from "../../data/pins.json";
-import areas from "../../data/districts.json";
+import { galleryStore } from "../../stores/gallery.store";
+import type { Area } from "../../types/gallery.type";
 import { AreaPopup, type AreaPopupData } from "./AreaPopup";
 import { AreaHoverLabel } from "./AreaHoverLabel";
-import type { Photo } from "../../types/gallery.type";
 
 type Pin = {
   id: string;
@@ -15,24 +15,12 @@ type Pin = {
   iconType?: string;
 };
 
-type AreaContent = {
-  id: string;
-  areaName?: string;
-  coverImage?: string;
-  description?: string;
-  photos: Photo[];
-};
-
 const taiwanCenter: LatLngExpression = [23.7, 121];
 
 const taiwanBounds: [[number, number], [number, number]] = [
   [21.5, 118.0],
   [27.0, 124.0],
 ];
-
-function getAreaContent(id: string) {
-  return areas.find((area) => area.id === id) as AreaContent | undefined;
-}
 
 function getFeatureAreaId(feature: GeoJSON.Feature | undefined): string {
   return (
@@ -46,6 +34,9 @@ function getFeatureAreaId(feature: GeoJSON.Feature | undefined): string {
 }
 
 export function TaiwanMap() {
+  const [sourceAreas, setSourceAreas] = useState<Area[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const [hoveredAreaId, setHoveredAreaId] = useState<string | null>(null);
   const [hoveredPosition, setHoveredPosition] = useState<
     [number, number] | null
@@ -56,8 +47,43 @@ export function TaiwanMap() {
     [number, number] | null
   >(null);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    galleryStore
+      .getAreas()
+      .then((areas) => {
+        if (cancelled) {
+          return;
+        }
+
+        setSourceAreas(areas);
+      })
+      .catch((reason: unknown) => {
+        if (cancelled) {
+          return;
+        }
+
+        setError(
+          reason instanceof Error ? reason.message : "無法載入行政區資料",
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const areaByName = useMemo(() => {
+    return new Map<string, Area>(
+      sourceAreas?.map((area) => [area.name, area]) ?? [],
+    );
+  }, [sourceAreas]);
+
   function handleAreaHover(id: string, hoverPosition?: [number, number]) {
-    if (selectedAreaId === id) return;
+    if (selectedAreaId === id) {
+      return;
+    }
 
     setHoveredAreaId(id);
 
@@ -65,6 +91,7 @@ export function TaiwanMap() {
       setHoveredPosition(hoverPosition);
     }
   }
+
   function handleAreaLeave(id: string) {
     setHoveredAreaId((current) => (current === id ? null : current));
     setHoveredPosition(null);
@@ -76,6 +103,7 @@ export function TaiwanMap() {
     if (popupPosition) {
       setSelectedPopupPosition(popupPosition);
     }
+
     setHoveredPosition(null);
   }
 
@@ -114,16 +142,11 @@ export function TaiwanMap() {
   }, [hoveredAreaId, selectedAreaId]);
 
   function getSelectedAreaData(id: string | null): AreaPopupData | null {
-    if (!id) return null;
+    if (!id) {
+      return null;
+    }
 
-    const content = getAreaContent(id);
-
-    return {
-      id: content?.id ?? selectedAreaId ?? "查無行政區",
-      coverImage: content?.coverImage,
-      description: content?.description,
-      photos: content?.photos ?? [],
-    };
+    return areaByName.get(id) ?? null;
   }
 
   const selectedArea = getSelectedAreaData(selectedAreaId);
@@ -132,20 +155,19 @@ export function TaiwanMap() {
     const id = getFeatureAreaId(feature);
 
     layer.on({
-      mouseover: (e: LeafletMouseEvent) => {
-        handleAreaHover(id, [e.latlng.lat, e.latlng.lng]);
+      mouseover: (event: LeafletMouseEvent) => {
+        handleAreaHover(id, [event.latlng.lat, event.latlng.lng]);
       },
       mouseout: () => {
         handleAreaLeave(id);
       },
-      click: (e: LeafletMouseEvent) => {
-        handleAreaClick(id, [e.latlng.lat, e.latlng.lng]);
+      click: (event: LeafletMouseEvent) => {
+        handleAreaClick(id, [event.latlng.lat, event.latlng.lng]);
       },
     });
   }
 
   return (
-    // 設定地圖基本資料
     <MapContainer
       center={taiwanCenter}
       zoom={7}
@@ -156,7 +178,6 @@ export function TaiwanMap() {
       keyboard={false}
       className="w-full h-full"
     >
-      {/* 地圖圖檔 */}
       <TileLayer
         attribution="&copy; OpenStreetMap contributors &copy; CARTO"
         url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
@@ -168,7 +189,7 @@ export function TaiwanMap() {
         style={(feature) => getPolygonStyle(getFeatureAreaId(feature))}
         onEachFeature={onEachFeature}
       />
-      {/* 地圖自帶元件：錨點 */}
+
       {pins.map((pin: Pin) => (
         <Marker
           key={pin.id}
@@ -187,11 +208,11 @@ export function TaiwanMap() {
           }}
         />
       ))}
-      {/* 自製游標移入高亮 */}
+
       {hoveredAreaId && hoveredPosition && (
         <AreaHoverLabel areaName={hoveredAreaId} position={hoveredPosition} />
       )}
-      {/* 各縣市的顯示氣泡 */}
+
       {selectedPopupPosition && (
         <Popup
           position={selectedPopupPosition}
@@ -204,6 +225,12 @@ export function TaiwanMap() {
         >
           <AreaPopup area={selectedArea} />
         </Popup>
+      )}
+
+      {error && (
+        <div className="pointer-events-none absolute left-4 top-4 z-[1000] rounded bg-white px-3 py-2 text-sm text-red-600 shadow">
+          {error}
+        </div>
       )}
     </MapContainer>
   );
