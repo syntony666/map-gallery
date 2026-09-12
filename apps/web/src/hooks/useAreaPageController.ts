@@ -42,6 +42,7 @@ export function useAreaPageController({
       .getAreaById(areaId)
       .then((area) => {
         if (cancelled) return;
+
         setSourceArea(area);
       })
       .catch((reason: unknown) => {
@@ -56,6 +57,7 @@ export function useAreaPageController({
       .getCollectionsByAreaId(areaId)
       .then((collections) => {
         if (cancelled) return;
+
         setSourceCollections(collections);
       })
       .catch((reason: unknown) => {
@@ -101,7 +103,7 @@ export function useAreaPageController({
 
   function startAreaEdit() {
     editor.startEditing();
-    dispatch({ type: "START_DISTRICT_EDIT" });
+    dispatch({ type: "START_AREA_EDIT" });
   }
 
   function startCollectionEdit() {
@@ -110,6 +112,12 @@ export function useAreaPageController({
   }
 
   function saveEdit() {
+    // TODO: PATCH /api/v1/areas/:areaId/content
+    // await galleryStore.updateAreaContent(areaId, {
+    //   coverImage: editor.draftArea?.coverImage ?? null,
+    //   description: editor.draftArea?.description ?? null,
+    // });
+
     editor.saveChanges();
     resetPageUI();
     dispatch({ type: "SAVE_EDIT" });
@@ -148,7 +156,7 @@ export function useAreaPageController({
 
   function onConfirmCollectionPhotoSelection() {
     const collection = sourceCollections?.find(
-      (collection) => collection.id === areaState.selectedCollectionId,
+      (item) => item.id === areaState.selectedCollectionId,
     );
     const photoIds = UIState.selectedPhotoIds;
     const mode = UIState.collectionPhotoMode;
@@ -159,11 +167,19 @@ export function useAreaPageController({
     }
 
     if (mode === "add") {
-      editor.addPhotosToCollection(collection.id, photoIds);
+      // TODO: POST /api/v1/collection-photos
+      // await galleryStore.addPhotosToCollection({
+      //   collectionId: collection.id,
+      //   photoIds: [...photoIds],
+      // });
     }
 
     if (mode === "remove") {
-      editor.removePhotosFromCollection(collection.id, photoIds);
+      // TODO: DELETE /api/v1/collection-photos/:collectionId/:photoId
+      // await galleryStore.removePhotosFromCollection({
+      //   collectionId: collection.id,
+      //   photoIds: [...photoIds],
+      // });
     }
 
     dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
@@ -176,13 +192,20 @@ export function useAreaPageController({
   function onCollectionRename(collection: Collection) {
     const nextName = window.prompt("請輸入新的相簿名稱", collection.name);
 
-    if (nextName === null) return;
+    if (nextName === null) {
+      return;
+    }
 
     const normalizedName = nextName.trim();
 
-    if (!normalizedName || normalizedName === collection.name) return;
+    if (!normalizedName || normalizedName === collection.name) {
+      return;
+    }
 
-    editor.renameCollection(collection.id, normalizedName);
+    // TODO: PATCH /api/v1/collections/:collectionId
+    // await galleryStore.updateCollection(collection.id, {
+    //   name: normalizedName,
+    // });
   }
 
   function onCollectionRemove(collection: Collection) {
@@ -190,29 +213,38 @@ export function useAreaPageController({
       `確定要刪除「${collection.name}」嗎？其中 ${collection.photoCount} 張照片會解除與此相簿的關聯。`,
     );
 
-    if (!isConfirmed) return;
+    if (!isConfirmed) {
+      return;
+    }
 
-    editor.removeCollection(collection.id);
+    // TODO: DELETE /api/v1/collections/:collectionId
+    // await galleryStore.deleteCollection(collection.id);
+
     areaState.setSelectedCollectionId("");
   }
 
   function startPhotoDeleteSelect() {
-    editor.startEditing();
     dispatch({ type: "START_PHOTO_DELETE_SELECT" });
   }
 
   function confirmPhotoDelete() {
     const photoIds = UIState.selectedPhotoIds;
 
-    if (photoIds.size === 0) return;
+    if (photoIds.size === 0) {
+      return;
+    }
 
     const isConfirmed = window.confirm(
       `確定要刪除已選取的 ${photoIds.size} 張照片嗎？`,
     );
 
-    if (!isConfirmed) return;
+    if (!isConfirmed) {
+      return;
+    }
 
-    editor.deletePhotos(photoIds);
+    // TODO: POST /api/v1/photos/batch-delete
+    // await galleryStore.deletePhotos([...photoIds]);
+
     dispatch({ type: "CONFIRM_PHOTO_DELETE" });
   }
 
@@ -238,6 +270,7 @@ export function useAreaPageController({
 
   return {
     error,
+
     area: {
       displayed: displayedArea,
       draft: editor.draftArea,

@@ -14,7 +14,7 @@ export type AreaPageUIState = {
 };
 
 export type AreaPageUIAction =
-  | { type: "START_DISTRICT_EDIT" }
+  | { type: "START_AREA_EDIT" }
   | { type: "START_COLLECTION_EDIT" }
   | {
       type: "START_COLLECTION_PHOTO_SELECT";
@@ -58,7 +58,7 @@ export function areaPageReducer(
   action: AreaPageUIAction,
 ): AreaPageUIState {
   switch (action.type) {
-    case "START_DISTRICT_EDIT":
+    case "START_AREA_EDIT":
       return {
         mode: "areaEdit",
         collectionPhotoMode: null,
