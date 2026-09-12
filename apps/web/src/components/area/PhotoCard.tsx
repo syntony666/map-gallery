@@ -1,7 +1,7 @@
 import type { Photo } from "../../types/gallery.type";
 
 type PhotoCardProps = {
-  districtName: string;
+  areaName: string;
   photo: Photo;
   isSelectionMode: boolean;
   isSelected?: boolean;
@@ -9,7 +9,7 @@ type PhotoCardProps = {
 };
 
 export function PhotoCard({
-  districtName,
+  areaName,
   photo,
   isSelectionMode = false,
   isSelected = false,
@@ -21,7 +21,7 @@ export function PhotoCard({
       return;
     }
 
-    navigation.navigate(`/district/${districtName}/photo/${photo.id}`);
+    navigation.navigate(`/area/${areaName}/photo/${photo.id}`);
   }
 
   return (

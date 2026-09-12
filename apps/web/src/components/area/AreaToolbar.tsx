@@ -7,7 +7,7 @@ type PhotoToolbarProps = {
   onSortChange: (value: SortOption) => void;
 };
 
-export function DistrictToolbar({
+export function AreaToolbar({
   keyword,
   sort,
   onKeywordChange,

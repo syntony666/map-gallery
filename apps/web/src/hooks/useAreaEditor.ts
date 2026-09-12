@@ -1,20 +1,20 @@
 import { useState } from "react";
 import type { Area } from "../types/gallery.type";
 
-export function useDistrictEditor(area: Area | null) {
-  const [draftDistrict, setDraftDistrict] = useState<Area | null>(null);
+export function useAreaEditor(area: Area | null) {
+  const [draftArea, setDraftArea] = useState<Area | null>(null);
 
   function startEditing() {
     if (!area) return;
-    setDraftDistrict(structuredClone(area));
+    setDraftArea(structuredClone(area));
   }
 
   function cancelEditing() {
-    setDraftDistrict(null);
+    setDraftArea(null);
   }
 
   function updateDescription(description: string) {
-    setDraftDistrict((current) =>
+    setDraftArea((current) =>
       current
         ? {
             ...current,
@@ -29,7 +29,7 @@ export function useDistrictEditor(area: Area | null) {
 
     if (!name || name === currentName) return;
 
-    setDraftDistrict((current) => {
+    setDraftArea((current) => {
       if (!current) return current;
 
       return {
@@ -51,7 +51,7 @@ export function useDistrictEditor(area: Area | null) {
   }
 
   function removeCollection(collectionId: string) {
-    setDraftDistrict((current) => {
+    setDraftArea((current) => {
       if (!current) return current;
 
       return {
@@ -71,7 +71,7 @@ export function useDistrictEditor(area: Area | null) {
   ) {
     if (!collectionId || photoIds.size === 0) return;
 
-    setDraftDistrict((current) => {
+    setDraftArea((current) => {
       if (!current) return current;
 
       return {
@@ -98,7 +98,7 @@ export function useDistrictEditor(area: Area | null) {
   ) {
     if (!collectionId || photoIds.size === 0) return;
 
-    setDraftDistrict((current) => {
+    setDraftArea((current) => {
       if (!current) return current;
 
       return {
@@ -122,7 +122,7 @@ export function useDistrictEditor(area: Area | null) {
   function removePhotos(photoIds: ReadonlySet<string>) {
     if (photoIds.size === 0) return;
 
-    setDraftDistrict((draft) => {
+    setDraftArea((draft) => {
       if (!draft) return draft;
 
       return {
@@ -135,23 +135,23 @@ export function useDistrictEditor(area: Area | null) {
   function deletePhotos(photoIds: ReadonlySet<string>) {
     if (photoIds.size === 0) return;
 
-    // setCurrentDistrict((current) => ({
+    // setCurrentArea((current) => ({
     //   ...current,
     //   photos: current.photos.filter((photo) => !photoIds.has(photo.id)),
     // }));
 
-    setDraftDistrict(null);
+    setDraftArea(null);
   }
 
   function saveChanges() {
-    if (!draftDistrict) return;
+    if (!draftArea) return;
 
-    // setCurrentDistrict(draftDistrict);
-    setDraftDistrict(null);
+    // setCurrentArea(draftArea);
+    setDraftArea(null);
   }
 
   return {
-    draftDistrict,
+    draftArea,
     startEditing,
     cancelEditing,
     updateDescription,

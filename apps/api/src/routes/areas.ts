@@ -12,6 +12,13 @@ areasRoute.get("/", (context) => {
       name: areas.name,
       coverImage: areaContents.coverImage,
       description: areaContents.description,
+      photoCount: sql<number>`
+      (
+        SELECT COUNT(*)
+        FROM photos
+        WHERE photos.area_id = areas.id
+      )
+      `,
     })
     .from(areas)
     .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
@@ -30,6 +37,13 @@ areasRoute.get("/:areaId", (context) => {
       name: areas.name,
       coverImage: areaContents.coverImage,
       description: areaContents.description,
+      photoCount: sql<number>`
+      (
+        SELECT COUNT(*)
+        FROM photos
+        WHERE photos.area_id = areas.id
+      )
+      `,
     })
     .from(areas)
     .leftJoin(areaContents, eq(areaContents.areaId, areas.id))

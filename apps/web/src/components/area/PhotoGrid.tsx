@@ -3,7 +3,7 @@ import { EmptyState } from "../common/EmptyState";
 import { PhotoCard } from "./PhotoCard";
 
 export type PhotoGridProps = {
-  district: string;
+  area: string;
   photos: Photo[];
   isSelectionMode?: boolean;
   selectedPhotoIds?: ReadonlySet<string>;
@@ -11,7 +11,7 @@ export type PhotoGridProps = {
 };
 
 export function PhotoGrid({
-  district,
+  area,
   photos,
   isSelectionMode = false,
   selectedPhotoIds = new Set(),
@@ -26,7 +26,7 @@ export function PhotoGrid({
           {photos.map((photo) => (
             <PhotoCard
               key={photo.id}
-              districtName={district}
+              areaName={area}
               photo={photo}
               isSelectionMode={isSelectionMode}
               isSelected={selectedPhotoIds.has(photo.id)}

@@ -1,23 +1,23 @@
 import { useLocation, useNavigate, useParams } from "react-router";
-import { CollectionBar } from "../components/district/CollectionBar";
-import { CollectionManageToolbar } from "../components/district/CollectionManageToolbar";
-import { DistrictToolbar } from "../components/district/DistrictToolbar";
-import { PhotoGrid } from "../components/district/PhotoGrid";
+import { CollectionBar } from "../components/area/CollectionBar";
+import { CollectionManageToolbar } from "../components/area/CollectionManageToolbar";
+import { AreaToolbar } from "../components/area/AreaToolbar";
+import { PhotoGrid } from "../components/area/PhotoGrid";
 import { TitleBar } from "../components/common/TitleBar";
 import { EmptyState } from "../components/common/EmptyState";
-import { PhotoGridToolbar } from "../components/district/PhotoGridToolbar";
-import { PhotoSelectionToolbar } from "../components/district/PhotoSelectionToolbar";
+import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
+import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
 import type { ButtonActionGroup } from "../types/button.type";
-import { useDistrictPageController } from "../hooks/useDistrictPageController";
+import { useAreaPageController } from "../hooks/useAreaPageController";
 
-export function DistrictPage() {
-  const { districtId } = useParams();
+export function AreaPage() {
+  const { areaId } = useParams();
   const { state } = useLocation();
 
-  if (!districtId) {
+  if (!areaId) {
     return (
       <div>
-        <TitleBarContent districtName="" />
+        <TitleBarContent areaName="" />
         <EmptyState
           title=""
           description="目前未建立此行政區 請確認網址或聯絡管理員"
@@ -27,24 +27,21 @@ export function DistrictPage() {
   }
 
   return (
-    <DistrictContent
-      areaId={districtId}
+    <AreaContent
+      areaId={areaId}
       initialCollectionId={state?.collectionName ?? ""}
     />
   );
 }
 
-type DistrictContentProps = {
+type AreaContentProps = {
   areaId: string;
   initialCollectionId?: string;
 };
 
-function DistrictContent({
-  areaId,
-  initialCollectionId,
-}: DistrictContentProps) {
-  const { error, district, collections, filters, UI, actions } =
-    useDistrictPageController({
+function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
+  const { error, area, collections, filters, UI, actions } =
+    useAreaPageController({
       areaId,
       initialCollectionId,
     });
@@ -54,16 +51,16 @@ function DistrictContent({
   if (error) {
     return (
       <div>
-        <TitleBarContent districtName="" />
+        <TitleBarContent areaName="" />
         <EmptyState title="無法載入行政區" description={error} />
       </div>
     );
   }
 
-  if (!district.displayed) {
+  if (!area.displayed) {
     return (
       <div>
-        <TitleBarContent districtName="" />
+        <TitleBarContent areaName="" />
         <EmptyState title="載入中…" />
       </div>
     );
@@ -73,21 +70,21 @@ function DistrictContent({
     <main className="grid gap-4">
       {/* 標題列 */}
       <TitleBarContent
-        districtName={district.displayed.name}
+        areaName={area.displayed.name}
         description={
-          UI.isDistrictEditMode
+          UI.isAreaEditMode
             ? "對於這個地方，你想說..."
-            : district.displayed.description
+            : area.displayed.description
         }
         isEditMode={UI.isEditMode}
         showActions={!UI.isPhotoDeleteSelectMode}
         action={actions.titleBar}
       />
 
-      {UI.isDistrictEditMode && district.draft ? (
+      {UI.isAreaEditMode && area.draft ? (
         /* 說明編輯區 編輯時相簿列隱藏 */
         <textarea
-          value={district.draft.description ?? ""}
+          value={area.draft.description ?? ""}
           onChange={(event) => actions.updateDescription(event.target.value)}
           rows={3}
           autoFocus
@@ -121,7 +118,7 @@ function DistrictContent({
 
       {/* 搜尋、篩選與排序列 */}
       {!UI.isEditMode && (
-        <DistrictToolbar
+        <AreaToolbar
           keyword={filters.keyword}
           sort={filters.sort}
           onKeywordChange={filters.setKeyword}
@@ -145,7 +142,7 @@ function DistrictContent({
             showActions={!UI.isEditMode}
             action={{
               onAddPhoto: () =>
-                navigate(`/district/${district.displayed?.id}/photo/new`),
+                navigate(`/area/${area.displayed?.id}/photo/new`),
               onDeletePhoto: actions.startPhotoDeleteSelect,
             }}
           />
@@ -161,7 +158,7 @@ function DistrictContent({
 
       {!(filters.visiblePhotos?.length === 0) && !!filters.visiblePhotos && (
         <PhotoGrid
-          district={district.displayed.id}
+          area={area.displayed.id}
           photos={filters.visiblePhotos}
           isSelectionMode={!!UI.isPhotoSelectMode}
           selectedPhotoIds={UI.selectedPhotoIds}
@@ -173,20 +170,20 @@ function DistrictContent({
 }
 
 type TitleBarActions = {
-  onEditDistrict?: () => void;
+  onEditArea?: () => void;
   onEditCollection?: () => void;
   onCancelEdit?: () => void;
   onSaveEdit?: () => void;
 };
 
 function TitleBarContent({
-  districtName,
+  areaName,
   description,
   isEditMode = false,
   showActions = true,
   action,
 }: {
-  districtName: string;
+  areaName: string;
   description?: string;
   isEditMode?: boolean;
   showActions?: boolean;
@@ -197,7 +194,7 @@ function TitleBarContent({
   if (!action) {
     return (
       <TitleBar
-        districtName={districtName.length !== 0 ? districtName : "回到地圖"}
+        areaName={areaName.length !== 0 ? areaName : "回到地圖"}
         description={description}
         onBack={() => navigate("/")}
         buttonGroup={[]}
@@ -213,7 +210,7 @@ function TitleBarContent({
           id: "manage-description",
           icon: "bi-pencil-square",
           label: "編輯說明",
-          onClick: action.onEditDistrict ?? (() => alert("非預期操作")),
+          onClick: action.onEditArea ?? (() => alert("非預期操作")),
         },
         {
           id: "manage-album",
@@ -248,7 +245,7 @@ function TitleBarContent({
   ];
 
   const buttons =
-    districtName.length === 0 || !showActions
+    areaName.length === 0 || !showActions
       ? []
       : isEditMode
         ? editButtons
@@ -256,7 +253,7 @@ function TitleBarContent({
 
   return (
     <TitleBar
-      districtName={districtName.length !== 0 ? districtName : "回到地圖"}
+      areaName={areaName.length !== 0 ? areaName : "回到地圖"}
       description={description}
       onBack={() => navigate("/")}
       buttonGroup={buttons}

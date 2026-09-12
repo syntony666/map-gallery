@@ -2,14 +2,11 @@ import { useState, useEffect } from "react";
 import { useMap } from "react-leaflet";
 
 type HoverLabelProps = {
-  districtName: string;
+  areaName: string;
   position: [number, number];
 };
 
-export function DistrictHoverLabel({
-  districtName,
-  position,
-}: HoverLabelProps) {
+export function AreaHoverLabel({ areaName, position }: HoverLabelProps) {
   const map = useMap();
   const [point, setPoint] = useState(() =>
     map.latLngToContainerPoint(position),
@@ -37,7 +34,7 @@ export function DistrictHoverLabel({
         top: `${point.y}px`,
       }}
     >
-      {districtName}
+      {areaName}
     </div>
   );
 }

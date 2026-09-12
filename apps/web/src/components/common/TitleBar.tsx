@@ -5,7 +5,7 @@ import type {
 import { ButtonGroup } from "./ButtonGroup";
 
 type TitleBarComponentProps = {
-  districtName: string;
+  areaName: string;
   description?: string;
   onBack: () => void;
   buttonGroup?: ButtonActionGroup[];
@@ -13,7 +13,7 @@ type TitleBarComponentProps = {
 };
 
 export function TitleBar({
-  districtName,
+  areaName,
   description,
   onBack,
   buttonGroup = [],
@@ -30,7 +30,7 @@ export function TitleBar({
           <i className="bi bi-arrow-left-short shrink-0 text-3xl leading-none" />
 
           <span className="truncate text-2xl font-bold text-stone-700 sm:text-3xl">
-            {districtName}
+            {areaName}
           </span>
         </button>
 

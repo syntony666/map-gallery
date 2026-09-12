@@ -3,9 +3,9 @@ import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 import type { LatLngExpression, Layer, LeafletMouseEvent } from "leaflet";
 import taiwanCounties from "../../data/twcounty.json";
 import pins from "../../data/pins.json";
-import districts from "../../data/districts.json";
-import { DistrictPopup, type DistrictPopupData } from "./DistrictPopup";
-import { DistrictHoverLabel } from "./DistrictHoverLabel";
+import areas from "../../data/districts.json";
+import { AreaPopup, type AreaPopupData } from "./AreaPopup";
+import { AreaHoverLabel } from "./AreaHoverLabel";
 import type { Photo } from "../../types/gallery.type";
 
 type Pin = {
@@ -15,9 +15,9 @@ type Pin = {
   iconType?: string;
 };
 
-type DistrictContent = {
+type AreaContent = {
   id: string;
-  districtName?: string;
+  areaName?: string;
   coverImage?: string;
   description?: string;
   photos: Photo[];
@@ -30,13 +30,11 @@ const taiwanBounds: [[number, number], [number, number]] = [
   [27.0, 124.0],
 ];
 
-function getDistrictContent(id: string) {
-  return districts.find((district) => district.id === id) as
-    | DistrictContent
-    | undefined;
+function getAreaContent(id: string) {
+  return areas.find((area) => area.id === id) as AreaContent | undefined;
 }
 
-function getFeatureDistrictId(feature: GeoJSON.Feature | undefined): string {
+function getFeatureAreaId(feature: GeoJSON.Feature | undefined): string {
   return (
     feature?.properties?.name ||
     feature?.properties?.NAME_2010 ||
@@ -48,36 +46,32 @@ function getFeatureDistrictId(feature: GeoJSON.Feature | undefined): string {
 }
 
 export function TaiwanMap() {
-  const [hoveredDistrictId, setHoveredDistrictId] = useState<string | null>(
-    null,
-  );
+  const [hoveredAreaId, setHoveredAreaId] = useState<string | null>(null);
   const [hoveredPosition, setHoveredPosition] = useState<
     [number, number] | null
   >(null);
 
-  const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(
-    null,
-  );
+  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
   const [selectedPopupPosition, setSelectedPopupPosition] = useState<
     [number, number] | null
   >(null);
 
-  function handleDistrictHover(id: string, hoverPosition?: [number, number]) {
-    if (selectedDistrictId === id) return;
+  function handleAreaHover(id: string, hoverPosition?: [number, number]) {
+    if (selectedAreaId === id) return;
 
-    setHoveredDistrictId(id);
+    setHoveredAreaId(id);
 
     if (hoverPosition) {
       setHoveredPosition(hoverPosition);
     }
   }
-  function handleDistrictLeave(id: string) {
-    setHoveredDistrictId((current) => (current === id ? null : current));
+  function handleAreaLeave(id: string) {
+    setHoveredAreaId((current) => (current === id ? null : current));
     setHoveredPosition(null);
   }
 
-  function handleDistrictClick(id: string, popupPosition?: [number, number]) {
-    setSelectedDistrictId(id);
+  function handleAreaClick(id: string, popupPosition?: [number, number]) {
+    setSelectedAreaId(id);
 
     if (popupPosition) {
       setSelectedPopupPosition(popupPosition);
@@ -86,8 +80,8 @@ export function TaiwanMap() {
   }
 
   function getPolygonStyle(id: string) {
-    const isSelected = selectedDistrictId === id;
-    const isHovered = hoveredDistrictId === id;
+    const isSelected = selectedAreaId === id;
+    const isHovered = hoveredAreaId === id;
 
     if (isSelected) {
       return {
@@ -116,38 +110,36 @@ export function TaiwanMap() {
   }
 
   const geoJsonKey = useMemo(() => {
-    return `${hoveredDistrictId ?? "none"}-${selectedDistrictId ?? "none"}`;
-  }, [hoveredDistrictId, selectedDistrictId]);
+    return `${hoveredAreaId ?? "none"}-${selectedAreaId ?? "none"}`;
+  }, [hoveredAreaId, selectedAreaId]);
 
-  function getSelectedDistrictData(
-    id: string | null,
-  ): DistrictPopupData | null {
+  function getSelectedAreaData(id: string | null): AreaPopupData | null {
     if (!id) return null;
 
-    const content = getDistrictContent(id);
+    const content = getAreaContent(id);
 
     return {
-      id: content?.id ?? selectedDistrictId ?? "查無行政區",
+      id: content?.id ?? selectedAreaId ?? "查無行政區",
       coverImage: content?.coverImage,
       description: content?.description,
       photos: content?.photos ?? [],
     };
   }
 
-  const selectedDistrict = getSelectedDistrictData(selectedDistrictId);
+  const selectedArea = getSelectedAreaData(selectedAreaId);
 
   function onEachFeature(feature: GeoJSON.Feature, layer: Layer) {
-    const id = getFeatureDistrictId(feature);
+    const id = getFeatureAreaId(feature);
 
     layer.on({
       mouseover: (e: LeafletMouseEvent) => {
-        handleDistrictHover(id, [e.latlng.lat, e.latlng.lng]);
+        handleAreaHover(id, [e.latlng.lat, e.latlng.lng]);
       },
       mouseout: () => {
-        handleDistrictLeave(id);
+        handleAreaLeave(id);
       },
       click: (e: LeafletMouseEvent) => {
-        handleDistrictClick(id, [e.latlng.lat, e.latlng.lng]);
+        handleAreaClick(id, [e.latlng.lat, e.latlng.lng]);
       },
     });
   }
@@ -173,7 +165,7 @@ export function TaiwanMap() {
       <GeoJSON
         key={geoJsonKey}
         data={taiwanCounties as GeoJSON.GeoJsonObject}
-        style={(feature) => getPolygonStyle(getFeatureDistrictId(feature))}
+        style={(feature) => getPolygonStyle(getFeatureAreaId(feature))}
         onEachFeature={onEachFeature}
       />
       {/* 地圖自帶元件：錨點 */}
@@ -184,23 +176,20 @@ export function TaiwanMap() {
           position={[pin.lat, pin.lng]}
           eventHandlers={{
             mouseover: () => {
-              handleDistrictHover(pin.id, [pin.lat, pin.lng]);
+              handleAreaHover(pin.id, [pin.lat, pin.lng]);
             },
             mouseout: () => {
-              handleDistrictLeave(pin.id);
+              handleAreaLeave(pin.id);
             },
             click: () => {
-              handleDistrictClick(pin.id, [pin.lat, pin.lng]);
+              handleAreaClick(pin.id, [pin.lat, pin.lng]);
             },
           }}
         />
       ))}
       {/* 自製游標移入高亮 */}
-      {hoveredDistrictId && hoveredPosition && (
-        <DistrictHoverLabel
-          districtName={hoveredDistrictId}
-          position={hoveredPosition}
-        />
+      {hoveredAreaId && hoveredPosition && (
+        <AreaHoverLabel areaName={hoveredAreaId} position={hoveredPosition} />
       )}
       {/* 各縣市的顯示氣泡 */}
       {selectedPopupPosition && (
@@ -208,12 +197,12 @@ export function TaiwanMap() {
           position={selectedPopupPosition}
           eventHandlers={{
             remove: () => {
-              setSelectedDistrictId(null);
+              setSelectedAreaId(null);
               setSelectedPopupPosition(null);
             },
           }}
         >
-          <DistrictPopup district={selectedDistrict} />
+          <AreaPopup area={selectedArea} />
         </Popup>
       )}
     </MapContainer>

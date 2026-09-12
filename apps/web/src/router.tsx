@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import { HomePage } from "./pages/HomePage";
-import { DistrictPage } from "./pages/DistrictPage";
+import { AreaPage } from "./pages/AreaPage";
 import { PhotoDetailPage } from "./pages/PhotoDetailPage";
 import { PhotoEditPage } from "./pages/PhotoEditPage";
 
@@ -10,19 +10,19 @@ export const router = createBrowserRouter([
     Component: HomePage,
   },
   {
-    path: "/district/:districtId",
-    Component: DistrictPage,
+    path: "/area/:areaId",
+    Component: AreaPage,
   },
   {
-    path: "/district/:districtId/photo/new",
+    path: "/area/:areaId/photo/new",
     Component: PhotoEditPage,
   },
   {
-    path: "/district/:districtId/photo/:photoId",
+    path: "/area/:areaId/photo/:photoId",
     Component: PhotoDetailPage,
   },
   {
-    path: "/district/:districtId/photo/:photoId/edit",
+    path: "/area/:areaId/photo/:photoId/edit",
     Component: PhotoEditPage,
   },
 ]);

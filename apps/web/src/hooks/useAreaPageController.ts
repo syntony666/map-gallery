@@ -1,42 +1,39 @@
 import { useEffect, useReducer, useState } from "react";
-import type { CollectionManageToolbarAction } from "../components/district/CollectionManageToolbar";
-import { useDistrictEditor } from "./useDistrictEditor";
-import { useDistrictState } from "./useDistrictState";
-import {
-  districtPageReducer,
-  initialDistrictPageUIState,
-} from "./useDistrictStateReducer";
+import type { CollectionManageToolbarAction } from "../components/area/CollectionManageToolbar";
+import { useAreaEditor } from "./useAreaEditor";
+import { useAreaState } from "./useAreaState";
+import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
 import type { Area, Collection } from "../types/gallery.type";
 import { galleryStore } from "../stores/gallery.store";
 
-type UseDistrictPageControllerOptions = {
+type UseAreaPageControllerOptions = {
   areaId: string;
   initialCollectionId?: string;
 };
 
 type TitleBarActions = {
-  onEditDistrict?: () => void;
+  onEditArea?: () => void;
   onEditCollection?: () => void;
   onCancelEdit?: () => void;
   onSaveEdit?: () => void;
 };
 
-export function useDistrictPageController({
+export function useAreaPageController({
   areaId,
   initialCollectionId,
-}: UseDistrictPageControllerOptions) {
+}: UseAreaPageControllerOptions) {
   const [UIState, dispatch] = useReducer(
-    districtPageReducer,
-    initialDistrictPageUIState,
+    areaPageReducer,
+    initialAreaPageUIState,
   );
 
-  const [sourceDistrict, setSourceDistrict] = useState<Area | null>(null);
+  const [sourceArea, setSourceArea] = useState<Area | null>(null);
   const [sourceCollections, setSourceCollections] = useState<
     Collection[] | null
   >(null);
   const [error, setError] = useState<string | null>(null);
 
-  const editor = useDistrictEditor(sourceDistrict);
+  const editor = useAreaEditor(sourceArea);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,7 +42,7 @@ export function useDistrictPageController({
       .getAreaById(areaId)
       .then((area) => {
         if (cancelled) return;
-        setSourceDistrict(area);
+        setSourceArea(area);
       })
       .catch((reason: unknown) => {
         if (cancelled) return;
@@ -72,12 +69,12 @@ export function useDistrictPageController({
     };
   }, [areaId]);
 
-  const displayedDistrict =
-    UIState.mode !== "browse" && editor.draftDistrict
-      ? editor.draftDistrict
-      : sourceDistrict;
+  const displayedArea =
+    UIState.mode !== "browse" && editor.draftArea
+      ? editor.draftArea
+      : sourceArea;
 
-  const districtState = useDistrictState(
+  const areaState = useAreaState(
     areaId,
     initialCollectionId,
     UIState.collectionPhotoMode,
@@ -85,7 +82,7 @@ export function useDistrictPageController({
 
   const isEditMode = UIState.mode !== "browse";
 
-  const isDistrictEditMode = UIState.mode === "districtEdit";
+  const isAreaEditMode = UIState.mode === "areaEdit";
 
   const isCollectionEditMode =
     UIState.mode === "collectionEdit" ||
@@ -99,10 +96,10 @@ export function useDistrictPageController({
     isCollectionPhotoSelectMode || isPhotoDeleteSelectMode;
 
   function resetPageUI() {
-    districtState.setSelectedCollectionId("");
+    areaState.setSelectedCollectionId("");
   }
 
-  function startDistrictEdit() {
+  function startAreaEdit() {
     editor.startEditing();
     dispatch({ type: "START_DISTRICT_EDIT" });
   }
@@ -151,7 +148,7 @@ export function useDistrictPageController({
 
   function onConfirmCollectionPhotoSelection() {
     const collection = sourceCollections?.find(
-      (collection) => collection.id === districtState.selectedCollectionId,
+      (collection) => collection.id === areaState.selectedCollectionId,
     );
     const photoIds = UIState.selectedPhotoIds;
     const mode = UIState.collectionPhotoMode;
@@ -196,7 +193,7 @@ export function useDistrictPageController({
     if (!isConfirmed) return;
 
     editor.removeCollection(collection.id);
-    districtState.setSelectedCollectionId("");
+    areaState.setSelectedCollectionId("");
   }
 
   function startPhotoDeleteSelect() {
@@ -224,7 +221,7 @@ export function useDistrictPageController({
   }
 
   const titleBarActions: TitleBarActions = {
-    onEditDistrict: startDistrictEdit,
+    onEditArea: startAreaEdit,
     onEditCollection: startCollectionEdit,
     onSaveEdit: saveEdit,
     onCancelEdit: cancelEdit,
@@ -241,26 +238,26 @@ export function useDistrictPageController({
 
   return {
     error,
-    district: {
-      displayed: displayedDistrict,
-      draft: editor.draftDistrict,
+    area: {
+      displayed: displayedArea,
+      draft: editor.draftArea,
     },
 
     collections: sourceCollections,
 
     filters: {
-      keyword: districtState.keyword,
-      setKeyword: districtState.setKeyword,
-      sort: districtState.sort,
-      setSort: districtState.setSort,
-      selectedCollectionId: districtState.selectedCollectionId,
-      toggleCollection: districtState.toggleCollection,
-      visiblePhotos: districtState.visiblePhotos,
+      keyword: areaState.keyword,
+      setKeyword: areaState.setKeyword,
+      sort: areaState.sort,
+      setSort: areaState.setSort,
+      selectedCollectionId: areaState.selectedCollectionId,
+      toggleCollection: areaState.toggleCollection,
+      visiblePhotos: areaState.visiblePhotos,
     },
 
     UI: {
       isEditMode,
-      isDistrictEditMode,
+      isAreaEditMode,
       isCollectionEditMode,
       isCollectionPhotoSelectMode,
       isPhotoDeleteSelectMode,

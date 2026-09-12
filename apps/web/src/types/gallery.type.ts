@@ -13,7 +13,7 @@ export type Area = {
   name: string;
   coverImage?: string;
   description?: string;
-  photos: Photo[];
+  photoCount: number;
 };
 
 export type Collection = {

@@ -3,6 +3,7 @@ export type AreaDataResponse = {
   name: string;
   coverImage: string | null;
   description: string | null;
+  photoCount: number;
 };
 
 export type AreaListDataResponse = {

@@ -82,13 +82,13 @@ function toCollection(
   };
 }
 
-function toArea(area: AreaDataResponse, photos: Photo[]): Area {
+function toArea(area: AreaDataResponse): Area {
   return {
     id: area.id,
     name: area.name,
     coverImage: area.coverImage ?? undefined,
     description: area.description ?? undefined,
-    photos,
+    photoCount: area.photoCount,
   };
 }
 
@@ -115,7 +115,7 @@ async function getAreaById(areaId: string): Promise<Area> {
     `/api/v1/areas/${areaId}`,
   );
 
-  return toArea(areaResponse, []);
+  return toArea(areaResponse);
 }
 
 async function getCollectionsByAreaId(areaId: string): Promise<Collection[]> {
@@ -123,9 +123,7 @@ async function getCollectionsByAreaId(areaId: string): Promise<Collection[]> {
     `/api/v1/collections?areaId=${areaId}`,
   );
 
-  return collectionsResponse.items.map((collection) =>
-    toCollection(collection),
-  );
+  return collectionsResponse.items.map(toCollection);
 }
 
 async function getPhotoById(photoId: string): Promise<Photo> {
@@ -139,13 +137,7 @@ async function getPhotoById(photoId: string): Promise<Photo> {
 async function getAreas(): Promise<Area[]> {
   const response = await requestData<AreaListDataResponse>("/api/v1/areas");
 
-  return response.items.map((area) => ({
-    id: area.id,
-    name: area.name,
-    coverImage: area.coverImage ?? undefined,
-    description: area.description ?? undefined,
-    photos: [],
-  }));
+  return response.items.map(toArea);
 }
 
 async function getPhotos(query: GetPhotosQuery = {}): Promise<PhotoListResult> {
@@ -161,7 +153,7 @@ async function getPhotos(query: GetPhotosQuery = {}): Promise<PhotoListResult> {
   );
 
   return {
-    photos: response.items.map((photo) => toPhoto(photo)),
+    photos: response.items.map(toPhoto),
     page: response.pagination.page,
     limit: response.pagination.limit,
     total: response.pagination.total,

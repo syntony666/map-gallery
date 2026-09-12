@@ -1,5 +1,1 @@
-export type PageMode =
-  | "districtEdit"
-  | "collectionEdit"
-  | "editPhoto"
-  | "browse";
+export type PageMode = "areaEdit" | "collectionEdit" | "editPhoto" | "browse";

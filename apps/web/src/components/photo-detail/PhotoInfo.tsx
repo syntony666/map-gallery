@@ -2,11 +2,11 @@ import { useNavigate } from "react-router";
 import type { Photo } from "../../types/gallery.type";
 
 type PhotoInfoProps = {
-  districtName: string;
+  areaName: string;
   photo: Photo;
 };
 
-export function PhotoInfo({ districtName, photo }: PhotoInfoProps) {
+export function PhotoInfo({ areaName, photo }: PhotoInfoProps) {
   const navigate = useNavigate();
   return (
     <section className="lg:pt-1">
@@ -23,7 +23,7 @@ export function PhotoInfo({ districtName, photo }: PhotoInfoProps) {
               key={collection}
               type="button"
               onClick={() =>
-                navigate(`/district/${districtName}`, {
+                navigate(`/area/${areaName}`, {
                   state: { collectionName: collection },
                 })
               }

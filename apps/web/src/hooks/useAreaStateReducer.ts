@@ -1,19 +1,19 @@
 import type { CollectionPhotoMode } from "../types/gallery.type";
 
-export type DistrictPageMode =
+export type AreaPageMode =
   | "browse"
-  | "districtEdit"
+  | "areaEdit"
   | "collectionEdit"
   | "collectionPhotoSelect"
   | "photoDeleteSelect";
 
-export type DistrictPageUIState = {
-  mode: DistrictPageMode;
+export type AreaPageUIState = {
+  mode: AreaPageMode;
   collectionPhotoMode: CollectionPhotoMode;
   selectedPhotoIds: Set<string>;
 };
 
-export type DistrictPageUIAction =
+export type AreaPageUIAction =
   | { type: "START_DISTRICT_EDIT" }
   | { type: "START_COLLECTION_EDIT" }
   | {
@@ -31,13 +31,13 @@ export type DistrictPageUIAction =
   | { type: "CANCEL_EDIT" }
   | { type: "EXIT_EDIT" };
 
-export const initialDistrictPageUIState: DistrictPageUIState = {
+export const initialAreaPageUIState: AreaPageUIState = {
   mode: "browse",
   collectionPhotoMode: null,
   selectedPhotoIds: new Set(),
 };
 
-function createBrowseState(): DistrictPageUIState {
+function createBrowseState(): AreaPageUIState {
   return {
     mode: "browse",
     collectionPhotoMode: null,
@@ -45,7 +45,7 @@ function createBrowseState(): DistrictPageUIState {
   };
 }
 
-function createCollectionEditState(): DistrictPageUIState {
+function createCollectionEditState(): AreaPageUIState {
   return {
     mode: "collectionEdit",
     collectionPhotoMode: null,
@@ -53,14 +53,14 @@ function createCollectionEditState(): DistrictPageUIState {
   };
 }
 
-export function districtPageReducer(
-  state: DistrictPageUIState,
-  action: DistrictPageUIAction,
-): DistrictPageUIState {
+export function areaPageReducer(
+  state: AreaPageUIState,
+  action: AreaPageUIAction,
+): AreaPageUIState {
   switch (action.type) {
     case "START_DISTRICT_EDIT":
       return {
-        mode: "districtEdit",
+        mode: "areaEdit",
         collectionPhotoMode: null,
         selectedPhotoIds: new Set(),
       };

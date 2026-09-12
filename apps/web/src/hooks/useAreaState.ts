@@ -6,7 +6,7 @@ import type {
 } from "../types/gallery.type";
 import { galleryStore } from "../stores/gallery.store";
 
-export function useDistrictState(
+export function useAreaState(
   areaId: string,
   initialCollectionId = "",
   collectionPhotoMode: CollectionPhotoMode = null,
