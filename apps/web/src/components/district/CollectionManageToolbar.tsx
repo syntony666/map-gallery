@@ -3,8 +3,8 @@ import type { Collection } from "../../types/gallery.type";
 import { Toolbar } from "../common/Toolbar";
 
 export type CollectionManageToolbarAction = {
-  onCollectionRename: (collectionName: string) => void;
-  onCollectionRemove: (collectionName: string, photoCount: number) => void;
+  onCollectionRename: (collection: Collection) => void;
+  onCollectionRemove: (collection: Collection) => void;
   onAddCollectionPhoto: () => void;
   onRemoveCollectionPhoto: () => void;
   onConfirmCollectionPhotoSelection: () => void;
@@ -52,13 +52,13 @@ export function CollectionManageToolbar({
           id: "collection-photo-edit",
           buttons: [
             {
-              id: `${collection.name}-add-photo`,
+              id: `${collection.id}-add-photo`,
               label: "加入照片",
               icon: "bi-plus-square",
               onClick: () => action.onAddCollectionPhoto(),
             },
             {
-              id: `${collection.name}-remove-photo`,
+              id: `${collection.id}-remove-photo`,
               label: "移除照片",
               icon: "bi-dash-square",
               onClick: () => action.onRemoveCollectionPhoto(),
@@ -69,21 +69,17 @@ export function CollectionManageToolbar({
           id: "collection-meta-edit",
           buttons: [
             {
-              id: `rename-${collection.name}`,
+              id: `rename-${collection.id}`,
               label: "更改名稱",
               icon: "bi-pencil-square",
-              onClick: () => action.onCollectionRename(collection.name),
+              onClick: () => action.onCollectionRename(collection),
             },
             {
-              id: `remove-${collection.name}`,
+              id: `remove-${collection.id}`,
               label: "刪除相簿",
               icon: "bi-trash3",
               variant: "danger",
-              onClick: () =>
-                action.onCollectionRemove(
-                  collection.name,
-                  collection.photos.length,
-                ),
+              onClick: () => action.onCollectionRemove(collection),
             },
           ],
         },

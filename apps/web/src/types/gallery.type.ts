@@ -17,7 +17,7 @@ export type Area = {
 };
 
 export type Collection = {
-  id?: string;
+  id: string;
   name: string;
   photos: Photo[];
 };

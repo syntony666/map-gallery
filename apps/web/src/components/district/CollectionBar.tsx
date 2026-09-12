@@ -4,33 +4,33 @@ import { CollectionItem } from "./CollectionItem";
 import "./CollectionBar.css";
 
 type CollectionBarProps = {
-  collectionGroup: Collection[] | null;
-  selectedCollectionName: string;
+  collections: Collection[] | null;
+  selectedCollectionId: string;
   onSelect: (value: string) => void;
 };
 
 export function CollectionBar({
-  collectionGroup,
-  selectedCollectionName,
+  collections,
+  selectedCollectionId,
   onSelect,
 }: CollectionBarProps) {
-  if (!collectionGroup || collectionGroup.length === 0) {
+  if (!collections || collections.length === 0) {
     return <EmptyState title="" description="目前沒有相簿" />;
   }
 
   function handleCollectionClick(collection: Collection) {
-    onSelect(collection.name);
+    onSelect(collection.id);
   }
 
   return (
     <section className="flex gap-3 overflow-x-auto -mx-4 px-4">
-      {collectionGroup.map((collection) => (
+      {collections.map((collection) => (
         <CollectionItem
-          key={collection.name}
+          key={collection.id}
           collection={collection}
           isSelected={
-            selectedCollectionName === "" ||
-            selectedCollectionName === collection.name
+            selectedCollectionId === "" ||
+            selectedCollectionId === collection.id
           }
           onClick={() => handleCollectionClick(collection)}
         />

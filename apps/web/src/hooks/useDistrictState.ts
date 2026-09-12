@@ -1,102 +1,68 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type {
   CollectionPhotoMode,
   Photo,
   SortOption,
 } from "../types/gallery.type";
+import { galleryStore } from "../stores/gallery.store";
 
 export function useDistrictState(
-  photos: Photo[],
-  initialCollectionName = "",
+  areaId: string,
+  initialCollectionId = "",
   collectionPhotoMode: CollectionPhotoMode = null,
 ) {
   const [keyword, setKeyword] = useState("");
-  const [collectionName, setCollectionName] = useState(initialCollectionName);
+  const [selectedCollectionId, setSelectedCollectionId] =
+    useState(initialCollectionId);
   const [sort, setSort] = useState<SortOption>("newest");
+  const [visiblePhotos, setVisiblePhotos] = useState<Photo[] | null>(null);
 
-  const collectionGroup = useMemo(() => {
-    const groups = new Map<string, Photo[]>();
+  useEffect(() => {
+    let cancelled = false;
+    galleryStore
+      .getPhotos({ areaId, keyword, sort })
+      .then((result) => {
+        if (cancelled) {
+          return;
+        }
+        setVisiblePhotos(
+          result.photos.filter((photo) => {
+            const isInSelectedCollection =
+              photo.collectionIds.includes(selectedCollectionId) ?? false;
+            if (!selectedCollectionId) {
+              return true;
+            }
 
-    photos.forEach((photo) => {
-      photo.collectionIds?.forEach((collection) => {
-        const collectionPhotos = groups.get(collection) ?? [];
-
-        collectionPhotos.push(photo);
-        groups.set(collection, collectionPhotos);
+            if (collectionPhotoMode === "add") {
+              return !isInSelectedCollection;
+            }
+            return isInSelectedCollection;
+          }),
+        );
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setVisiblePhotos([]);
       });
-    });
-
-    return Array.from(groups, ([name, collectionPhotos]) => ({
-      name,
-      photos: collectionPhotos,
-    })).sort((a, b) =>
-      b.photos[0].date.localeCompare(a.photos[0].date, "zh-Hant"),
-    );
-  }, [photos]);
-
-  const selectedCollection =
-    collectionGroup.find((collection) => collection.name === collectionName) ??
-    null;
-
-  const visiblePhotos = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase();
-
-    const filteredPhotos = photos.filter((photo) => {
-      const isInSelectedCollection =
-        photo.collectionIds.includes(collectionName) ?? false;
-
-      const matchesCollection = (() => {
-        if (!collectionName) {
-          return true;
-        }
-
-        if (collectionPhotoMode === "add") {
-          return !isInSelectedCollection;
-        }
-        return isInSelectedCollection;
-      })();
-
-      const searchableText = [photo.title, photo.summary, photo.description]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      const matchesKeyword =
-        !normalizedKeyword || searchableText.includes(normalizedKeyword);
-
-      return matchesCollection && matchesKeyword;
-    });
-
-    return [...filteredPhotos].sort((a, b) => {
-      switch (sort) {
-        case "newest":
-          return b.date.localeCompare(a.date);
-
-        case "oldest":
-          return a.date.localeCompare(b.date);
-
-        case "title":
-          return a.title.localeCompare(b.title, "zh-Hant");
-      }
-    });
-  }, [photos, keyword, collectionName, sort, collectionPhotoMode]);
+    return () => {
+      cancelled = true;
+    };
+  }, [areaId, keyword, selectedCollectionId, sort, collectionPhotoMode]);
 
   function toggleCollection(collection: string) {
-    setCollectionName((current) => (current === collection ? "" : collection));
+    setSelectedCollectionId((current) =>
+      current === collection ? "" : collection,
+    );
   }
 
   return {
     keyword,
     setKeyword,
-
     sort,
     setSort,
-
-    setCollectionName,
+    selectedCollectionId,
+    setSelectedCollectionId,
     toggleCollection,
-
-    selectedCollection,
-    collectionGroup,
     visiblePhotos,
   };
 }

@@ -6,12 +6,12 @@ import {
   districtPageReducer,
   initialDistrictPageUIState,
 } from "./useDistrictStateReducer";
-import type { Area } from "../types/gallery.type";
+import type { Area, Collection } from "../types/gallery.type";
 import { galleryStore } from "../stores/gallery.store";
 
 type UseDistrictPageControllerOptions = {
   areaId: string;
-  initialCollectionName?: string;
+  initialCollectionId?: string;
 };
 
 type TitleBarActions = {
@@ -23,7 +23,7 @@ type TitleBarActions = {
 
 export function useDistrictPageController({
   areaId,
-  initialCollectionName,
+  initialCollectionId,
 }: UseDistrictPageControllerOptions) {
   const [UIState, dispatch] = useReducer(
     districtPageReducer,
@@ -31,6 +31,9 @@ export function useDistrictPageController({
   );
 
   const [sourceDistrict, setSourceDistrict] = useState<Area | null>(null);
+  const [sourceCollections, setSourceCollections] = useState<
+    Collection[] | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
 
   const editor = useDistrictEditor(sourceDistrict);
@@ -38,7 +41,7 @@ export function useDistrictPageController({
   useEffect(() => {
     let cancelled = false;
 
-    void galleryStore
+    galleryStore
       .getAreaById(areaId)
       .then((area) => {
         if (cancelled) return;
@@ -52,6 +55,18 @@ export function useDistrictPageController({
         );
       });
 
+    galleryStore
+      .getCollectionsByAreaId(areaId)
+      .then((collections) => {
+        if (cancelled) return;
+        setSourceCollections(collections);
+      })
+      .catch((reason: unknown) => {
+        if (cancelled) return;
+
+        setError(reason instanceof Error ? reason.message : "無法載入相簿資料");
+      });
+
     return () => {
       cancelled = true;
     };
@@ -63,8 +78,8 @@ export function useDistrictPageController({
       : sourceDistrict;
 
   const districtState = useDistrictState(
-    displayedDistrict?.photos ?? [],
-    initialCollectionName,
+    areaId,
+    initialCollectionId,
     UIState.collectionPhotoMode,
   );
 
@@ -84,7 +99,7 @@ export function useDistrictPageController({
     isCollectionPhotoSelectMode || isPhotoDeleteSelectMode;
 
   function resetPageUI() {
-    districtState.setCollectionName("");
+    districtState.setSelectedCollectionId("");
   }
 
   function startDistrictEdit() {
@@ -135,7 +150,9 @@ export function useDistrictPageController({
   }
 
   function onConfirmCollectionPhotoSelection() {
-    const collection = districtState.selectedCollection;
+    const collection = sourceCollections?.find(
+      (collection) => collection.id === districtState.selectedCollectionId,
+    );
     const photoIds = UIState.selectedPhotoIds;
     const mode = UIState.collectionPhotoMode;
 
@@ -145,11 +162,11 @@ export function useDistrictPageController({
     }
 
     if (mode === "add") {
-      editor.addPhotosToCollection(collection.name, photoIds);
+      editor.addPhotosToCollection(collection.id, photoIds);
     }
 
     if (mode === "remove") {
-      editor.removePhotosFromCollection(collection.name, photoIds);
+      editor.removePhotosFromCollection(collection.id, photoIds);
     }
 
     dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
@@ -159,28 +176,27 @@ export function useDistrictPageController({
     dispatch({ type: "CANCEL_PHOTO_SELECTION" });
   }
 
-  function onCollectionRename(collectionName: string) {
-    const nextName = window.prompt("請輸入新的相簿名稱", collectionName);
+  function onCollectionRename(collection: Collection) {
+    const nextName = window.prompt("請輸入新的相簿名稱", collection.name);
 
     if (nextName === null) return;
 
     const normalizedName = nextName.trim();
 
-    if (!normalizedName || normalizedName === collectionName) return;
+    if (!normalizedName || normalizedName === collection.name) return;
 
-    editor.renameCollection(collectionName, normalizedName);
-    districtState.setCollectionName(normalizedName);
+    editor.renameCollection(collection.id, normalizedName);
   }
 
-  function onCollectionRemove(collectionName: string, photoCount: number) {
+  function onCollectionRemove(collection: Collection) {
     const isConfirmed = window.confirm(
-      `確定要刪除「${collectionName}」嗎？其中 ${photoCount} 張照片會解除與此相簿的關聯。`,
+      `確定要刪除「${collection.name}」嗎？其中 ${collection.photos.length} 張照片會解除與此相簿的關聯。`,
     );
 
     if (!isConfirmed) return;
 
-    editor.removeCollection(collectionName);
-    districtState.setCollectionName("");
+    editor.removeCollection(collection.id);
+    districtState.setSelectedCollectionId("");
   }
 
   function startPhotoDeleteSelect() {
@@ -230,13 +246,14 @@ export function useDistrictPageController({
       draft: editor.draftDistrict,
     },
 
+    collections: sourceCollections,
+
     filters: {
       keyword: districtState.keyword,
       setKeyword: districtState.setKeyword,
       sort: districtState.sort,
       setSort: districtState.setSort,
-      selectedCollection: districtState.selectedCollection,
-      collectionGroup: districtState.collectionGroup,
+      selectedCollectionId: districtState.selectedCollectionId,
       toggleCollection: districtState.toggleCollection,
       visiblePhotos: districtState.visiblePhotos,
     },

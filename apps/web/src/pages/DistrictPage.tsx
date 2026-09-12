@@ -29,26 +29,26 @@ export function DistrictPage() {
   return (
     <DistrictContent
       areaId={districtId}
-      initialCollectionName={state?.collectionName ?? ""}
+      initialCollectionId={state?.collectionName ?? ""}
     />
   );
 }
 
 type DistrictContentProps = {
   areaId: string;
-  initialCollectionName?: string;
+  initialCollectionId?: string;
 };
 
 function DistrictContent({
-  areaId: string,
-  initialCollectionName,
+  areaId,
+  initialCollectionId,
 }: DistrictContentProps) {
-  const { error, district, filters, UI, actions } = useDistrictPageController({
-    areaId: string,
-    initialCollectionName,
-  });
+  const { error, district, collections, filters, UI, actions } =
+    useDistrictPageController({
+      areaId,
+      initialCollectionId,
+    });
 
-  const isDistrictEmpty = !district.displayed?.photos.length;
   const navigate = useNavigate();
 
   if (error) {
@@ -98,10 +98,8 @@ function DistrictContent({
         /* 橫向相簿列 */
         <CollectionBar
           key={UI.isCollectionEditMode ? "editing" : "browse"}
-          collectionGroup={filters.collectionGroup}
-          selectedCollectionName={
-            filters.selectedCollection ? filters.selectedCollection.name : ""
-          }
+          collections={collections}
+          selectedCollectionId={filters.selectedCollectionId}
           onSelect={filters.toggleCollection}
         />
       )}
@@ -109,7 +107,11 @@ function DistrictContent({
       {/* Edit mode 的相簿管理列 */}
       {UI.isCollectionEditMode ? (
         <CollectionManageToolbar
-          collection={filters.selectedCollection}
+          collection={
+            collections?.find(
+              (collection) => collection.id === filters.selectedCollectionId,
+            ) ?? null
+          }
           isCollectionPhotoSelectMode={!!UI.collectionPhotoMode}
           action={actions.collectionToolbar}
         />
@@ -128,21 +130,26 @@ function DistrictContent({
       )}
 
       {/* 景點卡片區 */}
-      {isDistrictEmpty && (
+      {filters.visiblePhotos?.length === 0 && (
         <EmptyState title="" description="你來早了 這裡什麼都沒有" />
       )}
 
-      {!isDistrictEmpty && (
-        <PhotoGridToolbar
-          photoCount={filters.visiblePhotos.length}
-          showActions={!UI.isEditMode}
-          action={{
-            onAddPhoto: () =>
-              navigate(`/district/${district.displayed?.id}/photo/new`),
-            onDeletePhoto: actions.startPhotoDeleteSelect,
-          }}
-        />
+      {filters.visiblePhotos === null && (
+        <EmptyState title="" description="載入中..." />
       )}
+
+      {!(filters.visiblePhotos?.length === 0) &&
+        filters.visiblePhotos !== null && (
+          <PhotoGridToolbar
+            photoCount={filters.visiblePhotos.length}
+            showActions={!UI.isEditMode}
+            action={{
+              onAddPhoto: () =>
+                navigate(`/district/${district.displayed?.id}/photo/new`),
+              onDeletePhoto: actions.startPhotoDeleteSelect,
+            }}
+          />
+        )}
 
       {UI.isPhotoDeleteSelectMode && (
         <PhotoSelectionToolbar
@@ -152,7 +159,7 @@ function DistrictContent({
         />
       )}
 
-      {!isDistrictEmpty && (
+      {!(filters.visiblePhotos?.length === 0) && !!filters.visiblePhotos && (
         <PhotoGrid
           district={district.displayed.id}
           photos={filters.visiblePhotos}

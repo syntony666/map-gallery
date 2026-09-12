@@ -50,7 +50,7 @@ export function useDistrictEditor(area: Area | null) {
     });
   }
 
-  function removeCollection(collectionName: string) {
+  function removeCollection(collectionId: string) {
     setDraftDistrict((current) => {
       if (!current) return current;
 
@@ -59,17 +59,17 @@ export function useDistrictEditor(area: Area | null) {
         photos: current.photos.map((photo) => ({
           ...photo,
           collectionIds: photo.collectionIds?.filter(
-            (collection) => collection !== collectionName,
+            (collection) => collection !== collectionId,
           ),
         })),
       };
     });
   }
   function addPhotosToCollection(
-    collectionName: string,
+    collectionId: string,
     photoIds: ReadonlySet<string>,
   ) {
-    if (!collectionName || photoIds.size === 0) return;
+    if (!collectionId || photoIds.size === 0) return;
 
     setDraftDistrict((current) => {
       if (!current) return current;
@@ -84,7 +84,7 @@ export function useDistrictEditor(area: Area | null) {
           return {
             ...photo,
             collectionIds: [
-              ...new Set([...(photo.collectionIds ?? []), collectionName]),
+              ...new Set([...(photo.collectionIds ?? []), collectionId]),
             ],
           };
         }),
@@ -93,10 +93,10 @@ export function useDistrictEditor(area: Area | null) {
   }
 
   function removePhotosFromCollection(
-    collectionName: string,
+    collectionId: string,
     photoIds: ReadonlySet<string>,
   ) {
-    if (!collectionName || photoIds.size === 0) return;
+    if (!collectionId || photoIds.size === 0) return;
 
     setDraftDistrict((current) => {
       if (!current) return current;
@@ -111,7 +111,7 @@ export function useDistrictEditor(area: Area | null) {
           return {
             ...photo,
             collectionIds: photo.collectionIds?.filter(
-              (collection) => collection !== collectionName,
+              (collection) => collection !== collectionId,
             ),
           };
         }),

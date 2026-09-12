@@ -58,7 +58,6 @@ async function requestData<T>(path: string): Promise<T> {
 
 function toPhoto(
   photo: PhotoListDataResponse["items"][number] | PhotoDataResponse,
-  collectionNamesById: Map<string, string> = new Map(),
 ): Photo {
   return {
     id: photo.id,
@@ -68,12 +67,7 @@ function toPhoto(
     summary: photo.summary ?? undefined,
     description:
       "description" in photo ? (photo.description ?? undefined) : undefined,
-    collectionIds: photo.collectionIds
-      .map((collectionId) => collectionNamesById.get(collectionId))
-      .filter(
-        (collectionName): collectionName is string =>
-          collectionName !== undefined,
-      ),
+    collectionIds: photo.collectionIds,
   };
 }
 
@@ -85,7 +79,7 @@ function toCollection(
     id: collection.id,
     name: collection.name,
     photos: photos.filter((photo) =>
-      photo.collectionIds.includes(collection.name),
+      photo.collectionIds.includes(collection.id),
     ),
   };
 }
@@ -119,51 +113,20 @@ function toSearchParams(
 }
 
 async function getAreaById(areaId: string): Promise<Area> {
-  const [areaResponse, collectionsResponse, photosResponse] = await Promise.all(
-    [
-      requestData<AreaDataResponse>(`/api/v1/areas/${areaId}`),
-      requestData<CollectionListDataResponse>(
-        `/api/v1/collections?areaId=${areaId}`,
-      ),
-      requestData<PhotoListDataResponse>(`/api/v1/photos?areaId=${areaId}`),
-    ],
+  const areaResponse = await requestData<AreaDataResponse>(
+    `/api/v1/areas/${areaId}`,
   );
 
-  const collectionNamesById = new Map(
-    collectionsResponse.items.map((collection) => [
-      collection.id,
-      collection.name,
-    ]),
-  );
-
-  const photos = photosResponse.items.map((photo) =>
-    toPhoto(photo, collectionNamesById),
-  );
-
-  return toArea(areaResponse, photos);
+  return toArea(areaResponse, []);
 }
 
 async function getCollectionsByAreaId(areaId: string): Promise<Collection[]> {
-  const [collectionsResponse, photosResponse] = await Promise.all([
-    requestData<CollectionListDataResponse>(
-      `/api/v1/collections?areaId=${areaId}`,
-    ),
-    requestData<PhotoListDataResponse>(`/api/v1/photos?areaId=${areaId}`),
-  ]);
-
-  const collectionNamesById = new Map(
-    collectionsResponse.items.map((collection) => [
-      collection.id,
-      collection.name,
-    ]),
-  );
-
-  const photos = photosResponse.items.map((photo) =>
-    toPhoto(photo, collectionNamesById),
+  const collectionsResponse = await requestData<CollectionListDataResponse>(
+    `/api/v1/collections?areaId=${areaId}`,
   );
 
   return collectionsResponse.items.map((collection) =>
-    toCollection(collection, photos),
+    toCollection(collection, []),
   );
 }
 
