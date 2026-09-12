@@ -29,7 +29,7 @@ export function AreaPage() {
   return (
     <AreaContent
       areaId={areaId}
-      initialCollectionId={state?.collectionName ?? ""}
+      initialCollectionId={state?.collectionId ?? ""}
     />
   );
 }

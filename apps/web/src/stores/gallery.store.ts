@@ -13,6 +13,7 @@ import type {
   Collection,
   GetPhotosQuery,
   Photo,
+  PhotoDetail,
 } from "../types/gallery.type";
 
 export type PhotoListResult = {
@@ -71,6 +72,13 @@ function toPhoto(
   };
 }
 
+function toPhotoDetail(photo: PhotoDataResponse): PhotoDetail {
+  return {
+    ...toPhoto(photo),
+    areaId: photo.areaId,
+  };
+}
+
 function toCollection(
   collection: CollectionListDataResponse["items"][number],
 ): Collection {
@@ -126,12 +134,12 @@ async function getCollectionsByAreaId(areaId: string): Promise<Collection[]> {
   return collectionsResponse.items.map(toCollection);
 }
 
-async function getPhotoById(photoId: string): Promise<Photo> {
+async function getPhotoById(photoId: string): Promise<PhotoDetail> {
   const photoResponse = await requestData<PhotoDataResponse>(
     `/api/v1/photos/${photoId}`,
   );
 
-  return toPhoto(photoResponse);
+  return toPhotoDetail(photoResponse);
 }
 
 async function getAreas(): Promise<Area[]> {

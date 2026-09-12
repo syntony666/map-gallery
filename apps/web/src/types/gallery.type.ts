@@ -8,6 +8,10 @@ export type Photo = {
   collectionIds: string[];
 };
 
+export type PhotoDetail = Photo & {
+  areaId: string;
+};
+
 export type Area = {
   id: string;
   name: string;

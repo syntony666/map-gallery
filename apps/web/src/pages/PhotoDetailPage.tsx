@@ -1,49 +1,42 @@
 import { useNavigate, useParams } from "react-router";
-import areas from "../data/districts.json";
 import { TitleBar } from "../components/common/TitleBar";
 import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
-import type { Photo } from "../types/gallery.type";
+import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
+import { usePhotoDetailPageController } from "../hooks/usePhotoDetailPageController";
 
 export function PhotoDetailPage() {
   const { areaId, photoId } = useParams();
 
-  const area = areas.find((area) => area.id === areaId);
+  const controller = usePhotoDetailPageController({ photoId, areaId });
 
-  const emptyPhoto: Photo = {
+  const emptyPhoto: PhotoDetail = {
     id: "0",
     title: "",
     summary: "找不到此照片 請返回到上一頁",
     date: "",
     image: "https://placehold.net/default.png",
     collectionIds: [],
+    areaId: areaId ?? "",
   };
 
-  if (!area) {
-    return <PhotoDetailContent areaName="" photo={emptyPhoto} isError />;
+  if (!controller.area || !controller.photo || controller.error) {
+    return (
+      <PhotoDetailContent area={controller.area} photo={emptyPhoto} isError />
+    );
   }
 
-  const photo = area.photos.find((photo) => photo.id === photoId) as Photo;
-
-  if (!photo) {
-    return <PhotoDetailContent areaName={area.id} photo={emptyPhoto} isError />;
-  }
-
-  return <PhotoDetailContent areaName={area.id} photo={photo} />;
+  return <PhotoDetailContent area={controller.area} photo={controller.photo} />;
 }
 
 type PhotoDetailContentProps = {
-  areaName: string;
-  photo: Photo;
+  area: Area | null;
+  photo: PhotoDetail;
   isError?: boolean;
 };
 
-function PhotoDetailContent({
-  areaName,
-  photo,
-  isError,
-}: PhotoDetailContentProps) {
+function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
   const navigate = useNavigate();
 
   const titleButtons: ButtonActionGroup[] = [
@@ -64,16 +57,16 @@ function PhotoDetailContent({
   return (
     <main>
       <TitleBar
-        areaName={!isError ? areaName : "回到地圖"}
+        areaName={!isError && area ? area.name : "回到地圖"}
         buttonGroup={!isError ? titleButtons : []}
         mobileActions={{ mobileMode: "inline" }}
-        onBack={() => navigate(!isError ? `/area/${areaName}` : "/")}
+        onBack={() => navigate(!isError && area ? `/area/${area.id}` : "/")}
       />
 
       <article className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,2fr)] lg:gap-10">
         <PhotoViewer photo={photo} />
 
-        <PhotoInfo areaName={areaName} photo={photo} />
+        <PhotoInfo photo={photo} />
       </article>
     </main>
   );

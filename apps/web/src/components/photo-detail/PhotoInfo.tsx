@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router";
-import type { Photo } from "../../types/gallery.type";
+import type { PhotoDetail } from "../../types/gallery.type";
 
 type PhotoInfoProps = {
-  areaName: string;
-  photo: Photo;
+  photo: PhotoDetail;
 };
 
-export function PhotoInfo({ areaName, photo }: PhotoInfoProps) {
+export function PhotoInfo({ photo }: PhotoInfoProps) {
   const navigate = useNavigate();
   return (
     <section className="lg:pt-1">
@@ -16,15 +15,15 @@ export function PhotoInfo({ areaName, photo }: PhotoInfoProps) {
         <time className="mt-1 block text-sm text-stone-500">{photo.date}</time>
       </div>
 
-      {photo.collectionIds?.length && photo.collectionIds.length > 0 && (
+      {photo.collectionIds.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2">
           {photo.collectionIds.map((collection) => (
             <button
               key={collection}
               type="button"
               onClick={() =>
-                navigate(`/area/${areaName}`, {
-                  state: { collectionName: collection },
+                navigate(`/area/${photo.areaId}`, {
+                  state: { collectionId: collection },
                 })
               }
               className="text-sm text-purple-500 hover:text-purple-700"
