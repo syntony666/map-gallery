@@ -19,7 +19,8 @@ export type Area = {
 export type Collection = {
   id: string;
   name: string;
-  photos: Photo[];
+  coverImage?: string;
+  photoCount: number;
 };
 
 export type GetPhotosQuery = {

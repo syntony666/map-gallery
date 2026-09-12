@@ -190,7 +190,7 @@ export function useDistrictPageController({
 
   function onCollectionRemove(collection: Collection) {
     const isConfirmed = window.confirm(
-      `確定要刪除「${collection.name}」嗎？其中 ${collection.photos.length} 張照片會解除與此相簿的關聯。`,
+      `確定要刪除「${collection.name}」嗎？其中 ${collection.photoCount} 張照片會解除與此相簿的關聯。`,
     );
 
     if (!isConfirmed) return;

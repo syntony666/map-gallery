@@ -73,14 +73,12 @@ function toPhoto(
 
 function toCollection(
   collection: CollectionListDataResponse["items"][number],
-  photos: Photo[],
 ): Collection {
   return {
     id: collection.id,
     name: collection.name,
-    photos: photos.filter((photo) =>
-      photo.collectionIds.includes(collection.id),
-    ),
+    coverImage: collection.coverImage ?? undefined,
+    photoCount: collection.photoCount,
   };
 }
 
@@ -126,7 +124,7 @@ async function getCollectionsByAreaId(areaId: string): Promise<Collection[]> {
   );
 
   return collectionsResponse.items.map((collection) =>
-    toCollection(collection, []),
+    toCollection(collection),
   );
 }
 

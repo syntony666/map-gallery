@@ -88,7 +88,7 @@ export function CollectionManageToolbar({
     <Toolbar
       label="正在編輯："
       value={collection.name}
-      meta={`${collection.photos.length} 張照片`}
+      meta={`${collection.photoCount} 張照片`}
       buttonGroups={buttons}
       mobileMode="inline"
     />
@@ -96,7 +96,7 @@ export function CollectionManageToolbar({
     <Toolbar
       label="正在編輯："
       value={collection.name}
-      meta={`（${collection.photos.length} 張照片）`}
+      meta={`（${collection.photoCount} 張照片）`}
       buttonGroups={buttons}
       mobileGroupIcon="bi-pencil-square"
       mobileGroupLabel="管理相簿"
