@@ -47,6 +47,10 @@ function parseSort(value: string | undefined): SortDirection | null {
   return null;
 }
 
+function escapeLikeKeyword(keyword: string): string {
+  return `%${keyword.replace(/[\\%_]/g, (match) => `\\${match}`)}%`;
+}
+
 const orderByBySort = {
   newest: [desc(photos.takenAt), asc(photos.id)],
   oldest: [asc(photos.takenAt), asc(photos.id)],
@@ -164,11 +168,13 @@ photosRoute.get("/", (context) => {
     }
   }
 
-  const keywordCondition = keyword
+  const keywordPattern = keyword ? escapeLikeKeyword(keyword) : null;
+
+  const keywordCondition = keywordPattern
     ? sql`(
-        ${photos.title} LIKE ${`%${keyword}%`}
-        OR COALESCE(${photos.summary}, '') LIKE ${`%${keyword}%`}
-        OR COALESCE(${photos.description}, '') LIKE ${`%${keyword}%`}
+        ${photos.title} LIKE ${keywordPattern} ESCAPE '\\'
+        OR COALESCE(${photos.summary}, '') LIKE ${keywordPattern} ESCAPE '\\'
+        OR COALESCE(${photos.description}, '') LIKE ${keywordPattern} ESCAPE '\\'
       )`
     : undefined;
 
