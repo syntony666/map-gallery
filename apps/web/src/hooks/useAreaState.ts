@@ -28,7 +28,7 @@ export function useAreaState(
         setVisiblePhotos(
           result.photos.filter((photo) => {
             const isInSelectedCollection =
-              photo.collectionIds.includes(selectedCollectionId) ?? false;
+              photo.collectionIds.includes(selectedCollectionId);
             if (!selectedCollectionId) {
               return true;
             }

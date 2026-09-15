@@ -7,7 +7,7 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 24;
 const MAX_LIMIT = 100;
 
-type SortDirection = "newest" | "oldest";
+type SortDirection = "newest" | "oldest" | "title";
 
 const photoListSelection = {
   id: photos.id,
@@ -40,12 +40,18 @@ function parseSort(value: string | undefined): SortDirection | null {
     return "newest";
   }
 
-  if (value === "newest" || value === "oldest") {
+  if (value === "newest" || value === "oldest" || value === "title") {
     return value;
   }
 
   return null;
 }
+
+const orderByBySort = {
+  newest: [desc(photos.takenAt), asc(photos.id)],
+  oldest: [asc(photos.takenAt), asc(photos.id)],
+  title: [asc(photos.title), asc(photos.id)],
+} satisfies Record<SortDirection, unknown>;
 
 function getCollectionIdsByPhotoId(photoIds: readonly string[]) {
   if (photoIds.length === 0) {
@@ -97,7 +103,8 @@ photosRoute.get("/", (context) => {
       {
         error: {
           code: "INVALID_QUERY",
-          message: 'The sort query parameter must be "newest" or "oldest".',
+          message:
+            'The sort query parameter must be "newest", "oldest", or "title".',
         },
       },
       400,
@@ -188,10 +195,7 @@ photosRoute.get("/", (context) => {
 
   const total = totalResult?.count ?? 0;
   const offset = (page - 1) * limit;
-  const orderBy = [
-    sort === "newest" ? desc(photos.takenAt) : asc(photos.takenAt),
-    asc(photos.id),
-  ] as const;
+  const orderBy = orderByBySort[sort];
 
   const items = collectionId
     ? db

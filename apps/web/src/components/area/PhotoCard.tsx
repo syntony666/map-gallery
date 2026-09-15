@@ -1,7 +1,8 @@
+import { useNavigate } from "react-router";
 import type { Photo } from "../../types/gallery.type";
 
 type PhotoCardProps = {
-  areaName: string;
+  areaId: string;
   photo: Photo;
   isSelectionMode: boolean;
   isSelected?: boolean;
@@ -9,19 +10,20 @@ type PhotoCardProps = {
 };
 
 export function PhotoCard({
-  areaName,
+  areaId,
   photo,
   isSelectionMode = false,
   isSelected = false,
   onToggleSelection,
 }: PhotoCardProps) {
+  const navigate = useNavigate();
   function handleClick() {
     if (isSelectionMode) {
       onToggleSelection?.();
       return;
     }
 
-    navigation.navigate(`/area/${areaName}/photo/${photo.id}`);
+    navigate(`/area/${areaId}/photo/${photo.id}`);
   }
 
   return (

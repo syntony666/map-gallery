@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import type { Area } from "../../types/gallery.type";
 
 export type AreaPopupData = Area;
@@ -7,6 +8,7 @@ type AreaPopupProps = {
 };
 
 export function AreaPopup({ area }: AreaPopupProps) {
+  const navigate = useNavigate();
   if (!area) {
     return (
       <div style={{ width: "220px" }}>
@@ -42,7 +44,7 @@ export function AreaPopup({ area }: AreaPopupProps) {
 
         <button
           type="button"
-          onClick={() => navigation.navigate(`/area/${area.id}`)}
+          onClick={() => navigate(`/area/${area.id}`)}
           className="rounded bg-teal-600 px-2 py-1 text-xs text-white"
         >
           查看內容

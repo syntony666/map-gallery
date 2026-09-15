@@ -113,7 +113,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           action={actions.collectionToolbar}
         />
       ) : (
-        <div className="border-b border-stone-200 -mt-4 pb-4 height" />
+        <div className="border-b border-stone-200 -mt-4 pb-4" />
       )}
 
       {/* 搜尋、篩選與排序列 */}
@@ -158,7 +158,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
 
       {!(filters.visiblePhotos?.length === 0) && !!filters.visiblePhotos && (
         <PhotoGrid
-          area={area.displayed.id}
+          areaId={area.displayed.id}
           photos={filters.visiblePhotos}
           isSelectionMode={!!UI.isPhotoSelectMode}
           selectedPhotoIds={UI.selectedPhotoIds}

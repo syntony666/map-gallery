@@ -54,7 +54,7 @@ areasRoute.get("/:areaId", (context) => {
     return context.json(
       {
         error: {
-          code: 404,
+          code: "AREA_NOT_FOUND",
           message: "Area not found.",
         },
       },
