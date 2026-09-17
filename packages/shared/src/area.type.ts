@@ -9,3 +9,8 @@ export type AreaDataResponse = {
 export type AreaListDataResponse = {
   items: AreaDataResponse[];
 };
+
+export type UpdateAreaContentRequest = {
+  coverImage?: string | null;
+  description?: string | null;
+};

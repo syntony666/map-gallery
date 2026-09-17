@@ -111,12 +111,24 @@ export function useAreaPageController({
     dispatch({ type: "START_COLLECTION_EDIT" });
   }
 
-  function saveEdit() {
-    // TODO: PATCH /api/v1/areas/:areaId/content
-    // await galleryStore.updateAreaContent(areaId, {
-    //   coverImage: editor.draftArea?.coverImage ?? null,
-    //   description: editor.draftArea?.description ?? null,
-    // });
+  async function saveEdit() {
+    const draft = editor.draftArea;
+
+    if (!draft) {
+      return;
+    }
+
+    try {
+      await galleryStore.updateAreaContent(areaId, {
+        description: draft.description ?? null,
+      });
+      setSourceArea(await galleryStore.getAreaById(areaId));
+    } catch (reason) {
+      window.alert(
+        reason instanceof Error ? reason.message : "儲存失敗，請稍後再試",
+      );
+      return;
+    }
 
     editor.saveChanges();
     resetPageUI();

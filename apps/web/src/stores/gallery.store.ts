@@ -6,6 +6,7 @@ import type {
   ErrorDataResponse,
   PhotoDataResponse,
   PhotoListDataResponse,
+  UpdateAreaContentRequest,
 } from "@map-gallery/shared";
 
 import type {
@@ -36,8 +37,18 @@ export class GalleryStoreError extends Error {
   }
 }
 
-async function requestData<T>(path: string): Promise<T> {
-  const response = await fetch(path);
+async function requestData<T>(
+  path: string,
+  options: { method?: string; body?: unknown } = {},
+): Promise<T> {
+  const response = await fetch(path, {
+    method: options.method ?? "GET",
+    headers:
+      options.body !== undefined
+        ? { "Content-Type": "application/json" }
+        : undefined,
+    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+  });
 
   const body = (await response.json().catch(() => null)) as
     | T
@@ -148,6 +159,16 @@ async function getAreas(): Promise<Area[]> {
   return response.items.map(toArea);
 }
 
+async function updateAreaContent(
+  areaId: string,
+  payload: UpdateAreaContentRequest,
+): Promise<void> {
+  await requestData(`/api/v1/areas/${areaId}/content`, {
+    method: "PATCH",
+    body: payload,
+  });
+}
+
 async function getPhotos(query: GetPhotosQuery = {}): Promise<PhotoListResult> {
   const response = await requestData<PhotoListDataResponse>(
     `/api/v1/photos${toSearchParams({
@@ -175,4 +196,5 @@ export const galleryStore = {
   getCollectionsByAreaId,
   getPhotoById,
   getPhotos,
+  updateAreaContent,
 };
