@@ -130,6 +130,7 @@ export function useAreaPageController({
   }
 
   function onAddCollectionPhoto() {
+    areaState.setKeyword("");
     dispatch({
       type: "START_COLLECTION_PHOTO_SELECT",
       collectionPhotoMode: "add",
@@ -137,6 +138,7 @@ export function useAreaPageController({
   }
 
   function onRemoveCollectionPhoto() {
+    areaState.setKeyword("");
     dispatch({
       type: "START_COLLECTION_PHOTO_SELECT",
       collectionPhotoMode: "remove",
@@ -224,6 +226,7 @@ export function useAreaPageController({
   }
 
   function startPhotoDeleteSelect() {
+    areaState.setKeyword("");
     dispatch({ type: "START_PHOTO_DELETE_SELECT" });
   }
 
