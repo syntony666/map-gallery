@@ -1,10 +1,10 @@
-import { useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import type { CollectionManageToolbarAction } from "../components/area/CollectionManageToolbar";
 import { useAreaEditor } from "./useAreaEditor";
 import { useAreaState } from "./useAreaState";
 import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
 import type { Area, Collection } from "../types/gallery.type";
-import { galleryStore } from "../stores/gallery.store";
+import { galleryStore, GalleryStoreError } from "../stores/gallery.store";
 
 type UseAreaPageControllerOptions = {
   areaId: string;
@@ -35,6 +35,12 @@ export function useAreaPageController({
 
   const editor = useAreaEditor(sourceArea);
 
+  const refetchCollections = useCallback(async () => {
+    return galleryStore
+      .getCollectionsByAreaId(areaId)
+      .then((items) => setSourceCollections(items));
+  }, [areaId]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -53,23 +59,15 @@ export function useAreaPageController({
         );
       });
 
-    galleryStore
-      .getCollectionsByAreaId(areaId)
-      .then((collections) => {
-        if (cancelled) return;
-
-        setSourceCollections(collections);
-      })
-      .catch((reason: unknown) => {
-        if (cancelled) return;
-
-        setError(reason instanceof Error ? reason.message : "無法載入相簿資料");
-      });
+    refetchCollections().catch((reason: unknown) => {
+      if (cancelled) return;
+      setError(reason instanceof Error ? reason.message : "無法載入相簿資料");
+    });
 
     return () => {
       cancelled = true;
     };
-  }, [areaId]);
+  }, [areaId, refetchCollections]);
 
   const displayedArea =
     UIState.mode !== "browse" && editor.draftArea
@@ -203,7 +201,7 @@ export function useAreaPageController({
     dispatch({ type: "CANCEL_PHOTO_SELECTION" });
   }
 
-  function onCollectionRename(collection: Collection) {
+  async function onCollectionRename(collection: Collection) {
     const nextName = window.prompt("請輸入新的相簿名稱", collection.name);
 
     if (nextName === null) {
@@ -216,13 +214,24 @@ export function useAreaPageController({
       return;
     }
 
-    // TODO: PATCH /api/v1/collections/:collectionId
-    // await galleryStore.updateCollection(collection.id, {
-    //   name: normalizedName,
-    // });
+    try {
+      await galleryStore.updateCollection(collection.id, {
+        name: normalizedName,
+      });
+      await refetchCollections();
+    } catch (reason) {
+      window.alert(
+        reason instanceof GalleryStoreError &&
+          reason.code === "COLLECTION_NAME_CONFLICT"
+          ? "已有相同名稱的相簿"
+          : reason instanceof Error
+            ? reason.message
+            : "更新失敗",
+      );
+    }
   }
 
-  function onCollectionRemove(collection: Collection) {
+  async function onCollectionRemove(collection: Collection) {
     const isConfirmed = window.confirm(
       `確定要刪除「${collection.name}」嗎？其中 ${collection.photoCount} 張照片會解除與此相簿的關聯。`,
     );
@@ -231,10 +240,47 @@ export function useAreaPageController({
       return;
     }
 
-    // TODO: DELETE /api/v1/collections/:collectionId
-    // await galleryStore.deleteCollection(collection.id);
+    try {
+      await galleryStore.deleteCollection(collection.id);
+      await refetchCollections();
+      areaState.setSelectedCollectionId("");
+    } catch (reason) {
+      window.alert(
+        reason instanceof Error ? reason.message : "刪除失敗",
+      );
+    }
+  }
 
-    areaState.setSelectedCollectionId("");
+  async function onCollectionCreate() {
+    const nextName = window.prompt("請輸入新相簿名稱");
+
+    if (nextName === null) {
+      return;
+    }
+
+    const normalizedName = nextName.trim();
+
+    if (!normalizedName) {
+      return;
+    }
+
+    try {
+      const created = await galleryStore.createCollection({
+        areaId,
+        name: normalizedName,
+      });
+      await refetchCollections();
+      areaState.setSelectedCollectionId(created.id);
+    } catch (reason) {
+      window.alert(
+        reason instanceof GalleryStoreError &&
+          reason.code === "COLLECTION_NAME_CONFLICT"
+          ? "已有相同名稱的相簿"
+          : reason instanceof Error
+            ? reason.message
+            : "新增失敗",
+      );
+    }
   }
 
   function startPhotoDeleteSelect() {
@@ -316,6 +362,7 @@ export function useAreaPageController({
 
     actions: {
       updateDescription: editor.updateDescription,
+      onCollectionCreate,
       togglePhotoSelection,
       clearPhotoSelection,
       startPhotoDeleteSelect,

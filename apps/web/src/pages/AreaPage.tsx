@@ -98,6 +98,8 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           collections={collections}
           selectedCollectionId={filters.selectedCollectionId}
           onSelect={filters.toggleCollection}
+          isEditMode={UI.isCollectionEditMode}
+          onAdd={actions.onCollectionCreate}
         />
       )}
 
