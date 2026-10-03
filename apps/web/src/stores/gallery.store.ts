@@ -1,12 +1,15 @@
 import type {
   AreaDataResponse,
   AreaListDataResponse,
+  CollectionDataResponse,
   CollectionListDataResponse,
+  CreateCollectionRequest,
   ErrorCode,
   ErrorDataResponse,
   PhotoDataResponse,
   PhotoListDataResponse,
   UpdateAreaContentRequest,
+  UpdateCollectionRequest,
 } from "@map-gallery/shared";
 
 import type {
@@ -90,9 +93,7 @@ function toPhotoDetail(photo: PhotoDataResponse): PhotoDetail {
   };
 }
 
-function toCollection(
-  collection: CollectionListDataResponse["items"][number],
-): Collection {
+function toCollection(collection: CollectionDataResponse): Collection {
   return {
     id: collection.id,
     name: collection.name,
@@ -190,6 +191,40 @@ async function getPhotos(query: GetPhotosQuery = {}): Promise<PhotoListResult> {
   };
 }
 
+async function createCollection(
+  payload: CreateCollectionRequest,
+): Promise<Collection> {
+  const response = await requestData<CollectionDataResponse>(
+    `/api/v1/collections`,
+    {
+      method: "POST",
+      body: payload,
+    },
+  );
+
+  return toCollection(response);
+}
+
+async function updateCollection(
+  collectionId: string,
+  payload: UpdateCollectionRequest,
+): Promise<Collection> {
+  const response = await requestData<CollectionDataResponse>(
+    `/api/v1/collections/${collectionId}`,
+    {
+      method: "PATCH",
+      body: payload,
+    },
+  );
+  return toCollection(response);
+}
+
+async function deleteCollection(collectionId: string): Promise<void> {
+  await requestData(`/api/v1/collections/${collectionId}`, {
+    method: "DELETE",
+  });
+}
+
 export const galleryStore = {
   getAreas,
   getAreaById,
@@ -197,4 +232,7 @@ export const galleryStore = {
   getPhotoById,
   getPhotos,
   updateAreaContent,
+  createCollection,
+  updateCollection,
+  deleteCollection,
 };

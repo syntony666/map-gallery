@@ -5,7 +5,8 @@ export type ErrorCode =
   | "PHOTO_NOT_FOUND"
   | "INVALID_QUERY"
   | "INVALID_JSON"
-  | "INVALID_BODY";
+  | "INVALID_BODY"
+  | "COLLECTION_NAME_CONFLICT";
 
 export type ErrorDataResponse = {
   error: {
