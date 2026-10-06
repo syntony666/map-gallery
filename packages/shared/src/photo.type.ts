@@ -10,8 +10,17 @@ export type PhotoListItemDataResponse = {
   collectionIds: string[];
 };
 
-export type PhotoDataResponse = PhotoListItemDataResponse & {
+export type PhotoCollectionSummary = {
+  id: string;
+  name: string;
+};
+
+export type PhotoDataResponse = Omit<
+  PhotoListItemDataResponse,
+  "collectionIds"
+> & {
   description: string | null;
+  collections: PhotoCollectionSummary[];
 };
 
 export type PhotoListPaginationDataResponse = {

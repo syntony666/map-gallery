@@ -20,6 +20,11 @@ const photoListSelection = {
   updatedAt: photos.updatedAt,
 };
 
+const photoDetailSelection = {
+  ...photoListSelection,
+  description: photos.description,
+};
+
 function parsePositiveInteger(
   value: string | undefined,
   fallback: number,
@@ -106,6 +111,30 @@ function parsePhotoIdsBody(body: unknown): ParsedPhotoIds {
   }
 
   return { ok: true, photoIds: [...new Set(photoIds)] };
+}
+
+function getPhotoDetail(photoId: string) {
+  const photo = db
+    .select(photoDetailSelection)
+    .from(photos)
+    .where(eq(photos.id, photoId))
+    .get();
+
+  if (!photo) {
+    return undefined;
+  }
+
+  const photoCollectionRows = db
+    .select({ id: collections.id, name: collections.name })
+    .from(photoCollections)
+    .innerJoin(collections, eq(collections.id, photoCollections.collectionId))
+    .where(eq(photoCollections.photoId, photo.id))
+    .all();
+
+  return {
+    ...photo,
+    collections: photoCollectionRows,
+  };
 }
 
 export const photosRoute = new Hono();
@@ -266,23 +295,7 @@ photosRoute.get("/", (context) => {
 });
 
 photosRoute.get("/:photoId", (context) => {
-  const photoId = context.req.param("photoId");
-
-  const photo = db
-    .select({
-      id: photos.id,
-      areaId: photos.areaId,
-      title: photos.title,
-      summary: photos.summary,
-      description: photos.description,
-      image: photos.image,
-      takenAt: photos.takenAt,
-      createdAt: photos.createdAt,
-      updatedAt: photos.updatedAt,
-    })
-    .from(photos)
-    .where(eq(photos.id, photoId))
-    .get();
+  const photo = getPhotoDetail(context.req.param("photoId"));
 
   if (!photo) {
     return context.json(
@@ -296,12 +309,7 @@ photosRoute.get("/:photoId", (context) => {
     );
   }
 
-  const collectionIdsByPhotoId = getCollectionIdsByPhotoId([photo.id]);
-
-  return context.json({
-    ...photo,
-    collectionIds: collectionIdsByPhotoId.get(photo.id) ?? [],
-  });
+  return context.json(photo);
 });
 
 photosRoute.delete("/:photoId", (context) => {

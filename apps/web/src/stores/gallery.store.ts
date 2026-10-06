@@ -73,24 +73,27 @@ async function requestData<T>(
   return body as T;
 }
 
-function toPhoto(
-  photo: PhotoListDataResponse["items"][number] | PhotoDataResponse,
-): Photo {
+function toPhoto(photo: PhotoListDataResponse["items"][number]): Photo {
   return {
     id: photo.id,
     title: photo.title,
     date: photo.takenAt,
     image: photo.image,
     summary: photo.summary ?? undefined,
-    description:
-      "description" in photo ? (photo.description ?? undefined) : undefined,
     collectionIds: photo.collectionIds,
   };
 }
 
 function toPhotoDetail(photo: PhotoDataResponse): PhotoDetail {
   return {
-    ...toPhoto(photo),
+    id: photo.id,
+    title: photo.title,
+    date: photo.takenAt,
+    image: photo.image,
+    summary: photo.summary ?? undefined,
+    description: photo.description ?? undefined,
+    collectionIds: photo.collections.map((collection) => collection.id),
+    collections: photo.collections,
     areaId: photo.areaId,
   };
 }

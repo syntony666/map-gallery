@@ -18,6 +18,7 @@ export function PhotoDetailPage() {
     date: "",
     image: "https://placehold.net/default.png",
     collectionIds: [],
+    collections: [],
     areaId: areaId ?? "",
   };
 

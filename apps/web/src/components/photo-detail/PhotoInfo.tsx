@@ -15,20 +15,20 @@ export function PhotoInfo({ photo }: PhotoInfoProps) {
         <time className="mt-1 block text-sm text-stone-500">{photo.date}</time>
       </div>
 
-      {photo.collectionIds.length > 0 && (
+      {photo.collections.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2">
-          {photo.collectionIds.map((collection) => (
+          {photo.collections.map((collection) => (
             <button
-              key={collection}
+              key={collection.id}
               type="button"
               onClick={() =>
                 navigate(`/area/${photo.areaId}`, {
-                  state: { collectionId: collection },
+                  state: { collectionId: collection.id },
                 })
               }
               className="text-sm text-purple-500 hover:text-purple-700"
             >
-              #{collection}
+              #{collection.name}
             </button>
           ))}
         </div>

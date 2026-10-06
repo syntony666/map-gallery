@@ -24,6 +24,12 @@ export function usePhotoDetailPageController({
     ])
       .then(([photo, area]) => {
         if (cancelled) return;
+
+        if (photo.areaId !== areaId) {
+          setError("照片不屬於此行政區");
+          return;
+        }
+
         setSourcePhoto(photo);
         setSourceArea(area);
       })
