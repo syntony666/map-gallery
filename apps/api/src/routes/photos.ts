@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
 import { areas, collections, photoCollections, photos } from "../db/schema";
@@ -148,6 +148,55 @@ function isNullableString(value: unknown): value is string | null {
 
 function isValidDateString(value: string): boolean {
   return !Number.isNaN(new Date(value).getTime());
+}
+
+function checkCollectionsInArea(
+  collectionIds: string[],
+  areaId: string,
+): "ok" | "not_found" | "mismatch" {
+  const found = db
+    .select({ id: collections.id, areaId: collections.areaId })
+    .from(collections)
+    .where(inArray(collections.id, collectionIds))
+    .all();
+
+  if (found.length !== collectionIds.length) {
+    return "not_found";
+  }
+
+  return found.every((collection) => collection.areaId === areaId)
+    ? "ok"
+    : "mismatch";
+}
+
+function replacePhotoCollections(photoId: string, collectionIds: string[]) {
+  db.delete(photoCollections)
+    .where(
+      and(
+        eq(photoCollections.photoId, photoId),
+        collectionIds.length > 0
+          ? notInArray(photoCollections.collectionId, collectionIds)
+          : undefined,
+      ),
+    )
+    .run();
+
+  if (collectionIds.length === 0) {
+    return;
+  }
+
+  const createdAt = new Date().toISOString();
+
+  db.insert(photoCollections)
+    .values(
+      collectionIds.map((collectionId) => ({
+        photoId,
+        collectionId,
+        createdAt,
+      })),
+    )
+    .onConflictDoNothing()
+    .run();
 }
 
 export const photosRoute = new Hono();
@@ -509,6 +558,27 @@ photosRoute.post("/", async (context) => {
     );
   }
 
+  let collectionIds: string[] | undefined;
+
+  if (payload.collectionIds !== undefined) {
+    if (
+      !Array.isArray(payload.collectionIds) ||
+      payload.collectionIds.some((id) => !isNonEmptyString(id))
+    ) {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "collectionIds must be an array of strings.",
+          },
+        },
+        400,
+      );
+    }
+
+    collectionIds = [...new Set(payload.collectionIds as string[])];
+  }
+
   const area = db
     .select({ id: areas.id })
     .from(areas)
@@ -527,22 +597,56 @@ photosRoute.post("/", async (context) => {
     );
   }
 
+  if (collectionIds) {
+    const collectionCheck = checkCollectionsInArea(collectionIds, areaId);
+
+    if (collectionCheck === "not_found") {
+      return context.json(
+        {
+          error: {
+            code: "COLLECTION_NOT_FOUND",
+            message: "One or more collections were not found.",
+          },
+        },
+        404,
+      );
+    }
+
+    if (collectionCheck === "mismatch") {
+      return context.json(
+        {
+          error: {
+            code: "PHOTO_AREA_MISMATCH",
+            message: "Collections must belong to the same area as the photo.",
+          },
+        },
+        422,
+      );
+    }
+  }
+
   const id = randomUUID();
   const now = new Date().toISOString();
 
-  db.insert(photos)
-    .values({
-      id,
-      areaId,
-      title: title.trim(),
-      image: image.trim(),
-      takenAt: new Date(takenAt).toISOString(),
-      summary: summary ?? null,
-      description: description ?? null,
-      createdAt: now,
-      updatedAt: now,
-    })
-    .run();
+  db.transaction(() => {
+    db.insert(photos)
+      .values({
+        id,
+        areaId,
+        title: title.trim(),
+        image: image.trim(),
+        takenAt: new Date(takenAt).toISOString(),
+        summary: summary ?? null,
+        description: description ?? null,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
+
+    if (collectionIds) {
+      replacePhotoCollections(id, collectionIds);
+    }
+  });
 
   return context.json(getPhotoDetail(id), 201);
 });
@@ -551,7 +655,7 @@ photosRoute.patch("/:photoId", async (context) => {
   const photoId = context.req.param("photoId");
 
   const photo = db
-    .select({ id: photos.id })
+    .select({ id: photos.id, areaId: photos.areaId })
     .from(photos)
     .where(eq(photos.id, photoId))
     .get();
@@ -682,7 +786,28 @@ photosRoute.patch("/:photoId", async (context) => {
     updates.description = payload.description;
   }
 
-  if (Object.keys(updates).length === 0) {
+  let collectionIds: string[] | undefined;
+
+  if (payload.collectionIds !== undefined) {
+    if (
+      !Array.isArray(payload.collectionIds) ||
+      payload.collectionIds.some((id) => !isNonEmptyString(id))
+    ) {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "collectionIds must be an array of strings.",
+          },
+        },
+        400,
+      );
+    }
+
+    collectionIds = [...new Set(payload.collectionIds as string[])];
+  }
+
+  if (Object.keys(updates).length === 0 && collectionIds === undefined) {
     return context.json(
       {
         error: {
@@ -694,9 +819,47 @@ photosRoute.patch("/:photoId", async (context) => {
     );
   }
 
-  updates.updatedAt = new Date().toISOString();
+  if (collectionIds) {
+    const collectionCheck = checkCollectionsInArea(
+      collectionIds,
+      photo.areaId,
+    );
 
-  db.update(photos).set(updates).where(eq(photos.id, photoId)).run();
+    if (collectionCheck === "not_found") {
+      return context.json(
+        {
+          error: {
+            code: "COLLECTION_NOT_FOUND",
+            message: "One or more collections were not found.",
+          },
+        },
+        404,
+      );
+    }
+
+    if (collectionCheck === "mismatch") {
+      return context.json(
+        {
+          error: {
+            code: "PHOTO_AREA_MISMATCH",
+            message: "Collections must belong to the same area as the photo.",
+          },
+        },
+        422,
+      );
+    }
+  }
+
+  db.transaction(() => {
+    if (Object.keys(updates).length > 0) {
+      updates.updatedAt = new Date().toISOString();
+      db.update(photos).set(updates).where(eq(photos.id, photoId)).run();
+    }
+
+    if (collectionIds) {
+      replacePhotoCollections(photoId, collectionIds);
+    }
+  });
 
   return context.json(getPhotoDetail(photoId));
 });

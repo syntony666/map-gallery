@@ -46,6 +46,7 @@ export type CreatePhotoRequest = {
   takenAt: string;
   summary?: string | null;
   description?: string | null;
+  collectionIds?: string[];
 };
 
 export type UpdatePhotoRequest = {
@@ -54,4 +55,5 @@ export type UpdatePhotoRequest = {
   takenAt?: string;
   summary?: string | null;
   description?: string | null;
+  collectionIds?: string[];
 };
