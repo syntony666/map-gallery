@@ -72,7 +72,7 @@ export function usePhotoEditPageController({
             ? {
                 title: photo.title,
                 image: photo.image,
-                takenAt: photo.date.slice(0, 10),
+                takenAt: photo.date,
                 summary: photo.summary ?? "",
                 description: photo.description ?? "",
               }

@@ -79,7 +79,7 @@ function toPhoto(photo: PhotoListDataResponse["items"][number]): Photo {
   return {
     id: photo.id,
     title: photo.title,
-    date: photo.takenAt,
+    date: photo.takenAt.slice(0, 10),
     image: photo.image,
     summary: photo.summary ?? undefined,
     collectionIds: photo.collectionIds,
@@ -90,7 +90,7 @@ function toPhotoDetail(photo: PhotoDataResponse): PhotoDetail {
   return {
     id: photo.id,
     title: photo.title,
-    date: photo.takenAt,
+    date: photo.takenAt.slice(0, 10),
     image: photo.image,
     summary: photo.summary ?? undefined,
     description: photo.description ?? undefined,
