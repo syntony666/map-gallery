@@ -297,25 +297,29 @@ export function useAreaPageController({
     dispatch({ type: "START_PHOTO_DELETE_SELECT" });
   }
 
-  function confirmPhotoDelete() {
-    const photoIds = UIState.selectedPhotoIds;
+  async function confirmPhotoDelete() {
+    const photoIds = [...UIState.selectedPhotoIds];
 
-    if (photoIds.size === 0) {
+    if (photoIds.length === 0) {
       return;
     }
 
     const isConfirmed = window.confirm(
-      `確定要刪除已選取的 ${photoIds.size} 張照片嗎？`,
+      `確定要刪除已選取的 ${photoIds.length} 張照片嗎？`,
     );
 
     if (!isConfirmed) {
       return;
     }
 
-    // TODO: POST /api/v1/photos/batch-delete
-    // await galleryStore.deletePhotos([...photoIds]);
-
-    dispatch({ type: "CONFIRM_PHOTO_DELETE" });
+    try {
+      await galleryStore.deletePhotos(photoIds);
+      await refetchCollections();
+      areaState.refreshPhotos();
+      dispatch({ type: "CONFIRM_PHOTO_DELETE" });
+    } catch (reason) {
+      window.alert(reason instanceof Error ? reason.message : "刪除失敗");
+    }
   }
 
   function cancelPhotoDelete() {

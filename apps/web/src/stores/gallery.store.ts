@@ -1,6 +1,7 @@
 import type {
   AreaDataResponse,
   AreaListDataResponse,
+  BatchDeletePhotosRequest,
   CollectionDataResponse,
   CollectionListDataResponse,
   CollectionPhotosRequest,
@@ -192,6 +193,13 @@ async function getPhotos(query: GetPhotosQuery = {}): Promise<PhotoListResult> {
   };
 }
 
+async function deletePhotos(photoIds: string[]): Promise<void> {
+  await requestData(`/api/v1/photos/batch-delete`, {
+    method: "POST",
+    body: { photoIds } satisfies BatchDeletePhotosRequest,
+  });
+}
+
 async function createCollection(
   payload: CreateCollectionRequest,
 ): Promise<Collection> {
@@ -252,6 +260,7 @@ export const galleryStore = {
   getCollectionsByAreaId,
   getPhotoById,
   getPhotos,
+  deletePhotos,
   updateAreaContent,
   createCollection,
   updateCollection,
