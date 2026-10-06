@@ -79,14 +79,23 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
 
     if (photos.length === 0) {
       return (
-        <EmptyState
-          title=""
-          description={
-            filters.keyword || filters.selectedCollectionId
-              ? "找不到符合條件的內容"
-              : "你來早了 這裡什麼都沒有"
-          }
-        />
+        <>
+          <PhotoGridToolbar
+            photoCount={0}
+            showActions={!UI.isEditMode && !readonly}
+            action={{
+              onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
+            }}
+          />
+          <EmptyState
+            title=""
+            description={
+              filters.keyword || filters.selectedCollectionId
+                ? "找不到符合條件的內容"
+                : "你來早了 這裡什麼都沒有"
+            }
+          />
+        </>
       );
     }
 

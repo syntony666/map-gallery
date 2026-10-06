@@ -3,7 +3,7 @@ import { Button } from "../common/Button";
 
 export type PhotoGridToolbarAction = {
   onAddPhoto: () => void;
-  onDeletePhoto: () => void;
+  onDeletePhoto?: () => void;
 };
 
 type PhotoGridToolbarProps = {
@@ -25,12 +25,16 @@ export function PhotoGridToolbar({
           icon: "bi-plus-lg",
           onClick: action.onAddPhoto,
         },
-        {
-          id: "photo-delete",
-          label: "",
-          icon: "bi-trash3",
-          onClick: action.onDeletePhoto,
-        },
+        ...(action.onDeletePhoto
+          ? [
+              {
+                id: "photo-delete",
+                label: "",
+                icon: "bi-trash3",
+                onClick: action.onDeletePhoto,
+              },
+            ]
+          : []),
       ]
     : [];
   return (
