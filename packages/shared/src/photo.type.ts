@@ -25,3 +25,7 @@ export type PhotoListDataResponse = {
   items: PhotoListItemDataResponse[];
   pagination: PhotoListPaginationDataResponse;
 };
+
+export type BatchDeletePhotosRequest = {
+  photoIds: string[];
+};

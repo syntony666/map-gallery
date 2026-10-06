@@ -83,6 +83,31 @@ function getCollectionIdsByPhotoId(photoIds: readonly string[]) {
   return collectionIdsByPhotoId;
 }
 
+type ParsedPhotoIds =
+  | { ok: true; photoIds: string[] }
+  | { ok: false; message: string };
+
+function parsePhotoIdsBody(body: unknown): ParsedPhotoIds {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { ok: false, message: "Request body must be a JSON object." };
+  }
+
+  const photoIds = (body as Record<string, unknown>).photoIds;
+
+  if (
+    !Array.isArray(photoIds) ||
+    photoIds.length === 0 ||
+    photoIds.some((id) => typeof id !== "string" || id.trim() === "")
+  ) {
+    return {
+      ok: false,
+      message: "photoIds must be a non-empty array of strings.",
+    };
+  }
+
+  return { ok: true, photoIds: [...new Set(photoIds)] };
+}
+
 export const photosRoute = new Hono();
 
 photosRoute.get("/", (context) => {
@@ -277,4 +302,84 @@ photosRoute.get("/:photoId", (context) => {
     ...photo,
     collectionIds: collectionIdsByPhotoId.get(photo.id) ?? [],
   });
+});
+
+photosRoute.delete("/:photoId", (context) => {
+  const photoId = context.req.param("photoId");
+
+  const photo = db
+    .select({ id: photos.id })
+    .from(photos)
+    .where(eq(photos.id, photoId))
+    .get();
+
+  if (!photo) {
+    return context.json(
+      {
+        error: {
+          code: "PHOTO_NOT_FOUND",
+          message: "Photo not found.",
+        },
+      },
+      404,
+    );
+  }
+
+  db.delete(photos).where(eq(photos.id, photoId)).run();
+
+  return context.body(null, 204);
+});
+
+photosRoute.post("/batch-delete", async (context) => {
+  let body: unknown;
+
+  try {
+    body = await context.req.json();
+  } catch {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_JSON",
+          message: "Request body must be valid JSON.",
+        },
+      },
+      400,
+    );
+  }
+
+  const parsed = parsePhotoIdsBody(body);
+
+  if (!parsed.ok) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: parsed.message,
+        },
+      },
+      400,
+    );
+  }
+
+  const existing = db
+    .select({ id: photos.id })
+    .from(photos)
+    .where(inArray(photos.id, parsed.photoIds))
+    .all();
+
+  if (existing.length !== parsed.photoIds.length) {
+    return context.json(
+      {
+        error: {
+          code: "PHOTO_NOT_FOUND",
+          message: "One or more photos were not found.",
+        },
+      },
+      404,
+    );
+  }
+
+  db.delete(photos).where(inArray(photos.id, parsed.photoIds)).run();
+
+  return context.body(null, 204);
 });
