@@ -23,14 +23,7 @@ const taiwanBounds: [[number, number], [number, number]] = [
 ];
 
 function getFeatureAreaId(feature: GeoJSON.Feature | undefined): string {
-  return (
-    feature?.properties?.name ||
-    feature?.properties?.NAME_2010 ||
-    feature?.properties?.COUNTYNAME ||
-    feature?.properties?.C_Name ||
-    feature?.properties?.county ||
-    ""
-  );
+  return feature?.properties?.county || "";
 }
 
 export function TaiwanMap() {
