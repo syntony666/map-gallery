@@ -166,35 +166,44 @@ export function useAreaPageController({
     dispatch({ type: "CLEAR_PHOTO_SELECTION" });
   }
 
-  function onConfirmCollectionPhotoSelection() {
+  async function onConfirmCollectionPhotoSelection() {
     const collection = sourceCollections?.find(
       (item) => item.id === areaState.selectedCollectionId,
     );
-    const photoIds = UIState.selectedPhotoIds;
+    const photoIds = [...UIState.selectedPhotoIds];
     const mode = UIState.collectionPhotoMode;
 
-    if (!collection || !mode || photoIds.size === 0) {
+    if (!collection || !mode || photoIds.length === 0) {
       dispatch({ type: "CANCEL_PHOTO_SELECTION" });
       return;
     }
 
-    if (mode === "add") {
-      // TODO: POST /api/v1/collection-photos
-      // await galleryStore.addPhotosToCollection({
-      //   collectionId: collection.id,
-      //   photoIds: [...photoIds],
-      // });
-    }
+    try {
+      if (mode === "add") {
+        await galleryStore.addPhotosToCollection({
+          collectionId: collection.id,
+          photoIds,
+        });
+      } else {
+        await galleryStore.removePhotosFromCollection({
+          collectionId: collection.id,
+          photoIds,
+        });
+      }
 
-    if (mode === "remove") {
-      // TODO: DELETE /api/v1/collection-photos/:collectionId/:photoId
-      // await galleryStore.removePhotosFromCollection({
-      //   collectionId: collection.id,
-      //   photoIds: [...photoIds],
-      // });
+      await refetchCollections();
+      areaState.refreshPhotos();
+      dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
+    } catch (reason) {
+      window.alert(
+        reason instanceof GalleryStoreError &&
+          reason.code === "PHOTO_AREA_MISMATCH"
+          ? "照片與相簿不屬於同一縣市"
+          : reason instanceof Error
+            ? reason.message
+            : "更新失敗",
+      );
     }
-
-    dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
   }
 
   function onRejectCollectionPhotoSelection() {

@@ -16,28 +16,25 @@ export function useAreaState(
     useState(initialCollectionId);
   const [sort, setSort] = useState<SortOption>("newest");
   const [visiblePhotos, setVisiblePhotos] = useState<Photo[] | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    galleryStore
-      .getPhotos({ areaId, keyword, sort })
-      .then((result) => {
-        if (cancelled) {
-          return;
-        }
-        setVisiblePhotos(
-          result.photos.filter((photo) => {
-            const isInSelectedCollection =
-              photo.collectionIds.includes(selectedCollectionId);
-            if (!selectedCollectionId) {
-              return true;
-            }
+    const effectiveCollectionId =
+      collectionPhotoMode === "add"
+        ? undefined
+        : selectedCollectionId || undefined;
 
-            if (collectionPhotoMode === "add") {
-              return !isInSelectedCollection;
-            }
-            return isInSelectedCollection;
-          }),
+    galleryStore
+      .getPhotos({ areaId, collectionId: effectiveCollectionId, keyword, sort })
+      .then((result) => {
+        if (cancelled) return;
+        setVisiblePhotos(
+          collectionPhotoMode === "add" && selectedCollectionId
+            ? result.photos.filter(
+                (photo) => !photo.collectionIds.includes(selectedCollectionId),
+              )
+            : result.photos,
         );
       })
       .catch(() => {
@@ -47,12 +44,23 @@ export function useAreaState(
     return () => {
       cancelled = true;
     };
-  }, [areaId, keyword, selectedCollectionId, sort, collectionPhotoMode]);
+  }, [
+    areaId,
+    keyword,
+    selectedCollectionId,
+    sort,
+    collectionPhotoMode,
+    refreshKey,
+  ]);
 
   function toggleCollection(collection: string) {
     setSelectedCollectionId((current) =>
       current === collection ? "" : collection,
     );
+  }
+
+  function refreshPhotos() {
+    setRefreshKey((key) => key + 1);
   }
 
   return {
@@ -64,5 +72,6 @@ export function useAreaState(
     setSelectedCollectionId,
     toggleCollection,
     visiblePhotos,
+    refreshPhotos,
   };
 }

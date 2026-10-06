@@ -3,6 +3,7 @@ import type {
   AreaListDataResponse,
   CollectionDataResponse,
   CollectionListDataResponse,
+  CollectionPhotosRequest,
   CreateCollectionRequest,
   ErrorCode,
   ErrorDataResponse,
@@ -225,6 +226,26 @@ async function deleteCollection(collectionId: string): Promise<void> {
   });
 }
 
+async function addPhotosToCollection(
+  payload: CollectionPhotosRequest,
+): Promise<Collection> {
+  const response = await requestData<CollectionDataResponse>(
+    `/api/v1/collection-photos`,
+    { method: "POST", body: payload },
+  );
+  return toCollection(response);
+}
+
+async function removePhotosFromCollection(
+  payload: CollectionPhotosRequest,
+): Promise<Collection> {
+  const response = await requestData<CollectionDataResponse>(
+    `/api/v1/collection-photos/batch-delete`,
+    { method: "POST", body: payload },
+  );
+  return toCollection(response);
+}
+
 export const galleryStore = {
   getAreas,
   getAreaById,
@@ -235,4 +256,6 @@ export const galleryStore = {
   createCollection,
   updateCollection,
   deleteCollection,
+  addPhotosToCollection,
+  removePhotosFromCollection,
 };
