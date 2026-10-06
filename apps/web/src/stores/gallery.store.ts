@@ -6,12 +6,14 @@ import type {
   CollectionListDataResponse,
   CollectionPhotosRequest,
   CreateCollectionRequest,
+  CreatePhotoRequest,
   ErrorCode,
   ErrorDataResponse,
   PhotoDataResponse,
   PhotoListDataResponse,
   UpdateAreaContentRequest,
   UpdateCollectionRequest,
+  UpdatePhotoRequest,
 } from "@map-gallery/shared";
 
 import type {
@@ -203,6 +205,30 @@ async function deletePhotos(photoIds: string[]): Promise<void> {
   });
 }
 
+async function createPhoto(payload: CreatePhotoRequest): Promise<PhotoDetail> {
+  const response = await requestData<PhotoDataResponse>(`/api/v1/photos`, {
+    method: "POST",
+    body: payload,
+  });
+
+  return toPhotoDetail(response);
+}
+
+async function updatePhoto(
+  photoId: string,
+  payload: UpdatePhotoRequest,
+): Promise<PhotoDetail> {
+  const response = await requestData<PhotoDataResponse>(
+    `/api/v1/photos/${photoId}`,
+    {
+      method: "PATCH",
+      body: payload,
+    },
+  );
+
+  return toPhotoDetail(response);
+}
+
 async function createCollection(
   payload: CreateCollectionRequest,
 ): Promise<Collection> {
@@ -264,6 +290,8 @@ export const galleryStore = {
   getPhotoById,
   getPhotos,
   deletePhotos,
+  createPhoto,
+  updatePhoto,
   updateAreaContent,
   createCollection,
   updateCollection,

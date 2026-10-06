@@ -48,9 +48,8 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
           id: "manage-photo-detail",
           label: "",
           icon: "bi-pencil-square",
-          onClick: () => {
-            alert("編輯模式未實作");
-          },
+          onClick: () =>
+            navigate(`/area/${photo.areaId}/photo/${photo.id}/edit`),
         },
       ],
     },
