@@ -2,41 +2,29 @@ import { useState } from "react";
 import type { Area } from "../types/gallery.type";
 
 export function useAreaEditor(area: Area | null) {
-  const [draftArea, setDraftArea] = useState<Area | null>(null);
+  const [draftDescription, setDraftDescription] = useState<string | null>(
+    null,
+  );
 
   function startEditing() {
     if (!area) return;
-    setDraftArea(structuredClone(area));
+    setDraftDescription(area.description ?? "");
   }
 
-  function cancelEditing() {
-    setDraftArea(null);
+  function discardDraft() {
+    setDraftDescription(null);
   }
 
   function updateDescription(description: string) {
-    setDraftArea((current) =>
-      current
-        ? {
-            ...current,
-            description,
-          }
-        : current,
+    setDraftDescription((current) =>
+      current === null ? current : description,
     );
   }
 
-  function saveChanges() {
-    if (!draftArea) {
-      return;
-    }
-
-    setDraftArea(null);
-  }
-
   return {
-    draftArea,
+    draftDescription,
     startEditing,
-    cancelEditing,
+    discardDraft,
     updateDescription,
-    saveChanges,
   };
 }

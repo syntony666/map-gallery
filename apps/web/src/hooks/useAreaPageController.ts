@@ -70,11 +70,6 @@ export function useAreaPageController({
     };
   }, [areaId, refetchCollections]);
 
-  const displayedArea =
-    UIState.mode !== "browse" && editor.draftArea
-      ? editor.draftArea
-      : sourceArea;
-
   const areaState = useAreaState(
     areaId,
     initialCollectionId,
@@ -106,20 +101,19 @@ export function useAreaPageController({
   }
 
   function startCollectionEdit() {
-    editor.startEditing();
     dispatch({ type: "START_COLLECTION_EDIT" });
   }
 
   async function saveEdit() {
-    const draft = editor.draftArea;
+    const draftDescription = editor.draftDescription;
 
-    if (!draft) {
+    if (draftDescription === null) {
       return;
     }
 
     try {
       await galleryStore.updateAreaContent(areaId, {
-        description: draft.description ?? null,
+        description: draftDescription,
       });
       setSourceArea(await galleryStore.getAreaById(areaId));
     } catch (reason) {
@@ -129,19 +123,19 @@ export function useAreaPageController({
       return;
     }
 
-    editor.saveChanges();
+    editor.discardDraft();
     resetPageUI();
     dispatch({ type: "SAVE_EDIT" });
   }
 
   function cancelEdit() {
-    editor.cancelEditing();
+    editor.discardDraft();
     resetPageUI();
     dispatch({ type: "CANCEL_EDIT" });
   }
 
   function exitEdit() {
-    editor.cancelEditing();
+    editor.discardDraft();
     resetPageUI();
     dispatch({ type: "EXIT_EDIT" });
   }
@@ -353,10 +347,8 @@ export function useAreaPageController({
   return {
     error,
 
-    area: {
-      displayed: displayedArea,
-      draft: editor.draftArea,
-    },
+    area: sourceArea,
+    draftDescription: editor.draftDescription,
 
     collections: sourceCollections,
 

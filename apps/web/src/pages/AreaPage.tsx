@@ -40,7 +40,7 @@ type AreaContentProps = {
 };
 
 function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
-  const { error, area, collections, filters, UI, actions } =
+  const { error, area, draftDescription, collections, filters, UI, actions } =
     useAreaPageController({
       areaId,
       initialCollectionId,
@@ -57,7 +57,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   }
 
-  if (!area.displayed) {
+  if (!area) {
     return (
       <div>
         <TitleBarContent areaName="" />
@@ -70,11 +70,11 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     <main className="grid gap-4">
       {/* 標題列 */}
       <TitleBarContent
-        areaName={area.displayed.name}
+        areaName={area.name}
         description={
           UI.isAreaEditMode
             ? "對於這個地方，你想說..."
-            : area.displayed.description
+            : area.description
         }
         isEditMode={UI.isEditMode}
         isCollectionEditMode={UI.isCollectionEditMode}
@@ -82,10 +82,10 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         action={actions.titleBar}
       />
 
-      {UI.isAreaEditMode && area.draft ? (
+      {UI.isAreaEditMode && draftDescription !== null ? (
         /* 說明編輯區 編輯時相簿列隱藏 */
         <textarea
-          value={area.draft.description ?? ""}
+          value={draftDescription}
           onChange={(event) => actions.updateDescription(event.target.value)}
           rows={3}
           autoFocus
@@ -146,8 +146,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             photoCount={filters.visiblePhotos.length}
             showActions={!UI.isEditMode}
             action={{
-              onAddPhoto: () =>
-                navigate(`/area/${area.displayed?.id}/photo/new`),
+              onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
               onDeletePhoto: actions.startPhotoDeleteSelect,
             }}
           />
@@ -163,7 +162,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
 
       {!(filters.visiblePhotos?.length === 0) && !!filters.visiblePhotos && (
         <PhotoGrid
-          areaId={area.displayed.id}
+          areaId={area.id}
           photos={filters.visiblePhotos}
           isSelectionMode={!!UI.isPhotoSelectMode}
           selectedPhotoIds={UI.selectedPhotoIds}
