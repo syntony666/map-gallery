@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
@@ -135,6 +136,18 @@ function getPhotoDetail(photoId: string) {
     ...photo,
     collections: photoCollectionRows,
   };
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === "string";
+}
+
+function isValidDateString(value: string): boolean {
+  return !Number.isNaN(new Date(value).getTime());
 }
 
 export const photosRoute = new Hono();
@@ -390,4 +403,300 @@ photosRoute.post("/batch-delete", async (context) => {
   db.delete(photos).where(inArray(photos.id, parsed.photoIds)).run();
 
   return context.body(null, 204);
+});
+
+photosRoute.post("/", async (context) => {
+  let body: unknown;
+
+  try {
+    body = await context.req.json();
+  } catch {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_JSON",
+          message: "Request body must be valid JSON.",
+        },
+      },
+      400,
+    );
+  }
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "Request body must be a JSON object.",
+        },
+      },
+      400,
+    );
+  }
+
+  const payload = body as Record<string, unknown>;
+  const { areaId, title, image, takenAt, summary, description } = payload;
+
+  if (!isNonEmptyString(areaId)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "areaId must be a non-empty string.",
+        },
+      },
+      400,
+    );
+  }
+
+  if (!isNonEmptyString(title)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "title must be a non-empty string.",
+        },
+      },
+      400,
+    );
+  }
+
+  if (!isNonEmptyString(image)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "image must be a non-empty string.",
+        },
+      },
+      400,
+    );
+  }
+
+  if (!isNonEmptyString(takenAt) || !isValidDateString(takenAt)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "takenAt must be a valid date string.",
+        },
+      },
+      400,
+    );
+  }
+
+  if (summary !== undefined && !isNullableString(summary)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "summary must be a string or null.",
+        },
+      },
+      400,
+    );
+  }
+
+  if (description !== undefined && !isNullableString(description)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "description must be a string or null.",
+        },
+      },
+      400,
+    );
+  }
+
+  const area = db
+    .select({ id: areas.id })
+    .from(areas)
+    .where(eq(areas.id, areaId))
+    .get();
+
+  if (!area) {
+    return context.json(
+      {
+        error: {
+          code: "AREA_NOT_FOUND",
+          message: "Area not found.",
+        },
+      },
+      404,
+    );
+  }
+
+  const id = randomUUID();
+  const now = new Date().toISOString();
+
+  db.insert(photos)
+    .values({
+      id,
+      areaId,
+      title: title.trim(),
+      image: image.trim(),
+      takenAt: new Date(takenAt).toISOString(),
+      summary: summary ?? null,
+      description: description ?? null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .run();
+
+  return context.json(getPhotoDetail(id), 201);
+});
+
+photosRoute.patch("/:photoId", async (context) => {
+  const photoId = context.req.param("photoId");
+
+  const photo = db
+    .select({ id: photos.id })
+    .from(photos)
+    .where(eq(photos.id, photoId))
+    .get();
+
+  if (!photo) {
+    return context.json(
+      {
+        error: {
+          code: "PHOTO_NOT_FOUND",
+          message: "Photo not found.",
+        },
+      },
+      404,
+    );
+  }
+
+  let body: unknown;
+
+  try {
+    body = await context.req.json();
+  } catch {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_JSON",
+          message: "Request body must be valid JSON.",
+        },
+      },
+      400,
+    );
+  }
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "Request body must be a JSON object.",
+        },
+      },
+      400,
+    );
+  }
+
+  const payload = body as Record<string, unknown>;
+  const updates: Partial<typeof photos.$inferInsert> = {};
+
+  if (payload.title !== undefined) {
+    if (!isNonEmptyString(payload.title)) {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "title must be a non-empty string.",
+          },
+        },
+        400,
+      );
+    }
+
+    updates.title = payload.title.trim();
+  }
+
+  if (payload.image !== undefined) {
+    if (!isNonEmptyString(payload.image)) {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "image must be a non-empty string.",
+          },
+        },
+        400,
+      );
+    }
+
+    updates.image = payload.image.trim();
+  }
+
+  if (payload.takenAt !== undefined) {
+    if (
+      !isNonEmptyString(payload.takenAt) ||
+      !isValidDateString(payload.takenAt)
+    ) {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "takenAt must be a valid date string.",
+          },
+        },
+        400,
+      );
+    }
+
+    updates.takenAt = new Date(payload.takenAt).toISOString();
+  }
+
+  if (payload.summary !== undefined) {
+    if (!isNullableString(payload.summary)) {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "summary must be a string or null.",
+          },
+        },
+        400,
+      );
+    }
+
+    updates.summary = payload.summary;
+  }
+
+  if (payload.description !== undefined) {
+    if (!isNullableString(payload.description)) {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "description must be a string or null.",
+          },
+        },
+        400,
+      );
+    }
+
+    updates.description = payload.description;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "At least one updatable field is required.",
+        },
+      },
+      400,
+    );
+  }
+
+  updates.updatedAt = new Date().toISOString();
+
+  db.update(photos).set(updates).where(eq(photos.id, photoId)).run();
+
+  return context.json(getPhotoDetail(photoId));
 });

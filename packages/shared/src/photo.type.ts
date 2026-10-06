@@ -38,3 +38,20 @@ export type PhotoListDataResponse = {
 export type BatchDeletePhotosRequest = {
   photoIds: string[];
 };
+
+export type CreatePhotoRequest = {
+  areaId: string;
+  title: string;
+  image: string;
+  takenAt: string;
+  summary?: string | null;
+  description?: string | null;
+};
+
+export type UpdatePhotoRequest = {
+  title?: string;
+  image?: string;
+  takenAt?: string;
+  summary?: string | null;
+  description?: string | null;
+};
