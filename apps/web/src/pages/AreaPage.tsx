@@ -6,6 +6,7 @@ import { PhotoGrid } from "../components/area/PhotoGrid";
 import { TitleBar } from "../components/common/TitleBar";
 import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
+import { PhotoPagination } from "../components/area/PhotoPagination";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
 import type { ButtonActionGroup } from "../types/button.type";
 import type { TitleBarActions } from "../types/title-bar.type";
@@ -90,7 +91,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     return (
       <>
         <PhotoGridToolbar
-          photoCount={photos.length}
+          photoCount={filters.pagination?.total ?? photos.length}
           showActions={!UI.isEditMode}
           action={{
             onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
@@ -109,6 +110,14 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           }
           onTogglePhotoSelection={actions.togglePhotoSelection}
         />
+
+        {filters.pagination && filters.pagination.totalPages > 1 && (
+          <PhotoPagination
+            page={filters.page}
+            totalPages={filters.pagination.totalPages}
+            onPageChange={filters.setPage}
+          />
+        )}
       </>
     );
   };

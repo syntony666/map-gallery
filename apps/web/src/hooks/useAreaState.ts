@@ -17,6 +17,25 @@ export function useAreaState(
   const [sort, setSort] = useState<SortOption>("newest");
   const [visiblePhotos, setVisiblePhotos] = useState<Photo[] | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [pagination, setPagination] = useState<{
+    total: number;
+    totalPages: number;
+  } | null>(null);
+
+  const filterKey = [
+    areaId,
+    keyword,
+    sort,
+    selectedCollectionId,
+    collectionPhotoMode,
+  ].join("|");
+
+  const [pageState, setPageState] = useState({ key: "", page: 1 });
+  const page = pageState.key === filterKey ? pageState.page : 1;
+
+  function setPage(nextPage: number) {
+    setPageState({ key: filterKey, page: nextPage });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -26,7 +45,13 @@ export function useAreaState(
         : selectedCollectionId || undefined;
 
     galleryStore
-      .getPhotos({ areaId, collectionId: effectiveCollectionId, keyword, sort })
+      .getPhotos({
+        areaId,
+        collectionId: effectiveCollectionId,
+        keyword,
+        sort,
+        page,
+      })
       .then((result) => {
         if (cancelled) return;
         setVisiblePhotos(
@@ -36,10 +61,15 @@ export function useAreaState(
               )
             : result.photos,
         );
+        setPagination({
+          total: result.total,
+          totalPages: result.totalPages,
+        });
       })
       .catch(() => {
         if (cancelled) return;
         setVisiblePhotos([]);
+        setPagination(null);
       });
     return () => {
       cancelled = true;
@@ -51,6 +81,7 @@ export function useAreaState(
     sort,
     collectionPhotoMode,
     refreshKey,
+    page,
   ]);
 
   function toggleCollection(collection: string) {
@@ -73,5 +104,8 @@ export function useAreaState(
     toggleCollection,
     visiblePhotos,
     refreshPhotos,
+    page,
+    setPage,
+    pagination,
   };
 }
