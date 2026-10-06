@@ -66,6 +66,48 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   }
 
+  const renderPhotoSection = () => {
+    const photos = filters.visiblePhotos;
+
+    if (photos === null) {
+      return <EmptyState title="" description="載入中..." />;
+    }
+
+    if (photos.length === 0) {
+      return (
+        <EmptyState
+          title=""
+          description={
+            filters.keyword || filters.selectedCollectionId
+              ? "找不到符合條件的內容"
+              : "你來早了 這裡什麼都沒有"
+          }
+        />
+      );
+    }
+
+    return (
+      <>
+        <PhotoGridToolbar
+          photoCount={photos.length}
+          showActions={!UI.isEditMode}
+          action={{
+            onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
+            onDeletePhoto: actions.startPhotoDeleteSelect,
+          }}
+        />
+
+        <PhotoGrid
+          areaId={area.id}
+          photos={photos}
+          isSelectionMode={!!UI.isPhotoSelectMode}
+          selectedPhotoIds={UI.selectedPhotoIds}
+          onTogglePhotoSelection={actions.togglePhotoSelection}
+        />
+      </>
+    );
+  };
+
   return (
     <main className="grid gap-4">
       {/* 標題列 */}
@@ -132,41 +174,13 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       )}
 
       {/* 景點卡片區 */}
-      {filters.visiblePhotos?.length === 0 && (
-        <EmptyState title="" description="你來早了 這裡什麼都沒有" />
-      )}
-
-      {filters.visiblePhotos === null && (
-        <EmptyState title="" description="載入中..." />
-      )}
-
-      {!(filters.visiblePhotos?.length === 0) &&
-        filters.visiblePhotos !== null && (
-          <PhotoGridToolbar
-            photoCount={filters.visiblePhotos.length}
-            showActions={!UI.isEditMode}
-            action={{
-              onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
-              onDeletePhoto: actions.startPhotoDeleteSelect,
-            }}
-          />
-        )}
+      {renderPhotoSection()}
 
       {UI.isPhotoDeleteSelectMode && (
         <PhotoSelectionToolbar
           selectedCount={UI.selectedPhotoIds.size}
           onConfirmDelete={actions.confirmPhotoDelete}
           onCancel={actions.cancelPhotoDelete}
-        />
-      )}
-
-      {!(filters.visiblePhotos?.length === 0) && !!filters.visiblePhotos && (
-        <PhotoGrid
-          areaId={area.id}
-          photos={filters.visiblePhotos}
-          isSelectionMode={!!UI.isPhotoSelectMode}
-          selectedPhotoIds={UI.selectedPhotoIds}
-          onTogglePhotoSelection={actions.togglePhotoSelection}
         />
       )}
     </main>

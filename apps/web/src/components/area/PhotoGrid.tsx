@@ -1,5 +1,4 @@
 import type { Photo } from "../../types/gallery.type";
-import { EmptyState } from "../common/EmptyState";
 import { PhotoCard } from "./PhotoCard";
 
 export type PhotoGridProps = {
@@ -18,23 +17,17 @@ export function PhotoGrid({
   onTogglePhotoSelection,
 }: PhotoGridProps) {
   return (
-    <section>
-      {photos.length === 0 ? (
-        <EmptyState title="" description="找不到符合條件的內容" />
-      ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {photos.map((photo) => (
-            <PhotoCard
-              key={photo.id}
-              areaId={areaId}
-              photo={photo}
-              isSelectionMode={isSelectionMode}
-              isSelected={selectedPhotoIds.has(photo.id)}
-              onToggleSelection={() => onTogglePhotoSelection?.(photo.id)}
-            />
-          ))}
-        </div>
-      )}
+    <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      {photos.map((photo) => (
+        <PhotoCard
+          key={photo.id}
+          areaId={areaId}
+          photo={photo}
+          isSelectionMode={isSelectionMode}
+          isSelected={selectedPhotoIds.has(photo.id)}
+          onToggleSelection={() => onTogglePhotoSelection?.(photo.id)}
+        />
+      ))}
     </section>
   );
 }
