@@ -16,6 +16,7 @@ type TitleBarActions = {
   onEditCollection?: () => void;
   onCancelEdit?: () => void;
   onSaveEdit?: () => void;
+  onDoneEdit?: () => void;
 };
 
 export function useAreaPageController({
@@ -137,6 +138,12 @@ export function useAreaPageController({
     editor.cancelEditing();
     resetPageUI();
     dispatch({ type: "CANCEL_EDIT" });
+  }
+
+  function exitEdit() {
+    editor.cancelEditing();
+    resetPageUI();
+    dispatch({ type: "EXIT_EDIT" });
   }
 
   function onAddCollectionPhoto() {
@@ -331,6 +338,7 @@ export function useAreaPageController({
     onEditCollection: startCollectionEdit,
     onSaveEdit: saveEdit,
     onCancelEdit: cancelEdit,
+    onDoneEdit: exitEdit,
   };
 
   const collectionManageToolbarActions: CollectionManageToolbarAction = {

@@ -77,7 +77,8 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             : area.displayed.description
         }
         isEditMode={UI.isEditMode}
-        showActions={!UI.isPhotoDeleteSelectMode}
+        isCollectionEditMode={UI.isCollectionEditMode}
+        showActions={!UI.isPhotoSelectMode}
         action={actions.titleBar}
       />
 
@@ -98,7 +99,9 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           collections={collections}
           selectedCollectionId={filters.selectedCollectionId}
           onSelect={filters.toggleCollection}
-          isEditMode={UI.isCollectionEditMode}
+          isEditMode={
+            UI.isCollectionEditMode && !UI.isCollectionPhotoSelectMode
+          }
           onAdd={actions.onCollectionCreate}
         />
       )}
@@ -176,18 +179,21 @@ type TitleBarActions = {
   onEditCollection?: () => void;
   onCancelEdit?: () => void;
   onSaveEdit?: () => void;
+  onDoneEdit?: () => void;
 };
 
 function TitleBarContent({
   areaName,
   description,
   isEditMode = false,
+  isCollectionEditMode = false,
   showActions = true,
   action,
 }: {
   areaName: string;
   description?: string;
   isEditMode?: boolean;
+  isCollectionEditMode?: boolean;
   showActions?: boolean;
   action?: TitleBarActions;
 }) {
@@ -246,12 +252,29 @@ function TitleBarContent({
     },
   ];
 
+  const collectionEditButtons: ButtonActionGroup[] = [
+    {
+      id: "title-collection-edit",
+      buttons: [
+        {
+          id: "done",
+          label: "完成",
+          icon: "bi-check-lg text-emerald-700",
+          variant: "primary",
+          onClick: action.onDoneEdit ?? (() => alert("非預期操作")),
+        },
+      ],
+    },
+  ];
+
   const buttons =
     areaName.length === 0 || !showActions
       ? []
-      : isEditMode
-        ? editButtons
-        : browseButtons;
+      : !isEditMode
+        ? browseButtons
+        : isCollectionEditMode
+          ? collectionEditButtons
+          : editButtons;
 
   return (
     <TitleBar

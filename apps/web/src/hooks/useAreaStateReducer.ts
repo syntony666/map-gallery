@@ -136,6 +136,7 @@ export function areaPageReducer(
 
     case "SAVE_EDIT":
     case "CANCEL_EDIT":
+    case "EXIT_EDIT":
       if (state.mode === "browse") return state;
 
       return createBrowseState();
