@@ -4,19 +4,12 @@ import { useAreaEditor } from "./useAreaEditor";
 import { useAreaState } from "./useAreaState";
 import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
 import type { Area, Collection } from "../types/gallery.type";
+import type { TitleBarActions } from "../types/title-bar.type";
 import { galleryStore, GalleryStoreError } from "../stores/gallery.store";
 
 type UseAreaPageControllerOptions = {
   areaId: string;
   initialCollectionId?: string;
-};
-
-type TitleBarActions = {
-  onEditArea?: () => void;
-  onEditCollection?: () => void;
-  onCancelEdit?: () => void;
-  onSaveEdit?: () => void;
-  onDoneEdit?: () => void;
 };
 
 export function useAreaPageController({

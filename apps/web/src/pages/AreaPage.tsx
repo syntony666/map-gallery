@@ -8,6 +8,7 @@ import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
 import type { ButtonActionGroup } from "../types/button.type";
+import type { TitleBarActions } from "../types/title-bar.type";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 
 export function AreaPage() {
@@ -186,14 +187,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     </main>
   );
 }
-
-type TitleBarActions = {
-  onEditArea?: () => void;
-  onEditCollection?: () => void;
-  onCancelEdit?: () => void;
-  onSaveEdit?: () => void;
-  onDoneEdit?: () => void;
-};
 
 function TitleBarContent({
   areaName,
