@@ -41,3 +41,6 @@ apps/web/dist
 
 # TypeScript
 *.tsbuildinfo
+
+# Local deploy scripts (not pushed)
+scripts/
