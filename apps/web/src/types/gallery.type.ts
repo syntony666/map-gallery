@@ -36,10 +36,6 @@ export type GetPhotosQuery = {
   limit?: number;
 };
 
-export type GetCollectionsQuery = {
-  areaId: string;
-};
-
 export type CollectionPhotoMode = "add" | "remove" | null;
 
 export type SortOption = "newest" | "oldest" | "title";

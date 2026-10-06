@@ -1,5 +1,3 @@
-export type PageMode = "areaEdit" | "collectionEdit" | "editPhoto" | "browse";
-
 export type TitleBarActions = {
   onEditArea?: () => void;
   onEditCollection?: () => void;

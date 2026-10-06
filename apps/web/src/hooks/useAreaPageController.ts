@@ -156,10 +156,6 @@ export function useAreaPageController({
     });
   }
 
-  function clearPhotoSelection() {
-    dispatch({ type: "CLEAR_PHOTO_SELECTION" });
-  }
-
   async function onConfirmCollectionPhotoSelection() {
     const collection = sourceCollections?.find(
       (item) => item.id === areaState.selectedCollectionId,
@@ -370,7 +366,6 @@ export function useAreaPageController({
       updateDescription: editor.updateDescription,
       onCollectionCreate,
       togglePhotoSelection,
-      clearPhotoSelection,
       startPhotoDeleteSelect,
       confirmPhotoDelete,
       cancelPhotoDelete,

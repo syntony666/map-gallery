@@ -22,7 +22,6 @@ export type AreaPageUIAction =
     }
   | { type: "START_PHOTO_DELETE_SELECT" }
   | { type: "TOGGLE_PHOTO_SELECTION"; photoId: string }
-  | { type: "CLEAR_PHOTO_SELECTION" }
   | { type: "CONFIRM_PHOTO_SELECTION" }
   | { type: "CANCEL_PHOTO_SELECTION" }
   | { type: "CONFIRM_PHOTO_DELETE" }
@@ -108,19 +107,6 @@ export function areaPageReducer(
         selectedPhotoIds,
       };
     }
-
-    case "CLEAR_PHOTO_SELECTION":
-      if (
-        state.mode !== "collectionPhotoSelect" &&
-        state.mode !== "photoDeleteSelect"
-      ) {
-        return state;
-      }
-
-      return {
-        ...state,
-        selectedPhotoIds: new Set(),
-      };
 
     case "CONFIRM_PHOTO_SELECTION":
     case "CANCEL_PHOTO_SELECTION":
