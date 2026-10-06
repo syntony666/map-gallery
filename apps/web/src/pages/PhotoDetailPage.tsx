@@ -5,6 +5,7 @@ import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
 import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoDetailPageController } from "../hooks/usePhotoDetailPageController";
+import { useViewMode } from "../hooks/useViewMode";
 
 export function PhotoDetailPage() {
   const { areaId, photoId } = useParams();
@@ -39,6 +40,7 @@ type PhotoDetailContentProps = {
 
 function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
   const navigate = useNavigate();
+  const { readonly } = useViewMode();
 
   const titleButtons: ButtonActionGroup[] = [
     {
@@ -58,7 +60,7 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
     <main>
       <TitleBar
         areaName={!isError && area ? area.name : "回到地圖"}
-        buttonGroup={!isError ? titleButtons : []}
+        buttonGroup={!isError && !readonly ? titleButtons : []}
         mobileActions={{ mobileMode: "inline" }}
         onBack={() => navigate(!isError && area ? `/area/${area.id}` : "/")}
       />

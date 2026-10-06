@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./main.css";
 import { RouterProvider } from "react-router";
 import { router } from "./router";
+import { ViewModeProvider } from "./components/common/ViewModeProvider";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -12,7 +13,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     ></link>
     <main className="min-h-screen bg-stone-100 text-stone-800">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
-        <RouterProvider router={router} />
+        <ViewModeProvider>
+          <RouterProvider router={router} />
+        </ViewModeProvider>
       </div>
     </main>
   </React.StrictMode>,

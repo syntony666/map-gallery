@@ -1,11 +1,12 @@
 import { useRef } from "react";
 import type { FormEvent } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import { TitleBar } from "../components/common/TitleBar";
 import { EmptyState } from "../components/common/EmptyState";
 import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEditor";
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
+import { useViewMode } from "../hooks/useViewMode";
 
 export function PhotoEditPage() {
   const { areaId, photoId } = useParams();
@@ -25,6 +26,12 @@ export function PhotoEditPage() {
     createCollection,
     submit,
   } = usePhotoEditPageController({ areaId, photoId });
+
+  const { readonly } = useViewMode();
+
+  if (readonly) {
+    return <Navigate to={areaId ? `/area/${areaId}` : "/"} replace />;
+  }
 
   if (error) {
     return (

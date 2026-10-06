@@ -11,6 +11,7 @@ import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar"
 import type { ButtonActionGroup } from "../types/button.type";
 import type { TitleBarActions } from "../types/title-bar.type";
 import { useAreaPageController } from "../hooks/useAreaPageController";
+import { useViewMode } from "../hooks/useViewMode";
 
 export function AreaPage() {
   const { areaId } = useParams();
@@ -48,6 +49,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       initialCollectionId,
     });
 
+  const { readonly } = useViewMode();
   const navigate = useNavigate();
 
   if (error) {
@@ -92,7 +94,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       <>
         <PhotoGridToolbar
           photoCount={filters.pagination?.total ?? photos.length}
-          showActions={!UI.isEditMode}
+          showActions={!UI.isEditMode && !readonly}
           action={{
             onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
             onDeletePhoto: actions.startPhotoDeleteSelect,
@@ -135,7 +137,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         isEditMode={UI.isEditMode}
         isCollectionEditMode={UI.isCollectionEditMode}
         showActions={!UI.isPhotoSelectMode}
-        action={actions.titleBar}
+        action={readonly ? undefined : actions.titleBar}
       />
 
       {UI.isAreaEditMode && draftDescription !== null ? (
