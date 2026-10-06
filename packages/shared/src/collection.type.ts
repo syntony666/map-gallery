@@ -14,3 +14,8 @@ export type CollectionListDataResponse = {
 
 export type CreateCollectionRequest = { areaId: string; name: string };
 export type UpdateCollectionRequest = { name: string };
+
+export type CollectionPhotosRequest = {
+  collectionId: string;
+  photoIds: string[];
+};

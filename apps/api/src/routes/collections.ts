@@ -6,7 +6,7 @@ import { areas, collections, photoCollections, photos } from "../db/schema";
 
 export const collectionsRoute = new Hono();
 
-const collectionListSelection = {
+export const collectionListSelection = {
   id: collections.id,
   areaId: collections.areaId,
   name: collections.name,
