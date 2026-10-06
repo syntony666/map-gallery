@@ -2,18 +2,18 @@ import type { Photo } from "../../types/gallery.type";
 import { PhotoCard } from "./PhotoCard";
 
 export type PhotoGridProps = {
-  areaId: string;
   photos: Photo[];
   isSelectionMode?: boolean;
   selectedPhotoIds?: ReadonlySet<string>;
+  onOpenPhoto?: (photoId: string) => void;
   onTogglePhotoSelection?: (photoId: string) => void;
 };
 
 export function PhotoGrid({
-  areaId,
   photos,
   isSelectionMode = false,
   selectedPhotoIds = new Set(),
+  onOpenPhoto,
   onTogglePhotoSelection,
 }: PhotoGridProps) {
   return (
@@ -21,10 +21,10 @@ export function PhotoGrid({
       {photos.map((photo) => (
         <PhotoCard
           key={photo.id}
-          areaId={areaId}
           photo={photo}
           isSelectionMode={isSelectionMode}
           isSelected={selectedPhotoIds.has(photo.id)}
+          onOpen={onOpenPhoto ? () => onOpenPhoto(photo.id) : undefined}
           onToggleSelection={() => onTogglePhotoSelection?.(photo.id)}
         />
       ))}

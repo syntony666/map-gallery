@@ -99,10 +99,14 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         />
 
         <PhotoGrid
-          areaId={area.id}
           photos={photos}
           isSelectionMode={!!UI.isPhotoSelectMode}
           selectedPhotoIds={UI.selectedPhotoIds}
+          onOpenPhoto={
+            UI.isEditMode
+              ? undefined
+              : (photoId) => navigate(`/area/${area.id}/photo/${photoId}`)
+          }
           onTogglePhotoSelection={actions.togglePhotoSelection}
         />
       </>

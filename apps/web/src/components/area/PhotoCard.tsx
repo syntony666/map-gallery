@@ -1,42 +1,43 @@
-import { useNavigate } from "react-router";
 import type { Photo } from "../../types/gallery.type";
 
 type PhotoCardProps = {
-  areaId: string;
   photo: Photo;
   isSelectionMode: boolean;
   isSelected?: boolean;
+  onOpen?: () => void;
   onToggleSelection?: () => void;
 };
 
 export function PhotoCard({
-  areaId,
   photo,
   isSelectionMode = false,
   isSelected = false,
+  onOpen,
   onToggleSelection,
 }: PhotoCardProps) {
-  const navigate = useNavigate();
   function handleClick() {
     if (isSelectionMode) {
       onToggleSelection?.();
       return;
     }
 
-    navigate(`/area/${areaId}/photo/${photo.id}`);
+    onOpen?.();
+  }
+
+  let interactionClass = "";
+  if (isSelectionMode) {
+    interactionClass = isSelected
+      ? "ring-2 ring-stone-700 ring-offset-2"
+      : "hover:ring-2 hover:ring-stone-300";
+  } else if (onOpen) {
+    interactionClass = "hover:-translate-y-0.5 hover:shadow-md";
   }
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      className={`relative overflow-hidden rounded-xl bg-white text-left shadow-sm transition ${
-        isSelectionMode
-          ? isSelected
-            ? "ring-2 ring-stone-700 ring-offset-2"
-            : "hover:ring-2 hover:ring-stone-300"
-          : "hover:-translate-y-0.5 hover:shadow-md"
-      }`}
+      className={`relative overflow-hidden rounded-xl bg-white text-left shadow-sm transition ${interactionClass}`}
     >
       {isSelectionMode && (
         <span
