@@ -1,73 +1,45 @@
-# React + TypeScript + Vite
+# Map Gallery
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![License](https://img.shields.io/github/license/syntony666/map-gallery)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Hono](https://img.shields.io/badge/Hono-4-E36002?logo=hono&logoColor=white)](https://hono.dev)
 
-Currently, two official plugins are available:
+A personal photo gallery organized by geography — photos are grouped by area on an interactive map of Taiwan, with collections, a paginated photo grid, and photo management. npm workspaces monorepo: `apps/web` is a React SPA, `apps/api` is a small REST API backed by SQLite, `packages/shared` carries the shared types.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Interactive Taiwan map (Leaflet) — hover labels and popups to browse areas
+- Photo grid per area with pagination, batch selection, and manage toolbars
+- Collections — group photos into named sets within each area (many-to-many)
+- Photo detail viewer and editor with collection tagging
+- Area covers and descriptions
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the ESLint configuration
+- **Web** — React 19, Vite, Tailwind CSS 4, React Router, Leaflet / react-leaflet
+- **API** — Hono on Node.js, Drizzle ORM, better-sqlite3
+- **Repo** — npm workspaces, shared TypeScript types in `packages/shared`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Usage
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+npm install         # install workspaces
+npm run init        # migrate DB + seed areas + build all workspaces
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+npm run dev         # web on :5173 (proxies /api) + api on :8787
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# production-style: API serves the built SPA on :8787
+npm run prepare:production && npm start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Other commands:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build          # build all workspaces
+npm run typecheck      # typecheck all workspaces
+npm run db:seed:dev    # load demo photos/collections for local dev
+npm run lint --workspace=@map-gallery/web
 ```
+
+SQLite data lives in `apps/api/data/`; migrations are managed by drizzle-kit (`apps/api/drizzle/`).
