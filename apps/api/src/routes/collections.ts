@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
 import { areas, collections, photoCollections, photos } from "../db/schema";
@@ -11,16 +11,28 @@ export const collectionListSelection = {
   areaId: collections.areaId,
   name: collections.name,
   coverImage: sql<string | null>`
-  (
-    SELECT p.image
-    FROM photo_collections AS pc
-    INNER JOIN photos AS p
-      ON p.id = pc.photo_id
-    WHERE pc.collection_id = collections.id
-    ORDER BY p.taken_at DESC, p.id ASC
-    LIMIT 1
+  COALESCE(
+    (
+      SELECT p.image
+      FROM photo_collections AS pc
+      INNER JOIN photos AS p
+        ON p.id = pc.photo_id
+      WHERE pc.collection_id = collections.id
+        AND pc.photo_id = collections.cover_photo_id
+      LIMIT 1
+    ),
+    (
+      SELECT p.image
+      FROM photo_collections AS pc
+      INNER JOIN photos AS p
+        ON p.id = pc.photo_id
+      WHERE pc.collection_id = collections.id
+      ORDER BY p.taken_at DESC, p.id ASC
+      LIMIT 1
+    )
   )
 `,
+  coverPhotoId: collections.coverPhotoId,
   photoCount: sql<number>`
   (
     SELECT COUNT(*)
@@ -247,9 +259,24 @@ collectionsRoute.patch("/:collectionId", async (context) => {
   }
 
   const payload = body as Record<string, unknown>;
+  const hasName = "name" in payload;
+  const hasCoverPhotoId = "coverPhotoId" in payload;
+
+  if (!hasName && !hasCoverPhotoId) {
+    return context.json(
+      {
+        error: {
+          code: "INVALID_BODY",
+          message: "At least one of name or coverPhotoId is required.",
+        },
+      },
+      400,
+    );
+  }
+
   const name = payload.name;
 
-  if (typeof name !== "string" || name.trim() === "") {
+  if (hasName && (typeof name !== "string" || name.trim() === "")) {
     return context.json(
       {
         error: {
@@ -261,9 +288,75 @@ collectionsRoute.patch("/:collectionId", async (context) => {
     );
   }
 
+  const coverPhotoId = payload.coverPhotoId;
+  let nextCoverPhotoId: string | null = null;
+
+  if (hasCoverPhotoId) {
+    if (coverPhotoId !== null && typeof coverPhotoId !== "string") {
+      return context.json(
+        {
+          error: {
+            code: "INVALID_BODY",
+            message: "coverPhotoId must be a string or null.",
+          },
+        },
+        400,
+      );
+    }
+
+    if (typeof coverPhotoId === "string") {
+      const photo = db
+        .select({ id: photos.id })
+        .from(photos)
+        .where(eq(photos.id, coverPhotoId))
+        .get();
+
+      if (!photo) {
+        return context.json(
+          {
+            error: {
+              code: "PHOTO_NOT_FOUND",
+              message: "Photo not found.",
+            },
+          },
+          404,
+        );
+      }
+
+      const membership = db
+        .select({ photoId: photoCollections.photoId })
+        .from(photoCollections)
+        .where(
+          and(
+            eq(photoCollections.collectionId, collectionId),
+            eq(photoCollections.photoId, coverPhotoId),
+          ),
+        )
+        .get();
+
+      if (!membership) {
+        return context.json(
+          {
+            error: {
+              code: "PHOTO_COLLECTION_NOT_FOUND",
+              message: "Cover photo must belong to the collection.",
+            },
+          },
+          422,
+        );
+      }
+
+      nextCoverPhotoId = coverPhotoId;
+    }
+  }
+
   try {
     db.update(collections)
-      .set({ name: name.trim(), updatedAt: new Date().toISOString() })
+      .set({
+        ...(hasName ? { name: (name as string).trim() } : {}),
+        ...(hasCoverPhotoId ? { coverPhotoId: nextCoverPhotoId } : {}),
+        updatedAt: new Date().toISOString(),
+      })
       .where(eq(collections.id, collectionId))
       .run();
   } catch (error) {

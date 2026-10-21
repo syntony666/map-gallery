@@ -59,6 +59,10 @@ export const collections = sqliteTable(
         onUpdate: "cascade",
       }),
     name: text("name").notNull(),
+    coverPhotoId: text("cover_photo_id").references(() => photos.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
     createdAt: text("created_at").notNull(),
     updatedAt: text("updated_at").notNull(),
   },
