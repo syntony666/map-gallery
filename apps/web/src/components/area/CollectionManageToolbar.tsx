@@ -7,6 +7,7 @@ export type CollectionManageToolbarAction = {
   onCollectionRemove: (collection: Collection) => void;
   onAddCollectionPhoto: () => void;
   onRemoveCollectionPhoto: () => void;
+  onSetCollectionCover: () => void;
   onConfirmCollectionPhotoSelection: () => void;
   onRejectCollectionPhotoSelection: () => void;
 };
@@ -62,6 +63,13 @@ export function CollectionManageToolbar({
               label: "移除照片",
               icon: "bi-dash-square",
               onClick: () => action.onRemoveCollectionPhoto(),
+            },
+            {
+              id: `${collection.id}-set-cover`,
+              label: "設定封面",
+              icon: "bi-star",
+              disabled: collection.photoCount === 0,
+              onClick: () => action.onSetCollectionCover(),
             },
           ],
         },

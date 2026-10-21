@@ -105,6 +105,7 @@ function toCollection(collection: CollectionDataResponse): Collection {
     id: collection.id,
     name: collection.name,
     coverImage: collection.coverImage ?? undefined,
+    coverPhotoId: collection.coverPhotoId ?? undefined,
     photoCount: collection.photoCount,
   };
 }

@@ -94,6 +94,15 @@ export function areaPageReducer(
       )
         return state;
 
+      if (state.collectionPhotoMode === "cover") {
+        return {
+          ...state,
+          selectedPhotoIds: state.selectedPhotoIds.has(action.photoId)
+            ? new Set<string>()
+            : new Set([action.photoId]),
+        };
+      }
+
       const selectedPhotoIds = new Set(state.selectedPhotoIds);
 
       if (selectedPhotoIds.has(action.photoId)) {

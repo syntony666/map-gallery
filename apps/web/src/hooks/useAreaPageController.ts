@@ -149,6 +149,25 @@ export function useAreaPageController({
     });
   }
 
+  function onSetCollectionCover() {
+    areaState.setKeyword("");
+    dispatch({
+      type: "START_COLLECTION_PHOTO_SELECT",
+      collectionPhotoMode: "cover",
+    });
+
+    const collection = sourceCollections?.find(
+      (item) => item.id === areaState.selectedCollectionId,
+    );
+
+    if (collection?.coverPhotoId) {
+      dispatch({
+        type: "TOGGLE_PHOTO_SELECTION",
+        photoId: collection.coverPhotoId,
+      });
+    }
+  }
+
   function togglePhotoSelection(photoId: string) {
     dispatch({
       type: "TOGGLE_PHOTO_SELECTION",
@@ -174,10 +193,14 @@ export function useAreaPageController({
           collectionId: collection.id,
           photoIds,
         });
-      } else {
+      } else if (mode === "remove") {
         await galleryStore.removePhotosFromCollection({
           collectionId: collection.id,
           photoIds,
+        });
+      } else {
+        await galleryStore.updateCollection(collection.id, {
+          coverPhotoId: photoIds[0],
         });
       }
 
@@ -329,6 +352,7 @@ export function useAreaPageController({
     onCollectionRemove,
     onAddCollectionPhoto,
     onRemoveCollectionPhoto,
+    onSetCollectionCover,
     onConfirmCollectionPhotoSelection,
     onRejectCollectionPhotoSelection,
   };

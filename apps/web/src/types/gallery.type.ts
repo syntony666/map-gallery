@@ -25,6 +25,7 @@ export type Collection = {
   id: string;
   name: string;
   coverImage?: string;
+  coverPhotoId?: string;
   photoCount: number;
 };
 
@@ -37,6 +38,6 @@ export type GetPhotosQuery = {
   limit?: number;
 };
 
-export type CollectionPhotoMode = "add" | "remove" | null;
+export type CollectionPhotoMode = "add" | "remove" | "cover" | null;
 
 export type SortOption = "newest" | "oldest" | "title";
