@@ -15,6 +15,13 @@
       "when": 1792564632712,
       "tag": "0001_flawless_caretaker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794441600000,
+      "tag": "0002_merge_regions",
+      "breakpoints": true
     }
   ]
 }

@@ -25,28 +25,24 @@ export const areaSeedData = [
     name: "高雄市",
   },
 
-  // 三市
+  // 三市（市縣合併後以單一地圖區域呈現）
   {
     id: "keelung-city",
     name: "基隆市",
   },
   {
-    id: "hsinchu-city",
-    name: "新竹市",
+    id: "hsinchu-region",
+    name: "新竹",
   },
   {
-    id: "chiayi-city",
-    name: "嘉義市",
+    id: "chiayi-region",
+    name: "嘉義",
   },
 
-  // 十三縣
+  // 縣（離島無地圖區塊，不列入）
   {
     id: "yilan-county",
     name: "宜蘭縣",
-  },
-  {
-    id: "hsinchu-county",
-    name: "新竹縣",
   },
   {
     id: "miaoli-county",
@@ -65,10 +61,6 @@ export const areaSeedData = [
     name: "雲林縣",
   },
   {
-    id: "chiayi-county",
-    name: "嘉義縣",
-  },
-  {
     id: "pingtung-county",
     name: "屏東縣",
   },
@@ -79,18 +71,6 @@ export const areaSeedData = [
   {
     id: "taitung-county",
     name: "臺東縣",
-  },
-  {
-    id: "penghu-county",
-    name: "澎湖縣",
-  },
-  {
-    id: "kinmen-county",
-    name: "金門縣",
-  },
-  {
-    id: "lienchiang-county",
-    name: "連江縣",
   },
 ] as const;
 

@@ -50,12 +50,6 @@ export const areaContentSeedData: readonly AreaContentSeed[] = [
       "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=85",
     description: "高雄港灣、老街、藝術空間與城市日常照片集合。",
   },
-  {
-    areaId: "lienchiang-county",
-    coverImage:
-      "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1600&q=85",
-    description: "馬祖群島的戰地遺跡、石屋聚落、海岸與島嶼日常。",
-  },
 ];
 
 export const photoSeedData: readonly PhotoSeed[] = [
@@ -213,37 +207,6 @@ export const photoSeedData: readonly PhotoSeed[] = [
       "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1600&q=85",
     summary: "夜間燈光與大型公共空間。",
     description: "在傍晚與夜間記錄衛武營建築外觀、戶外廣場與活動人潮。",
-  },
-  {
-    id: "lienchiang-001",
-    areaId: "lienchiang-county",
-    title: "芹壁聚落",
-    takenAt: "2026-01-15T00:00:00.000Z",
-    image:
-      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=85",
-    summary: "花崗岩石屋與山海聚落。",
-    description: "以石屋階梯、狹窄巷道與海灣視角，記錄北竿芹壁聚落的獨特樣貌。",
-  },
-  {
-    id: "lienchiang-002",
-    areaId: "lienchiang-county",
-    title: "北海坑道",
-    takenAt: "2026-02-09T00:00:00.000Z",
-    image:
-      "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1600&q=85",
-    summary: "戰地坑道與水面倒影。",
-    description: "在坑道入口、石壁紋理與水道之間，保留馬祖戰地歷史的空間感。",
-  },
-  {
-    id: "lienchiang-003",
-    areaId: "lienchiang-county",
-    title: "東引燈塔",
-    takenAt: "2026-02-27T00:00:00.000Z",
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=85",
-    summary: "海崖、燈塔與東引海景。",
-    description:
-      "在海風強烈的岬角拍攝白色燈塔與開闊海面，保留離島旅行的空曠感。",
   },
 ];
 
