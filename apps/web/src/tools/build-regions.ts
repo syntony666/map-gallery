@@ -15,8 +15,9 @@ import { basename } from "node:path";
 type BBox = { minX: number; maxX: number; minY: number; maxY: number };
 type Region = { id: string; paths: string[] };
 
-const [sourcePath, outputPath = "src/data/taiwan-regions.ts"] =
-  process.argv.slice(2);
+const defaultOutput = new URL("../data/taiwan-regions.ts", import.meta.url)
+  .pathname;
+const [sourcePath, outputPath = defaultOutput] = process.argv.slice(2);
 
 if (!sourcePath) {
   console.error("usage: node apps/web/src/tools/build-regions.ts <source.svg> [out.ts]");
