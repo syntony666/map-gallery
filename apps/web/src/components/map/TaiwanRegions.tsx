@@ -22,6 +22,22 @@ export function TaiwanRegions({
 
   return (
     <g transform={shapes.transform || undefined}>
+      <defs>
+        {shapes.regions
+          .filter((region) => region.holes.length > 0)
+          .map((region) => (
+            <clipPath
+              key={region.id}
+              id={`map-region-clip-${region.id}`}
+              clipPathUnits="userSpaceOnUse"
+            >
+              <path d="M-500,-500 H2100 V2100 H-500 Z" clipRule="evenodd" />
+              {region.holes.map((d) => (
+                <path key={d} d={d} clipRule="evenodd" />
+              ))}
+            </clipPath>
+          ))}
+      </defs>
       {shapes.regions.map((region) => {
         const area = areaById.get(region.id);
         const isActive = selectedAreaId === region.id;
@@ -30,6 +46,11 @@ export function TaiwanRegions({
           <g
             key={region.id}
             id={region.id}
+            clipPath={
+              region.holes.length > 0
+                ? `url(#map-region-clip-${region.id})`
+                : undefined
+            }
             className={isActive ? "map-region is-active" : "map-region"}
             role="button"
             tabIndex={0}

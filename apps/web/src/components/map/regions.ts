@@ -1,6 +1,11 @@
 export type RegionShapes = {
   transform: string;
-  regions: { id: string; paths: string[] }[];
+  regions: {
+    id: string;
+    paths: string[];
+    /** path data of enclave regions to cut out of this region's highlight */
+    holes: string[];
+  }[];
 };
 
 type BBox = { minX: number; maxX: number; minY: number; maxY: number };
@@ -30,6 +35,24 @@ function bboxEquals(a: BBox, b: BBox, tolerance = 0.5) {
   );
 }
 
+function bboxContains(outer: BBox, inner: BBox, margin = 1) {
+  return (
+    inner.minX > outer.minX + margin &&
+    inner.maxX < outer.maxX - margin &&
+    inner.minY > outer.minY + margin &&
+    inner.maxY < outer.maxY - margin
+  );
+}
+
+function unionBBox(boxes: BBox[]): BBox {
+  return {
+    minX: Math.min(...boxes.map((b) => b.minX)),
+    maxX: Math.max(...boxes.map((b) => b.maxX)),
+    minY: Math.min(...boxes.map((b) => b.minY)),
+    maxY: Math.max(...boxes.map((b) => b.maxY)),
+  };
+}
+
 export function parseRegionsSvg(svgText: string): RegionShapes {
   const doc = new DOMParser().parseFromString(svgText, "image/svg+xml");
   const wrapper = doc.querySelector("svg > g");
@@ -46,7 +69,8 @@ export function parseRegionsSvg(svgText: string): RegionShapes {
     parsed.map((region) => [
       region.id,
       region.paths.reduce(
-        (best, path, i) => (bboxArea(path.bbox) > bboxArea(region.paths[best].bbox) ? i : best),
+        (best, path, i) =>
+          bboxArea(path.bbox) > bboxArea(region.paths[best].bbox) ? i : best,
         0,
       ),
     ]),
@@ -55,9 +79,8 @@ export function parseRegionsSvg(svgText: string): RegionShapes {
   // Enclave outlines drawn inside a neighbouring region (e.g. Taipei's ring
   // inside New Taipei) must not be painted when that neighbour is hovered:
   // drop any path that duplicates another region's main body.
-  const regions = parsed.map((region) => ({
-    id: region.id,
-    paths: region.paths
+  const regions = parsed.map((region) => {
+    const paths = region.paths
       .filter((path, i) => {
         if (i === largest.get(region.id)) {
           return true;
@@ -72,11 +95,35 @@ export function parseRegionsSvg(svgText: string): RegionShapes {
             ),
         );
       })
-      .map((path) => path.d),
-  }));
+      .map((path) => path.d);
+    const main = region.paths[largest.get(region.id) ?? 0];
+    return { id: region.id, paths, mainBBox: main?.bbox };
+  });
 
+  // A region whose bbox sits strictly inside another region's main body is an
+  // enclave (Taipei and Keelung inside New Taipei). The host's own outline
+  // still traces the enclave border, so its highlight needs the enclave cut
+  // out via clipPath.
   return {
     transform: wrapper?.getAttribute("transform") ?? "",
-    regions,
+    regions: regions.map((region) => ({
+      id: region.id,
+      paths: region.paths,
+      holes: region.mainBBox
+        ? regions
+            .filter(
+              (inner) =>
+                inner.id !== region.id &&
+                inner.paths.length > 0 &&
+                bboxContains(
+                  region.mainBBox,
+                  unionBBox(
+                    inner.paths.map((d) => pathBBox(d)),
+                  ),
+                ),
+            )
+            .flatMap((inner) => inner.paths)
+        : [],
+    })),
   };
 }
