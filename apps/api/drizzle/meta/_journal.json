@@ -22,6 +22,13 @@
       "when": 1794441600000,
       "tag": "0002_merge_regions",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794474000000,
+      "tag": "0003_rename_regions",
+      "breakpoints": true
     }
   ]
 }

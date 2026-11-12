@@ -32,11 +32,11 @@ export const areaSeedData = [
   },
   {
     id: "hsinchu-region",
-    name: "新竹",
+    name: "新竹縣市",
   },
   {
     id: "chiayi-region",
-    name: "嘉義",
+    name: "嘉義縣市",
   },
 
   // 縣（離島無地圖區塊，不列入）
