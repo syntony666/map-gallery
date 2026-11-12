@@ -50,13 +50,7 @@ export function TaiwanRegions({
                 fill="white"
               />
               {region.holes.map((d) => (
-                <path
-                  key={d}
-                  d={d}
-                  fill="black"
-                  stroke="black"
-                  strokeWidth={4}
-                />
+                <path key={d} d={d} fill="black" />
               ))}
             </mask>
           ))}
@@ -70,11 +64,6 @@ export function TaiwanRegions({
             key={region.id}
             id={region.id}
             clipPath={`url(#map-region-clip-${region.id})`}
-            mask={
-              region.holes.length > 0
-                ? `url(#map-region-mask-${region.id})`
-                : undefined
-            }
             className={isActive ? "map-region is-active" : "map-region"}
             role="button"
             tabIndex={0}
@@ -90,7 +79,36 @@ export function TaiwanRegions({
             }}
           >
             {region.paths.map((d) => (
-              <path key={d} d={d} />
+              <path
+                key={d}
+                d={d}
+                className="map-region__fill"
+                mask={
+                  region.holes.length > 0
+                    ? `url(#map-region-mask-${region.id})`
+                    : undefined
+                }
+              />
+            ))}
+            {region.paths.map((d) => (
+              <path
+                key={d}
+                d={d}
+                className="map-region__stroke"
+                mask={
+                  region.holes.length > 0
+                    ? `url(#map-region-mask-${region.id})`
+                    : undefined
+                }
+              />
+            ))}
+            {region.holes.map((d) => (
+              <path
+                key={d}
+                d={d}
+                className="map-region__stroke"
+                mask={`url(#map-region-mask-${region.id})`}
+              />
             ))}
           </g>
         );
