@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { galleryStore, GalleryStoreError } from "../stores/gallery.store";
+import { galleryStore } from "../stores/gallery.store";
+import { alertError } from "../utils/alert";
 import type { Area, Collection, PhotoDetail } from "../types/gallery.type";
 
 export type PhotoEditForm = {
@@ -129,14 +130,9 @@ export function usePhotoEditPageController({
 
       return created;
     } catch (reason) {
-      window.alert(
-        reason instanceof GalleryStoreError &&
-          reason.code === "COLLECTION_NAME_CONFLICT"
-          ? "已有相同名稱的相簿"
-          : reason instanceof Error
-            ? reason.message
-            : "新增失敗",
-      );
+      alertError(reason, "新增失敗", {
+        COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
+      });
       return null;
     }
   }
@@ -162,7 +158,7 @@ export function usePhotoEditPageController({
         ? await galleryStore.updatePhoto(photoId, payload)
         : await galleryStore.createPhoto({ areaId, ...payload });
     } catch (reason) {
-      window.alert(reason instanceof Error ? reason.message : "儲存失敗");
+      alertError(reason, "儲存失敗");
       return null;
     } finally {
       setIsSubmitting(false);

@@ -5,7 +5,8 @@ import { useAreaState } from "./useAreaState";
 import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
 import type { Area, Collection } from "../types/gallery.type";
 import type { TitleBarActions } from "../types/title-bar.type";
-import { galleryStore, GalleryStoreError } from "../stores/gallery.store";
+import { galleryStore } from "../stores/gallery.store";
+import { alertError } from "../utils/alert";
 
 type UseAreaPageControllerOptions = {
   areaId: string;
@@ -118,9 +119,7 @@ export function useAreaPageController({
       });
       setSourceArea(await galleryStore.getAreaById(areaId));
     } catch (reason) {
-      window.alert(
-        reason instanceof Error ? reason.message : "儲存失敗，請稍後再試",
-      );
+      alertError(reason, "儲存失敗，請稍後再試");
       return;
     }
 
@@ -216,14 +215,9 @@ export function useAreaPageController({
       areaState.refreshPhotos();
       dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
     } catch (reason) {
-      window.alert(
-        reason instanceof GalleryStoreError &&
-          reason.code === "PHOTO_AREA_MISMATCH"
-          ? "照片與相簿不屬於同一縣市"
-          : reason instanceof Error
-            ? reason.message
-            : "更新失敗",
-      );
+      alertError(reason, "更新失敗", {
+        PHOTO_AREA_MISMATCH: "照片與相簿不屬於同一縣市",
+      });
     }
   }
 
@@ -250,14 +244,9 @@ export function useAreaPageController({
       });
       await refetchCollections();
     } catch (reason) {
-      window.alert(
-        reason instanceof GalleryStoreError &&
-          reason.code === "COLLECTION_NAME_CONFLICT"
-          ? "已有相同名稱的相簿"
-          : reason instanceof Error
-            ? reason.message
-            : "更新失敗",
-      );
+      alertError(reason, "更新失敗", {
+        COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
+      });
     }
   }
 
@@ -275,9 +264,7 @@ export function useAreaPageController({
       await refetchCollections();
       areaState.setSelectedCollectionId("");
     } catch (reason) {
-      window.alert(
-        reason instanceof Error ? reason.message : "刪除失敗",
-      );
+      alertError(reason, "刪除失敗");
     }
   }
 
@@ -302,14 +289,9 @@ export function useAreaPageController({
       await refetchCollections();
       areaState.setSelectedCollectionId(created.id);
     } catch (reason) {
-      window.alert(
-        reason instanceof GalleryStoreError &&
-          reason.code === "COLLECTION_NAME_CONFLICT"
-          ? "已有相同名稱的相簿"
-          : reason instanceof Error
-            ? reason.message
-            : "新增失敗",
-      );
+      alertError(reason, "新增失敗", {
+        COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
+      });
     }
   }
 
@@ -339,7 +321,7 @@ export function useAreaPageController({
       areaState.refreshPhotos();
       dispatch({ type: "CONFIRM_PHOTO_DELETE" });
     } catch (reason) {
-      window.alert(reason instanceof Error ? reason.message : "刪除失敗");
+      alertError(reason, "刪除失敗");
     }
   }
 
