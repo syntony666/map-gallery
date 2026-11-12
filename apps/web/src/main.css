@@ -3,8 +3,8 @@
 
 :root {
   --map-land: #f6f1e7;
-  --region-color: #ffffff;
-  --region-stroke: #ffffff;
+  --region-color: #4a4a4a;
+  --region-stroke: #232323;
 }
 
 /* Regions with an inline --region-color get a matching rim by default;

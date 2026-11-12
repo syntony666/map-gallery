@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { galleryStore } from "../../stores/gallery.store";
 import type { Area } from "../../types/gallery.type";
 import { parseRegionsSvg, type RegionShapes } from "./regions";
 import { TaiwanRegions } from "./TaiwanRegions";
 
 type TaiwanMapProps = {
+  areas: Area[] | null;
   selectedAreaId: string | null;
   onSelectArea: (areaId: string | null) => void;
 };
 
-export function TaiwanMap({ selectedAreaId, onSelectArea }: TaiwanMapProps) {
-  const [areas, setAreas] = useState<Area[] | null>(null);
+export function TaiwanMap({
+  areas,
+  selectedAreaId,
+  onSelectArea,
+}: TaiwanMapProps) {
   const [shapes, setShapes] = useState<RegionShapes | null>(null);
   const [error, setError] = useState<string | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -18,20 +21,17 @@ export function TaiwanMap({ selectedAreaId, onSelectArea }: TaiwanMapProps) {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      galleryStore.getAreas(),
-      fetch("/maps/taiwan-regions.svg").then((res) => {
+    fetch("/maps/taiwan-regions.svg")
+      .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
         }
         return res.text();
-      }),
-    ])
-      .then(([areaList, svgText]) => {
+      })
+      .then((svgText) => {
         if (cancelled) {
           return;
         }
-        setAreas(areaList);
         setShapes(parseRegionsSvg(svgText));
       })
       .catch((reason: unknown) => {

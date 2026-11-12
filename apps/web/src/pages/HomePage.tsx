@@ -1,17 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { DistrictBottomSheet } from "../components/map/DistrictBottomSheet";
+import { DistrictPanel } from "../components/map/DistrictPanel";
 import { TaiwanMap } from "../components/map/TaiwanMap";
 import { useViewMode } from "../hooks/useViewMode";
+import { galleryStore } from "../stores/gallery.store";
+import type { Area } from "../types/gallery.type";
 
 export function HomePage() {
   const { readonly, toggleReadonly } = useViewMode();
+  const [areas, setAreas] = useState<Area[] | null>(null);
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    galleryStore
+      .getAreas()
+      .then((areaList) => {
+        if (!cancelled) {
+          setAreas(areaList);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAreas([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const selectedArea =
+    areas?.find((area) => area.id === selectedAreaId) ?? null;
 
   return (
     <main className="map-page">
-      <div className="relative h-full">
+      <div
+        className="relative h-full lg:grid
+          lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-6 lg:p-6"
+      >
         <TaiwanMap
+          areas={areas}
           selectedAreaId={selectedAreaId}
           onSelectArea={setSelectedAreaId}
+        />
+        <DistrictPanel area={selectedArea} />
+        <DistrictBottomSheet
+          area={selectedArea}
+          onClose={() => setSelectedAreaId(null)}
         />
         <button
           type="button"
