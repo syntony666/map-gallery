@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
+import { ReadonlyToggle } from "../components/common/ReadonlyToggle";
 import { DistrictBottomBar } from "../components/map/DistrictBottomBar";
 import { DistrictPanel } from "../components/map/DistrictPanel";
 import { TaiwanMap } from "../components/map/TaiwanMap";
-import { useViewMode } from "../hooks/useViewMode";
 import { galleryStore } from "../stores/gallery.store";
 import type { Area } from "../types/gallery.type";
 
 export function HomePage() {
-  const { readonly, toggleReadonly } = useViewMode();
   const [areas, setAreas] = useState<Area[] | null>(null);
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
 
@@ -47,34 +46,18 @@ export function HomePage() {
           area={selectedArea}
           areas={areas}
           onSelect={setSelectedAreaId}
-          action={
-            <button
-              type="button"
-              onClick={toggleReadonly}
-              title={readonly ? "離開閱覽模式" : "閱覽模式"}
-              className="rounded bg-white px-2 py-1 text-stone-700 shadow
-                hover:bg-stone-50"
-            >
-              <i className={`bi ${readonly ? "bi-eye-slash" : "bi-eye"}`} />
-            </button>
-          }
+          action={<ReadonlyToggle />}
         />
         <DistrictBottomBar
           area={selectedArea}
           onClose={() => setSelectedAreaId(null)}
         />
-        <button
-          type="button"
-          onClick={toggleReadonly}
-          title={readonly ? "離開閱覽模式" : "閱覽模式"}
+        <ReadonlyToggle
           className={[
-            "absolute right-8 top-8 z-10 hidden rounded bg-white px-2 py-1",
-            "text-stone-700 shadow hover:bg-stone-50",
+            "absolute right-8 top-8 z-10 hidden",
             selectedArea ? "md:max-lg:block" : "sm:block lg:hidden",
           ].join(" ")}
-        >
-          <i className={`bi ${readonly ? "bi-eye-slash" : "bi-eye"}`} />
-        </button>
+        />
       </div>
     </main>
   );

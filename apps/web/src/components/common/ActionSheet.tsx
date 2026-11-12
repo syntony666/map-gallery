@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 type ActionSheetProps = {
   open: boolean;
   title?: string;
+  className?: string;
   children: ReactNode;
   onClose: () => void;
 };
@@ -11,6 +12,7 @@ type ActionSheetProps = {
 export function ActionSheet({
   open,
   title,
+  className,
   children,
   onClose,
 }: ActionSheetProps) {
@@ -37,7 +39,7 @@ export function ActionSheet({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-50">
+    <div className={`fixed inset-0 z-50 ${className ?? ""}`}>
       <button
         type="button"
         aria-label="關閉選單"
