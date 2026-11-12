@@ -103,8 +103,9 @@ path:focus {
 .map-region:hover path,
 .map-region:focus-visible path,
 .map-region.is-active path {
-  fill: rgb(255 255 255 / 0.28);
+  fill: rgb(255 255 255 / 0.35);
   stroke: rgb(255 255 255 / 0.95);
+  stroke-width: 4;
   filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.2));
 }
 
