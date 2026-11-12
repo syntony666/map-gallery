@@ -13,6 +13,7 @@ import type { TitleBarActions } from "../types/title-bar.type";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useViewMode } from "../hooks/useViewMode";
+import { getPhotoGridHeading } from "../utils/photo-grid-heading";
 
 export function AreaPage() {
   const { areaId } = useParams();
@@ -73,26 +74,11 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   }
 
-  const photoGridTitle = (() => {
-    if (UI.isAreaEditMode || UI.collectionPhotoMode === "cover")
-      return "選擇封面照片";
-    if (UI.collectionPhotoMode === "add") return "選擇要加入的照片";
-    if (UI.collectionPhotoMode === "remove") return "選擇要移除的照片";
-    if (UI.isPhotoDeleteSelectMode) return "選擇要刪除的照片";
-
-    const collection = collections?.find(
-      (item) => item.id === filters.selectedCollectionId,
-    );
-    if (collection) return collection.name;
-    if (filters.keyword) return "搜尋結果";
-
-    return "所有相片";
-  })();
-
-  const photoGridHint =
-    UI.isAreaEditMode || UI.collectionPhotoMode === "cover"
-      ? "從下方點選一張，再點一次取消指定"
-      : undefined;
+  const { title: photoGridTitle, hint: photoGridHint } = getPhotoGridHeading({
+    UI,
+    filters,
+    collections,
+  });
 
   const renderPhotoSection = () => {
     const photos = filters.visiblePhotos;
