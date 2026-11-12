@@ -1,6 +1,18 @@
 @import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
 
+:root {
+  --map-land: #f6f1e7;
+  --region-color: #ffffff;
+  --region-stroke: #ffffff;
+}
+
+/* Regions with an inline --region-color get a matching rim by default;
+   an explicit --region-stroke still wins. */
+.map-region[style] {
+  --region-stroke: var(--region-color);
+}
+
 .leaflet-container img {
   max-width: none !important;
 }
@@ -88,8 +100,8 @@ path:focus {
 }
 
 .map-canvas__land-fill {
-  fill: var(--map-land, #f6f1e7);
-  stroke: var(--map-land, #f6f1e7);
+  fill: var(--map-land);
+  stroke: var(--map-land);
   stroke-width: 6;
 }
 
@@ -100,7 +112,7 @@ path:focus {
 }
 
 .map-region__fill {
-  fill: color-mix(in srgb, var(--region-color, transparent) 15%, transparent);
+  fill: color-mix(in srgb, var(--region-color) 15%, transparent);
   pointer-events: all;
   cursor: pointer;
   transition: fill 160ms ease;
@@ -117,16 +129,13 @@ path:focus {
 .map-region:hover .map-region__fill,
 .map-region:focus-visible .map-region__fill,
 .map-region.is-active .map-region__fill {
-  fill: color-mix(in srgb, var(--region-color, #ffffff) 35%, transparent);
+  fill: color-mix(in srgb, var(--region-color) 35%, transparent);
 }
 
 .map-region:hover .map-region__stroke,
 .map-region:focus-visible .map-region__stroke,
 .map-region.is-active .map-region__stroke {
-  stroke: var(
-    --region-stroke,
-    var(--region-color, rgb(255 255 255 / 0.95))
-  );
+  stroke: var(--region-stroke);
 }
 
 .map-page {
