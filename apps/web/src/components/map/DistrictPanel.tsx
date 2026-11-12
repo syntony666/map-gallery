@@ -39,8 +39,9 @@ export function DistrictPanel({ area }: DistrictPanelProps) {
   return (
     <aside
       aria-label="地區簡介"
-      className="hidden min-h-0 overflow-y-auto rounded-2xl bg-white/90 p-5
-        shadow-lg backdrop-blur md:m-6 md:block"
+      className="absolute right-6 top-6 bottom-6 z-10 hidden w-80
+        overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg backdrop-blur
+        xl:block"
     >
       <DistrictInfo area={area} />
 
