@@ -7,12 +7,14 @@ export type PhotoGridToolbarAction = {
 };
 
 type PhotoGridToolbarProps = {
+  title?: string;
   photoCount: number;
   showActions: boolean;
   action: PhotoGridToolbarAction;
 };
 
 export function PhotoGridToolbar({
+  title = "所有相片",
   photoCount,
   showActions,
   action,
@@ -40,7 +42,7 @@ export function PhotoGridToolbar({
   return (
     <section className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <span className="text-lg font-semibold">所有相片</span>
+        <span className="text-lg font-semibold">{title}</span>
 
         {buttons.length > 0 &&
           buttons.map((button) => <Button key={button.id} button={button} />)}

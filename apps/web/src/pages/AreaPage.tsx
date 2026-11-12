@@ -70,6 +70,22 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   }
 
+  const photoGridTitle = (() => {
+    if (UI.isAreaEditMode || UI.collectionPhotoMode === "cover")
+      return "選擇封面照片";
+    if (UI.collectionPhotoMode === "add") return "選擇要加入的照片";
+    if (UI.collectionPhotoMode === "remove") return "選擇要移除的照片";
+    if (UI.isPhotoDeleteSelectMode) return "選擇要刪除的照片";
+
+    const collection = collections?.find(
+      (item) => item.id === filters.selectedCollectionId,
+    );
+    if (collection) return collection.name;
+    if (filters.keyword) return "搜尋結果";
+
+    return "所有相片";
+  })();
+
   const renderPhotoSection = () => {
     const photos = filters.visiblePhotos;
 
@@ -81,6 +97,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       return (
         <>
           <PhotoGridToolbar
+            title={photoGridTitle}
             photoCount={0}
             showActions={!UI.isEditMode && !readonly}
             action={{
@@ -102,6 +119,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     return (
       <>
         <PhotoGridToolbar
+          title={photoGridTitle}
           photoCount={filters.pagination?.total ?? photos.length}
           showActions={!UI.isEditMode && !readonly}
           action={{
@@ -253,7 +271,7 @@ function TitleBarContent({
         {
           id: "manage-description",
           icon: "bi-pencil-square",
-          label: "編輯說明",
+          label: "編輯簡介",
           onClick: action.onEditArea ?? (() => alert("非預期操作")),
         },
         {
