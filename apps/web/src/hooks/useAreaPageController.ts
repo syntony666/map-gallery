@@ -91,6 +91,13 @@ export function useAreaPageController({
   function startAreaEdit() {
     editor.startEditing();
     dispatch({ type: "START_AREA_EDIT" });
+
+    if (sourceArea?.coverPhotoId) {
+      dispatch({
+        type: "TOGGLE_PHOTO_SELECTION",
+        photoId: sourceArea.coverPhotoId,
+      });
+    }
   }
 
   function startCollectionEdit() {
@@ -107,6 +114,7 @@ export function useAreaPageController({
     try {
       await galleryStore.updateAreaContent(areaId, {
         description: draftDescription,
+        coverPhotoId: [...UIState.selectedPhotoIds][0] ?? null,
       });
       setSourceArea(await galleryStore.getAreaById(areaId));
     } catch (reason) {

@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import type { Area } from "../../types/gallery.type";
 import { ActionSheet } from "../common/ActionSheet";
 import { DistrictInfo } from "./DistrictInfo";
+import { AreaCover } from "./AreaCover";
 
 type DistrictBottomBarProps = {
   area: Area | null;
@@ -48,13 +49,10 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
             className="absolute inset-x-4 bottom-4 z-10 flex items-center gap-3
               rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur"
           >
-            {area.coverImage && (
-              <img
-                src={area.coverImage}
-                alt=""
-                className="h-12 w-20 rounded-md object-cover"
-              />
-            )}
+            <AreaCover
+              src={area.coverImage}
+              className="h-12 w-20 shrink-0 rounded-md object-cover"
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-stone-800">
                 {area.name}

@@ -112,7 +112,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
 
         <PhotoGrid
           photos={photos}
-          isSelectionMode={!!UI.isPhotoSelectMode}
+          isSelectionMode={!!UI.isPhotoSelectMode || UI.isAreaEditMode}
           selectedPhotoIds={UI.selectedPhotoIds}
           onOpenPhoto={
             UI.isEditMode
@@ -196,6 +196,12 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           onKeywordChange={filters.setKeyword}
           onSortChange={filters.setSort}
         />
+      )}
+
+      {UI.isAreaEditMode && (
+        <p className="-mb-2 text-xs text-stone-500">
+          封面照片：從下方點選一張，再點一次取消指定
+        </p>
       )}
 
       {/* 景點卡片區 */}

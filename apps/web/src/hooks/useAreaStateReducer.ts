@@ -90,11 +90,12 @@ export function areaPageReducer(
     case "TOGGLE_PHOTO_SELECTION": {
       if (
         state.mode !== "collectionPhotoSelect" &&
-        state.mode !== "photoDeleteSelect"
+        state.mode !== "photoDeleteSelect" &&
+        state.mode !== "areaEdit"
       )
         return state;
 
-      if (state.collectionPhotoMode === "cover") {
+      if (state.mode === "areaEdit" || state.collectionPhotoMode === "cover") {
         return {
           ...state,
           selectedPhotoIds: state.selectedPhotoIds.has(action.photoId)

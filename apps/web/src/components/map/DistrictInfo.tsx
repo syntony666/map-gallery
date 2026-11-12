@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Area } from "../../types/gallery.type";
+import { AreaCover } from "./AreaCover";
 
 type DistrictInfoProps = {
   area: Area | null;
@@ -18,13 +19,12 @@ export function DistrictInfo({ area, heading = true }: DistrictInfoProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      {area.coverImage && (
-        <img
-          src={area.coverImage}
-          alt={`${area.name}封面`}
-          className="aspect-[16/9] w-full rounded-lg object-cover"
-        />
-      )}
+      <AreaCover
+        src={area.coverImage}
+        alt={`${area.name}封面`}
+        className="aspect-[16/9] w-full rounded-lg object-cover"
+        iconClassName="text-2xl"
+      />
 
       {heading && (
         <h2 className="text-lg font-semibold text-stone-800">{area.name}</h2>
