@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useReducer } from "react";
 import type { CollectionManageToolbarAction } from "../components/area/CollectionManageToolbar";
 import { useAreaEditor } from "./useAreaEditor";
 import { useAreaState } from "./useAreaState";
+import { useAsyncData } from "./useAsyncData";
 import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
-import type { Area, Collection } from "../types/gallery.type";
+import type { Collection } from "../types/gallery.type";
 import type { TitleBarActions } from "../types/title-bar.type";
 import { galleryStore } from "../stores/gallery.store";
 import { alertError } from "../utils/alert";
@@ -22,47 +23,33 @@ export function useAreaPageController({
     initialAreaPageUIState,
   );
 
-  const [sourceArea, setSourceArea] = useState<Area | null>(null);
-  const [sourceCollections, setSourceCollections] = useState<
-    Collection[] | null
-  >(null);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: sourceArea,
+    setData: setSourceArea,
+    error: areaError,
+  } = useAsyncData(() => galleryStore.getAreaById(areaId), [areaId], {
+    errorMessage: "無法載入行政區資料",
+  });
+  const {
+    data: sourceCollections,
+    setData: setSourceCollections,
+    error: collectionsError,
+  } = useAsyncData(
+    () => galleryStore.getCollectionsByAreaId(areaId),
+    [areaId],
+    {
+      errorMessage: "無法載入相簿資料",
+    },
+  );
+  const error = areaError ?? collectionsError;
 
   const editor = useAreaEditor(sourceArea);
 
-  const refetchCollections = useCallback(async () => {
-    return galleryStore
-      .getCollectionsByAreaId(areaId)
-      .then((items) => setSourceCollections(items));
-  }, [areaId]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    galleryStore
-      .getAreaById(areaId)
-      .then((area) => {
-        if (cancelled) return;
-
-        setSourceArea(area);
-      })
-      .catch((reason: unknown) => {
-        if (cancelled) return;
-
-        setError(
-          reason instanceof Error ? reason.message : "無法載入行政區資料",
-        );
-      });
-
-    refetchCollections().catch((reason: unknown) => {
-      if (cancelled) return;
-      setError(reason instanceof Error ? reason.message : "無法載入相簿資料");
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [areaId, refetchCollections]);
+  const refetchCollections = useCallback(
+    () =>
+      galleryStore.getCollectionsByAreaId(areaId).then(setSourceCollections),
+    [areaId, setSourceCollections],
+  );
 
   const areaState = useAreaState(
     areaId,

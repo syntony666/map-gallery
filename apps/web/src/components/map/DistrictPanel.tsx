@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { useAsyncData } from "../../hooks/useAsyncData";
 import { galleryStore } from "../../stores/gallery.store";
-import type { Area, Photo } from "../../types/gallery.type";
+import type { Area } from "../../types/gallery.type";
 import { DistrictInfo } from "./DistrictInfo";
 import { RegionList } from "./RegionList";
 
@@ -19,7 +20,16 @@ export function DistrictPanel({
   action,
   onSelect,
 }: DistrictPanelProps) {
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const { data } = useAsyncData(
+    () =>
+      area
+        ? galleryStore
+            .getPhotos({ areaId: area.id, limit: 12 })
+            .then((r) => r.photos)
+        : Promise.resolve([]),
+    [area?.id],
+  );
+  const photos = data ?? [];
   const [view, setView] = useState<"list" | "info">("list");
   const [viewedAreaId, setViewedAreaId] = useState<string | null>(null);
 
@@ -32,31 +42,6 @@ export function DistrictPanel({
   }
 
   const showInfo = view === "info" && area !== null;
-
-  useEffect(() => {
-    if (!area) {
-      return;
-    }
-
-    let cancelled = false;
-    galleryStore
-      .getPhotos({ areaId: area.id, limit: 12 })
-      .then((result) => {
-        if (!cancelled) {
-          setPhotos(result.photos);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setPhotos([]);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-      setPhotos([]);
-    };
-  }, [area]);
 
   return (
     <aside

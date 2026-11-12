@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useAsyncData } from "./useAsyncData";
 import { galleryStore } from "../stores/gallery.store";
-import type { Area, PhotoDetail } from "../types/gallery.type";
 
 type UsePhotoDetailPageControllerOptions = {
   areaId?: string;
@@ -11,46 +10,29 @@ export function usePhotoDetailPageController({
   areaId,
   photoId,
 }: UsePhotoDetailPageControllerOptions) {
-  const [sourcePhoto, setSourcePhoto] = useState<PhotoDetail | null>(null);
-  const [sourceArea, setSourceArea] = useState<Area | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    if (!photoId || !areaId) {
-      return () => {
-        cancelled = true;
-      };
-    }
+  const { data, error } = useAsyncData(
+    () => {
+      if (!photoId || !areaId) {
+        return Promise.resolve(null);
+      }
 
-    Promise.all([
-      galleryStore.getPhotoById(photoId),
-      galleryStore.getAreaById(areaId),
-    ])
-      .then(([photo, area]) => {
-        if (cancelled) return;
-
+      return Promise.all([
+        galleryStore.getPhotoById(photoId),
+        galleryStore.getAreaById(areaId),
+      ]).then(([photo, area]) => {
         if (photo.areaId !== areaId) {
-          setError("照片不屬於此行政區");
-          return;
+          throw new Error("照片不屬於此行政區");
         }
-
-        setSourcePhoto(photo);
-        setSourceArea(area);
-      })
-      .catch((reason: unknown) => {
-        if (cancelled) return;
-
-        setError(
-          reason instanceof Error ? reason.message : "無法載入照片或地區資料",
-        );
+        return { photo, area };
       });
-    return () => {
-      cancelled = true;
-    };
-  }, [photoId, areaId]);
+    },
+    [photoId, areaId],
+    { errorMessage: "無法載入照片或地區資料" },
+  );
+
   return {
-    photo: sourcePhoto,
-    area: sourceArea,
+    photo: data?.photo ?? null,
+    area: data?.area ?? null,
     error,
   };
 }

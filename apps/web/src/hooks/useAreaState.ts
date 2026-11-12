@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
-import type {
-  CollectionPhotoMode,
-  Photo,
-  SortOption,
-} from "../types/gallery.type";
+import { useState } from "react";
+import type { CollectionPhotoMode, SortOption } from "../types/gallery.type";
+import { useAsyncData } from "./useAsyncData";
 import { galleryStore } from "../stores/gallery.store";
 
 export function useAreaState(
@@ -15,12 +12,7 @@ export function useAreaState(
   const [selectedCollectionId, setSelectedCollectionId] =
     useState(initialCollectionId);
   const [sort, setSort] = useState<SortOption>("newest");
-  const [visiblePhotos, setVisiblePhotos] = useState<Photo[] | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [pagination, setPagination] = useState<{
-    total: number;
-    totalPages: number;
-  } | null>(null);
 
   const filterKey = [
     areaId,
@@ -37,52 +29,42 @@ export function useAreaState(
     setPageState({ key: filterKey, page: nextPage });
   }
 
-  useEffect(() => {
-    let cancelled = false;
-    const effectiveCollectionId =
-      collectionPhotoMode === "add"
-        ? undefined
-        : selectedCollectionId || undefined;
-
-    galleryStore
-      .getPhotos({
+  const { data: result, error } = useAsyncData(
+    () =>
+      galleryStore.getPhotos({
         areaId,
-        collectionId: effectiveCollectionId,
+        collectionId:
+          collectionPhotoMode === "add"
+            ? undefined
+            : selectedCollectionId || undefined,
         keyword,
         sort,
         page,
-      })
-      .then((result) => {
-        if (cancelled) return;
-        setVisiblePhotos(
-          collectionPhotoMode === "add" && selectedCollectionId
-            ? result.photos.filter(
-                (photo) => !photo.collectionIds.includes(selectedCollectionId),
-              )
-            : result.photos,
-        );
-        setPagination({
-          total: result.total,
-          totalPages: result.totalPages,
-        });
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setVisiblePhotos([]);
-        setPagination(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    areaId,
-    keyword,
-    selectedCollectionId,
-    sort,
-    collectionPhotoMode,
-    refreshKey,
-    page,
-  ]);
+      }),
+    [
+      areaId,
+      keyword,
+      selectedCollectionId,
+      sort,
+      collectionPhotoMode,
+      refreshKey,
+      page,
+    ],
+  );
+
+  const visiblePhotos = error
+    ? []
+    : result
+      ? collectionPhotoMode === "add" && selectedCollectionId
+        ? result.photos.filter(
+            (photo) => !photo.collectionIds.includes(selectedCollectionId),
+          )
+        : result.photos
+      : null;
+
+  const pagination = result
+    ? { total: result.total, totalPages: result.totalPages }
+    : null;
 
   function toggleCollection(collection: string) {
     setSelectedCollectionId((current) =>

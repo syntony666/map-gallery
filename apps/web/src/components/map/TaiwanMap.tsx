@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useAsyncData } from "../../hooks/useAsyncData";
 import type { Area } from "../../types/gallery.type";
-import { parseRegionsSvg, type RegionShapes } from "./regions";
+import { parseRegionsSvg } from "./regions";
 import { TaiwanRegions } from "./TaiwanRegions";
 
 type TaiwanMapProps = {
@@ -14,39 +15,20 @@ export function TaiwanMap({
   selectedAreaId,
   onSelectArea,
 }: TaiwanMapProps) {
-  const [shapes, setShapes] = useState<RegionShapes | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data: shapes, error } = useAsyncData(
+    () =>
+      fetch("/maps/taiwan-regions.svg")
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          return res.text();
+        })
+        .then(parseRegionsSvg),
+    [],
+    { errorMessage: "無法載入地圖資料" },
+  );
   const scrollerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    fetch("/maps/taiwan-regions.svg")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-        return res.text();
-      })
-      .then((svgText) => {
-        if (cancelled) {
-          return;
-        }
-        setShapes(parseRegionsSvg(svgText));
-      })
-      .catch((reason: unknown) => {
-        if (cancelled) {
-          return;
-        }
-        setError(
-          reason instanceof Error ? reason.message : "無法載入地圖資料",
-        );
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     if (!shapes) {
@@ -86,9 +68,7 @@ export function TaiwanMap({
     const rect = regionEl.getBoundingClientRect();
     const scrollerRect = scroller.getBoundingClientRect();
     const dx =
-      rect.left +
-      rect.width / 2 -
-      (scrollerRect.left + scrollerRect.width / 2);
+      rect.left + rect.width / 2 - (scrollerRect.left + scrollerRect.width / 2);
     scroller.scrollTo({ left: scroller.scrollLeft + dx, behavior: "smooth" });
   }, [selectedAreaId]);
 
@@ -109,10 +89,7 @@ export function TaiwanMap({
             {shapes && (
               <g transform={shapes.transform || undefined}>
                 <defs>
-                  <clipPath
-                    id="map-land-clip"
-                    clipPathUnits="userSpaceOnUse"
-                  >
+                  <clipPath id="map-land-clip" clipPathUnits="userSpaceOnUse">
                     {shapes.regions.map((region) =>
                       region.paths.map((d) => <path key={d} d={d} />),
                     )}

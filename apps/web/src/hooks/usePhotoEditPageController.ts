@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAsyncData } from "./useAsyncData";
 import { galleryStore } from "../stores/gallery.store";
 import { alertError } from "../utils/alert";
-import type { Area, Collection, PhotoDetail } from "../types/gallery.type";
+import type { Collection, PhotoDetail } from "../types/gallery.type";
 
 export type PhotoEditForm = {
   title: string;
@@ -28,75 +29,59 @@ export function usePhotoEditPageController({
   areaId,
   photoId,
 }: UsePhotoEditPageControllerOptions) {
-  const [area, setArea] = useState<Area | null>(null);
   const [collections, setCollections] = useState<Collection[] | null>(null);
   const [form, setForm] = useState<PhotoEditForm | null>(null);
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
     Set<string>
   >(new Set());
-  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  const { data, error } = useAsyncData(
+    () => {
+      if (!areaId) {
+        return Promise.resolve(null);
+      }
 
-    if (!areaId) {
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const photoRequest = photoId
-      ? galleryStore.getPhotoById(photoId)
-      : Promise.resolve(null);
-
-    Promise.all([
-      photoRequest,
-      galleryStore.getAreaById(areaId),
-      galleryStore.getCollectionsByAreaId(areaId),
-    ])
-      .then(([photo, loadedArea, loadedCollections]) => {
-        if (cancelled) return;
-
+      return Promise.all([
+        photoId ? galleryStore.getPhotoById(photoId) : Promise.resolve(null),
+        galleryStore.getAreaById(areaId),
+        galleryStore.getCollectionsByAreaId(areaId),
+      ]).then(([photo, loadedArea, loadedCollections]) => {
         if (photo && photo.areaId !== areaId) {
-          setError("照片不屬於此行政區");
-          return;
+          throw new Error("照片不屬於此行政區");
         }
-
-        setArea(loadedArea);
-        setCollections(loadedCollections);
+        return { photo, area: loadedArea, collections: loadedCollections };
+      });
+    },
+    [areaId, photoId],
+    {
+      errorMessage: "無法載入資料",
+      onData: (d) => {
+        setCollections(d?.collections ?? null);
         setSelectedCollectionIds(
-          new Set(photo?.collections.map((collection) => collection.id) ?? []),
+          new Set(
+            d?.photo?.collections.map((collection) => collection.id) ?? [],
+          ),
         );
         setForm(
-          photo
+          d?.photo
             ? {
-                title: photo.title,
-                image: photo.image,
-                takenAt: photo.date,
-                summary: photo.summary ?? "",
-                description: photo.description ?? "",
+                title: d.photo.title,
+                image: d.photo.image,
+                takenAt: d.photo.date,
+                summary: d.photo.summary ?? "",
+                description: d.photo.description ?? "",
               }
             : emptyForm,
         );
-      })
-      .catch((reason: unknown) => {
-        if (cancelled) return;
+      },
+    },
+  );
 
-        setError(
-          reason instanceof Error ? reason.message : "無法載入資料",
-        );
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [areaId, photoId]);
+  const area = data?.area ?? null;
 
   function updateField(field: keyof PhotoEditForm, value: string) {
-    setForm((current) =>
-      current ? { ...current, [field]: value } : current,
-    );
+    setForm((current) => (current ? { ...current, [field]: value } : current));
   }
 
   function toggleCollection(collectionId: string) {
