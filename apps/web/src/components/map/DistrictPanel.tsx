@@ -10,7 +10,6 @@ type DistrictPanelProps = {
   area: Area | null;
   areas: Area[] | null;
   action?: ReactNode;
-  onClose: () => void;
   onSelect: (areaId: string) => void;
 };
 
@@ -18,10 +17,21 @@ export function DistrictPanel({
   area,
   areas,
   action,
-  onClose,
   onSelect,
 }: DistrictPanelProps) {
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [view, setView] = useState<"list" | "info">("list");
+  const [viewedAreaId, setViewedAreaId] = useState<string | null>(null);
+
+  // Reset to the info view whenever the selected region changes (map or list);
+  // the back button only switches views and keeps the selection.
+  const areaId = area?.id ?? null;
+  if (areaId !== viewedAreaId) {
+    setViewedAreaId(areaId);
+    setView(areaId ? "info" : "list");
+  }
+
+  const showInfo = view === "info" && area !== null;
 
   useEffect(() => {
     if (!area) {
@@ -55,48 +65,24 @@ export function DistrictPanel({
         overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg backdrop-blur
         lg:block"
     >
-      <div className="mb-4 flex items-center justify-end gap-2">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div>
+          {showInfo && (
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              aria-label="返回清單"
+              className="rounded bg-white px-2 py-1 text-stone-700 shadow
+                hover:bg-stone-50"
+            >
+              <i className="bi bi-arrow-left" />
+            </button>
+          )}
+        </div>
         {action}
-        {area && (
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="關閉簡介"
-            className="rounded bg-white px-2 py-1 text-stone-700 shadow
-              hover:bg-stone-50"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
-        )}
       </div>
 
-      {area === null ? (
-        <>
-          <h2 className="mb-2 text-sm font-semibold text-stone-800">
-            所有地區
-          </h2>
-          <ul className="divide-y divide-stone-200/60">
-            {[...(areas ?? [])]
-              .sort((a, b) => regionSortKey(a.id) - regionSortKey(b.id))
-              .map((item) => (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    onClick={() => onSelect(item.id)}
-                    className="flex w-full items-center justify-between rounded
-                    px-2 py-2 text-left text-sm text-stone-700
-                    hover:bg-stone-100/80"
-                  >
-                    <span>{item.name}</span>
-                    <span className="text-xs text-stone-400">
-                      {item.photoCount} 張
-                    </span>
-                  </button>
-                </li>
-              ))}
-          </ul>
-        </>
-      ) : (
+      {showInfo ? (
         <>
           <DistrictInfo area={area} />
 
@@ -118,6 +104,39 @@ export function DistrictPanel({
               ))}
             </div>
           )}
+        </>
+      ) : (
+        <>
+          <h2 className="mb-2 text-sm font-semibold text-stone-800">
+            所有地區
+          </h2>
+          <ul className="divide-y divide-stone-200/60">
+            {[...(areas ?? [])]
+              .sort((a, b) => regionSortKey(a.id) - regionSortKey(b.id))
+              .map((item) => (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelect(item.id);
+                      setView("info");
+                    }}
+                    className={[
+                      "flex w-full items-center justify-between rounded px-2",
+                      "py-2 text-left text-sm",
+                      item.id === area?.id
+                        ? "bg-stone-200/70 font-medium text-stone-800"
+                        : "text-stone-700 hover:bg-stone-100/80",
+                    ].join(" ")}
+                  >
+                    <span>{item.name}</span>
+                    <span className="text-xs text-stone-400">
+                      {item.photoCount} 張
+                    </span>
+                  </button>
+                </li>
+              ))}
+          </ul>
         </>
       )}
     </aside>

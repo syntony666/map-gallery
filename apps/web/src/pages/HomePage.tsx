@@ -47,7 +47,6 @@ export function HomePage() {
           area={selectedArea}
           areas={areas}
           onSelect={setSelectedAreaId}
-          onClose={() => setSelectedAreaId(null)}
           action={
             <button
               type="button"
