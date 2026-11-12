@@ -11,6 +11,7 @@ import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar"
 import type { ButtonActionGroup } from "../types/button.type";
 import type { TitleBarActions } from "../types/title-bar.type";
 import { useAreaPageController } from "../hooks/useAreaPageController";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useViewMode } from "../hooks/useViewMode";
 
 export function AreaPage() {
@@ -50,6 +51,8 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     });
 
   const { readonly } = useViewMode();
+
+  useDocumentTitle(area?.name);
   const navigate = useNavigate();
 
   if (error) {

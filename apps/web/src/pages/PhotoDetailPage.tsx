@@ -4,6 +4,7 @@ import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
 import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { usePhotoDetailPageController } from "../hooks/usePhotoDetailPageController";
 import { useViewMode } from "../hooks/useViewMode";
 
@@ -41,6 +42,8 @@ type PhotoDetailContentProps = {
 function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
   const navigate = useNavigate();
   const { readonly } = useViewMode();
+
+  useDocumentTitle(isError ? null : photo.title);
 
   const titleButtons: ButtonActionGroup[] = [
     {
