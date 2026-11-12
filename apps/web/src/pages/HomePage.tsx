@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DistrictBottomSheet } from "../components/map/DistrictBottomSheet";
+import { DistrictBottomBar } from "../components/map/DistrictBottomBar";
 import { DistrictPanel } from "../components/map/DistrictPanel";
 import { TaiwanMap } from "../components/map/TaiwanMap";
 import { useViewMode } from "../hooks/useViewMode";
@@ -58,21 +58,22 @@ export function HomePage() {
             </button>
           }
         />
-        <DistrictBottomSheet
+        <DistrictBottomBar
           area={selectedArea}
           onClose={() => setSelectedAreaId(null)}
         />
-        {selectedArea === null && (
-          <button
-            type="button"
-            onClick={toggleReadonly}
-            title={readonly ? "離開閱覽模式" : "閱覽模式"}
-            className="absolute right-8 top-8 z-10 hidden rounded bg-white px-2
-              py-1 text-stone-700 shadow hover:bg-stone-50 sm:block xl:hidden"
-          >
-            <i className={`bi ${readonly ? "bi-eye-slash" : "bi-eye"}`} />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={toggleReadonly}
+          title={readonly ? "離開閱覽模式" : "閱覽模式"}
+          className={[
+            "absolute right-8 top-8 z-10 hidden rounded bg-white px-2 py-1",
+            "text-stone-700 shadow hover:bg-stone-50",
+            selectedArea ? "md:max-lg:block" : "sm:block xl:hidden",
+          ].join(" ")}
+        >
+          <i className={`bi ${readonly ? "bi-eye-slash" : "bi-eye"}`} />
+        </button>
       </div>
     </main>
   );
