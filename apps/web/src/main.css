@@ -134,6 +134,8 @@ path:focus {
 
 .map-page {
   min-height: 100dvh;
+  width: 100dvw;
+  margin: -1.5rem 0 0 calc(50% - 50dvw);
   background:
     radial-gradient(
       circle at 50% 42%,
