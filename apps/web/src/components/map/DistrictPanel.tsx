@@ -8,9 +8,10 @@ import { DistrictInfo } from "./DistrictInfo";
 type DistrictPanelProps = {
   area: Area | null;
   action?: ReactNode;
+  onClose: () => void;
 };
 
-export function DistrictPanel({ area, action }: DistrictPanelProps) {
+export function DistrictPanel({ area, action, onClose }: DistrictPanelProps) {
   const [photos, setPhotos] = useState<Photo[]>([]);
 
   useEffect(() => {
@@ -41,11 +42,25 @@ export function DistrictPanel({ area, action }: DistrictPanelProps) {
   return (
     <aside
       aria-label="地區簡介"
-      className="absolute right-6 top-6 bottom-6 z-10 hidden w-80
-        overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg backdrop-blur
-        xl:block"
+      className={[
+        "absolute right-6 top-6 bottom-6 z-10 hidden w-80",
+        "overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg backdrop-blur",
+        "xl:block",
+        area ? "lg:block" : "",
+      ].join(" ")}
     >
-      {action && <div className="absolute right-3 top-3">{action}</div>}
+      <div className="absolute right-3 top-3 flex gap-2">
+        {action}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="關閉簡介"
+          className="rounded bg-white px-2 py-1 text-stone-700 shadow
+            hover:bg-stone-50 xl:hidden"
+        >
+          <i className="bi bi-x-lg" />
+        </button>
+      </div>
       <DistrictInfo area={area} />
 
       {photos.length > 0 && (

@@ -45,6 +45,7 @@ export function HomePage() {
         />
         <DistrictPanel
           area={selectedArea}
+          onClose={() => setSelectedAreaId(null)}
           action={
             <button
               type="button"

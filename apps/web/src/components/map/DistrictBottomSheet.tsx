@@ -15,7 +15,7 @@ export function DistrictBottomSheet({
   const [isWide, setIsWide] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 1280px)");
+    const query = window.matchMedia("(min-width: 1024px)");
     const update = () => setIsWide(query.matches);
     update();
     query.addEventListener("change", update);
@@ -30,9 +30,9 @@ export function DistrictBottomSheet({
     <>
       {area === null && (
         <div
-          className="absolute inset-x-4 bottom-4 z-10 rounded-2xl
+          className="absolute inset-x-4 bottom-4 z-10 hidden rounded-2xl
             bg-white/90 px-5 py-3 text-sm text-stone-500 shadow-lg
-            backdrop-blur"
+            backdrop-blur md:block"
         >
           點選地圖上的縣市，查看簡介與照片。
         </div>
