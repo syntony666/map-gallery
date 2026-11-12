@@ -1,3 +1,29 @@
+/** West coast north→south, then east coast north→south; for region pickers. */
+export const REGION_SORT_ORDER = [
+  "keelung-city",
+  "taipei-city",
+  "new-taipei-city",
+  "taoyuan-city",
+  "hsinchu-region",
+  "miaoli-county",
+  "taichung-city",
+  "changhua-county",
+  "nantou-county",
+  "yunlin-county",
+  "chiayi-region",
+  "tainan-city",
+  "kaohsiung-city",
+  "pingtung-county",
+  "yilan-county",
+  "hualien-county",
+  "taitung-county",
+];
+
+export function regionSortKey(id: string) {
+  const index = REGION_SORT_ORDER.indexOf(id);
+  return index === -1 ? REGION_SORT_ORDER.length : index;
+}
+
 export type RegionShapes = {
   transform: string;
   regions: {
@@ -117,9 +143,7 @@ export function parseRegionsSvg(svgText: string): RegionShapes {
                 inner.paths.length > 0 &&
                 bboxContains(
                   region.mainBBox,
-                  unionBBox(
-                    inner.paths.map((d) => pathBBox(d)),
-                  ),
+                  unionBBox(inner.paths.map((d) => pathBBox(d))),
                 ),
             )
             .flatMap((inner) => inner.paths)

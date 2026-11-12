@@ -45,6 +45,8 @@ export function HomePage() {
         />
         <DistrictPanel
           area={selectedArea}
+          areas={areas}
+          onSelect={setSelectedAreaId}
           onClose={() => setSelectedAreaId(null)}
           action={
             <button
@@ -69,7 +71,7 @@ export function HomePage() {
           className={[
             "absolute right-8 top-8 z-10 hidden rounded bg-white px-2 py-1",
             "text-stone-700 shadow hover:bg-stone-50",
-            selectedArea ? "md:max-lg:block" : "sm:block xl:hidden",
+            selectedArea ? "md:max-lg:block" : "sm:block lg:hidden",
           ].join(" ")}
         >
           <i className={`bi ${readonly ? "bi-eye-slash" : "bi-eye"}`} />

@@ -59,9 +59,15 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
               <p className="truncate text-sm font-semibold text-stone-800">
                 {area.name}
               </p>
-              <p className="text-xs text-stone-500">
-                {area.photoCount} 張照片
-              </p>
+              <p className="text-xs text-stone-500">{area.photoCount} 張照片</p>
+              {area.description && (
+                <p
+                  className="mt-0.5 line-clamp-2 text-xs leading-relaxed
+                    text-stone-600"
+                >
+                  {area.description}
+                </p>
+              )}
             </div>
             <Link
               to={`/area/${area.id}`}
@@ -83,11 +89,7 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
         ))}
 
       {!isMdUp && (
-        <ActionSheet
-          open={area !== null}
-          title={area?.name}
-          onClose={onClose}
-        >
+        <ActionSheet open={area !== null} title={area?.name} onClose={onClose}>
           <div className="px-2 pb-2">
             <DistrictInfo area={area} heading={false} />
           </div>
