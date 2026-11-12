@@ -49,7 +49,7 @@ export function DistrictPanel({ area, action, onClose }: DistrictPanelProps) {
         area ? "lg:block" : "",
       ].join(" ")}
     >
-      <div className="absolute right-3 top-3 flex gap-2">
+      <div className="mb-4 flex items-center justify-end gap-2">
         {action}
         <button
           type="button"
