@@ -1,15 +1,14 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { useAsyncData } from "../../hooks/useAsyncData";
-import { galleryStore } from "../../stores/gallery.store";
-import type { Area } from "../../types/gallery.type";
+import type { Area, Photo } from "../../types/gallery.type";
 import { DistrictInfo } from "./DistrictInfo";
 import { RegionList } from "./RegionList";
 
 type DistrictPanelProps = {
   area: Area | null;
   areas: Area[] | null;
+  photos: Photo[];
   action?: ReactNode;
   onSelect: (areaId: string) => void;
 };
@@ -17,19 +16,10 @@ type DistrictPanelProps = {
 export function DistrictPanel({
   area,
   areas,
+  photos,
   action,
   onSelect,
 }: DistrictPanelProps) {
-  const { data } = useAsyncData(
-    () =>
-      area
-        ? galleryStore
-            .getPhotos({ areaId: area.id, limit: 12 })
-            .then((r) => r.photos)
-        : Promise.resolve([]),
-    [area?.id],
-  );
-  const photos = data ?? [];
   const [view, setView] = useState<"list" | "info">("list");
   const [viewedAreaId, setViewedAreaId] = useState<string | null>(null);
 
