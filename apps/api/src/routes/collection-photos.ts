@@ -1,8 +1,14 @@
-import { and, eq, inArray } from "drizzle-orm";
 import { Hono } from "hono";
-import { db } from "../db";
-import { collections, photoCollections, photos } from "../db/schema";
-import { collectionListSelection } from "./collections";
+import {
+  addPhotosToCollection,
+  collectionHasPhoto,
+  findCollectionPhotoIds,
+  getCollectionArea,
+  getCollectionById,
+  removePhotoFromCollection,
+  removePhotosFromCollection,
+} from "../data/collections";
+import { getPhotosByIds } from "../data/photos";
 import { fail, readJsonObject } from "./errors";
 import { isNonEmptyString } from "./validators";
 
@@ -62,21 +68,13 @@ collectionPhotosRoute.post("/", async (context) => {
 
   const { collectionId, photoIds } = parsed.payload;
 
-  const collection = db
-    .select({ id: collections.id, areaId: collections.areaId })
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
+  const collection = getCollectionArea(collectionId);
 
   if (!collection) {
     return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
-  const foundPhotos = db
-    .select({ id: photos.id, areaId: photos.areaId })
-    .from(photos)
-    .where(inArray(photos.id, photoIds))
-    .all();
+  const foundPhotos = getPhotosByIds(photoIds);
 
   if (foundPhotos.length !== photoIds.length) {
     return fail(
@@ -96,48 +94,20 @@ collectionPhotosRoute.post("/", async (context) => {
     );
   }
 
-  const createdAt = new Date().toISOString();
+  addPhotosToCollection(collectionId, photoIds);
 
-  db.insert(photoCollections)
-    .values(photoIds.map((photoId) => ({ photoId, collectionId, createdAt })))
-    .onConflictDoNothing()
-    .run();
-
-  const item = db
-    .select(collectionListSelection)
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
-
-  return context.json(item);
+  return context.json(getCollectionById(collectionId));
 });
 
 collectionPhotosRoute.delete("/:collectionId/:photoId", (context) => {
   const collectionId = context.req.param("collectionId");
   const photoId = context.req.param("photoId");
 
-  const collection = db
-    .select({ id: collections.id })
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
-
-  if (!collection) {
+  if (!getCollectionArea(collectionId)) {
     return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
-  const relationFilter = and(
-    eq(photoCollections.collectionId, collectionId),
-    eq(photoCollections.photoId, photoId),
-  );
-
-  const relation = db
-    .select({ photoId: photoCollections.photoId })
-    .from(photoCollections)
-    .where(relationFilter)
-    .get();
-
-  if (!relation) {
+  if (!collectionHasPhoto(collectionId, photoId)) {
     return fail(
       context,
       404,
@@ -146,7 +116,7 @@ collectionPhotosRoute.delete("/:collectionId/:photoId", (context) => {
     );
   }
 
-  db.delete(photoCollections).where(relationFilter).run();
+  removePhotoFromCollection(collectionId, photoId);
 
   return context.body(null, 204);
 });
@@ -166,26 +136,11 @@ collectionPhotosRoute.post("/batch-delete", async (context) => {
 
   const { collectionId, photoIds } = parsed.payload;
 
-  const collection = db
-    .select({ id: collections.id })
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
-
-  if (!collection) {
+  if (!getCollectionArea(collectionId)) {
     return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
-  const relationFilter = and(
-    eq(photoCollections.collectionId, collectionId),
-    inArray(photoCollections.photoId, photoIds),
-  );
-
-  const existing = db
-    .select({ photoId: photoCollections.photoId })
-    .from(photoCollections)
-    .where(relationFilter)
-    .all();
+  const existing = findCollectionPhotoIds(collectionId, photoIds);
 
   if (existing.length !== photoIds.length) {
     return fail(
@@ -196,13 +151,7 @@ collectionPhotosRoute.post("/batch-delete", async (context) => {
     );
   }
 
-  db.delete(photoCollections).where(relationFilter).run();
+  removePhotosFromCollection(collectionId, photoIds);
 
-  const item = db
-    .select(collectionListSelection)
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
-
-  return context.json(item);
+  return context.json(getCollectionById(collectionId));
 });

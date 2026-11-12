@@ -1,64 +1,22 @@
-import { asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import { db } from "../db";
-import { areaContents, areas, photos } from "../db/schema";
+import {
+  areaExists,
+  getAreaById,
+  listAreas,
+  upsertAreaContent,
+} from "../data/areas";
+import { getPhoto } from "../data/photos";
 import { fail, readJsonObject } from "./errors";
 import { isNullableString } from "./validators";
 
 export const areasRoute = new Hono();
 
-export const areaListSelection = {
-  id: areas.id,
-  name: areas.name,
-  coverImage: sql<string | null>`
-  COALESCE(
-    (
-      SELECT p.image
-      FROM photos AS p
-      WHERE p.id = area_contents.cover_photo_id
-        AND p.area_id = areas.id
-      LIMIT 1
-    ),
-    (
-      SELECT p.image
-      FROM photos AS p
-      WHERE p.area_id = areas.id
-      ORDER BY p.taken_at DESC, p.id ASC
-      LIMIT 1
-    )
-  )
-`,
-  coverPhotoId: areaContents.coverPhotoId,
-  description: areaContents.description,
-  photoCount: sql<number>`
-  (
-    SELECT COUNT(*)
-    FROM photos
-    WHERE photos.area_id = areas.id
-  )
-`,
-};
-
 areasRoute.get("/", (context) => {
-  const items = db
-    .select(areaListSelection)
-    .from(areas)
-    .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
-    .orderBy(asc(areas.id))
-    .all();
-
-  return context.json({ items });
+  return context.json({ items: listAreas() });
 });
 
 areasRoute.get("/:areaId", (context) => {
-  const areaId = context.req.param("areaId");
-
-  const item = db
-    .select(areaListSelection)
-    .from(areas)
-    .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
-    .where(eq(areas.id, areaId))
-    .get();
+  const item = getAreaById(context.req.param("areaId"));
 
   if (!item) {
     return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
@@ -70,13 +28,7 @@ areasRoute.get("/:areaId", (context) => {
 areasRoute.patch("/:areaId/content", async (context) => {
   const areaId = context.req.param("areaId");
 
-  const area = db
-    .select({ id: areas.id })
-    .from(areas)
-    .where(eq(areas.id, areaId))
-    .get();
-
-  if (!area) {
+  if (!areaExists(areaId)) {
     return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
@@ -112,11 +64,7 @@ areasRoute.patch("/:areaId/content", async (context) => {
   }
 
   if (typeof coverPhotoId === "string") {
-    const photo = db
-      .select({ id: photos.id, areaId: photos.areaId })
-      .from(photos)
-      .where(eq(photos.id, coverPhotoId))
-      .get();
+    const photo = getPhoto(coverPhotoId);
 
     if (!photo) {
       return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
@@ -141,40 +89,10 @@ areasRoute.patch("/:areaId/content", async (context) => {
     );
   }
 
-  const now = new Date().toISOString();
+  upsertAreaContent(areaId, {
+    ...(hasCoverPhotoId ? { coverPhotoId: coverPhotoId as string | null } : {}),
+    ...(hasDescription ? { description: description as string | null } : {}),
+  });
 
-  db.insert(areaContents)
-    .values({
-      areaId,
-      coverPhotoId: hasCoverPhotoId ? (coverPhotoId as string | null) : null,
-      description:
-        hasDescription && typeof description === "string" ? description : null,
-      createdAt: now,
-      updatedAt: now,
-    })
-    .onConflictDoUpdate({
-      target: areaContents.areaId,
-      set: {
-        ...(hasCoverPhotoId
-          ? { coverPhotoId: coverPhotoId as string | null }
-          : {}),
-        ...(hasDescription
-          ? {
-              description:
-                description === null ? null : (description as string),
-            }
-          : {}),
-        updatedAt: sql`excluded.updated_at`,
-      },
-    })
-    .run();
-
-  const item = db
-    .select(areaListSelection)
-    .from(areas)
-    .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
-    .where(eq(areas.id, areaId))
-    .get();
-
-  return context.json(item);
+  return context.json(getAreaById(areaId));
 });

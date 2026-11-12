@@ -1,11 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { eq } from "drizzle-orm";
 import { SITE_NAME } from "@map-gallery/shared";
-import { db } from "./db";
-import { areaContents, areas, photos } from "./db/schema";
-import { areaListSelection } from "./routes/areas";
-import { photoDetailSelection } from "./routes/photos-shared";
+import { getAreaById } from "./data/areas";
+import { getPhotoRow } from "./data/photos";
 
 type PageMeta = {
   title: string;
@@ -78,12 +75,7 @@ export function getHomeMeta(): PageMeta {
 }
 
 export function getAreaMeta(areaId: string): PageMeta {
-  const area = db
-    .select(areaListSelection)
-    .from(areas)
-    .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
-    .where(eq(areas.id, areaId))
-    .get();
+  const area = getAreaById(areaId);
 
   if (!area) {
     return { title: "地區" };
@@ -97,11 +89,7 @@ export function getAreaMeta(areaId: string): PageMeta {
 }
 
 export function getPhotoMeta(photoId: string): PageMeta {
-  const photo = db
-    .select(photoDetailSelection)
-    .from(photos)
-    .where(eq(photos.id, photoId))
-    .get();
+  const photo = getPhotoRow(photoId);
 
   if (!photo) {
     return { title: "照片" };

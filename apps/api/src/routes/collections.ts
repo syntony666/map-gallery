@@ -1,50 +1,20 @@
 import { randomUUID } from "node:crypto";
-import { and, asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import { db } from "../db";
-import { areas, collections, photoCollections, photos } from "../db/schema";
+import { areaExists } from "../data/areas";
+import {
+  collectionHasPhoto,
+  createCollection,
+  deleteCollection,
+  getCollectionArea,
+  getCollectionById,
+  listCollectionsByArea,
+  updateCollection,
+} from "../data/collections";
+import { getPhoto } from "../data/photos";
 import { fail, readJsonObject } from "./errors";
 import { isNonEmptyString, isNullableString } from "./validators";
 
 export const collectionsRoute = new Hono();
-
-export const collectionListSelection = {
-  id: collections.id,
-  areaId: collections.areaId,
-  name: collections.name,
-  coverImage: sql<string | null>`
-  COALESCE(
-    (
-      SELECT p.image
-      FROM photo_collections AS pc
-      INNER JOIN photos AS p
-        ON p.id = pc.photo_id
-      WHERE pc.collection_id = collections.id
-        AND pc.photo_id = collections.cover_photo_id
-      LIMIT 1
-    ),
-    (
-      SELECT p.image
-      FROM photo_collections AS pc
-      INNER JOIN photos AS p
-        ON p.id = pc.photo_id
-      WHERE pc.collection_id = collections.id
-      ORDER BY p.taken_at DESC, p.id ASC
-      LIMIT 1
-    )
-  )
-`,
-  coverPhotoId: collections.coverPhotoId,
-  photoCount: sql<number>`
-  (
-    SELECT COUNT(*)
-    FROM ${photoCollections}
-    WHERE ${photoCollections.collectionId} = ${collections.id}
-  )
-`,
-  createdAt: collections.createdAt,
-  updatedAt: collections.updatedAt,
-};
 
 function isUniqueConstraintError(error: unknown): boolean {
   return (
@@ -67,24 +37,11 @@ collectionsRoute.get("/", (context) => {
     );
   }
 
-  const area = db
-    .select({ id: areas.id })
-    .from(areas)
-    .where(eq(areas.id, areaId))
-    .get();
-
-  if (!area) {
+  if (!areaExists(areaId)) {
     return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
-  const items = db
-    .select(collectionListSelection)
-    .from(collections)
-    .where(eq(collections.areaId, areaId))
-    .orderBy(asc(collections.name))
-    .all();
-
-  return context.json({ items });
+  return context.json({ items: listCollectionsByArea(areaId) });
 });
 
 collectionsRoute.post("/", async (context) => {
@@ -116,13 +73,7 @@ collectionsRoute.post("/", async (context) => {
     );
   }
 
-  const area = db
-    .select({ id: areas.id })
-    .from(areas)
-    .where(eq(areas.id, areaId))
-    .get();
-
-  if (!area) {
+  if (!areaExists(areaId)) {
     return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
@@ -130,15 +81,13 @@ collectionsRoute.post("/", async (context) => {
   const now = new Date().toISOString();
 
   try {
-    db.insert(collections)
-      .values({
-        id,
-        areaId,
-        name: name.trim(),
-        createdAt: now,
-        updatedAt: now,
-      })
-      .run();
+    createCollection({
+      id,
+      areaId,
+      name: name.trim(),
+      createdAt: now,
+      updatedAt: now,
+    });
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       return fail(
@@ -152,25 +101,13 @@ collectionsRoute.post("/", async (context) => {
     throw error;
   }
 
-  const item = db
-    .select(collectionListSelection)
-    .from(collections)
-    .where(eq(collections.id, id))
-    .get();
-
-  return context.json(item, 201);
+  return context.json(getCollectionById(id), 201);
 });
 
 collectionsRoute.patch("/:collectionId", async (context) => {
   const collectionId = context.req.param("collectionId");
 
-  const collection = db
-    .select({ id: collections.id })
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
-
-  if (!collection) {
+  if (!getCollectionArea(collectionId)) {
     return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
@@ -218,28 +155,13 @@ collectionsRoute.patch("/:collectionId", async (context) => {
     }
 
     if (typeof coverPhotoId === "string") {
-      const photo = db
-        .select({ id: photos.id })
-        .from(photos)
-        .where(eq(photos.id, coverPhotoId))
-        .get();
+      const photo = getPhoto(coverPhotoId);
 
       if (!photo) {
         return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
       }
 
-      const membership = db
-        .select({ photoId: photoCollections.photoId })
-        .from(photoCollections)
-        .where(
-          and(
-            eq(photoCollections.collectionId, collectionId),
-            eq(photoCollections.photoId, coverPhotoId),
-          ),
-        )
-        .get();
-
-      if (!membership) {
+      if (!collectionHasPhoto(collectionId, coverPhotoId)) {
         return fail(
           context,
           422,
@@ -253,14 +175,10 @@ collectionsRoute.patch("/:collectionId", async (context) => {
   }
 
   try {
-    db.update(collections)
-      .set({
-        ...(hasName ? { name: (name as string).trim() } : {}),
-        ...(hasCoverPhotoId ? { coverPhotoId: nextCoverPhotoId } : {}),
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(collections.id, collectionId))
-      .run();
+    updateCollection(collectionId, {
+      ...(hasName ? { name: (name as string).trim() } : {}),
+      ...(hasCoverPhotoId ? { coverPhotoId: nextCoverPhotoId } : {}),
+    });
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       return fail(
@@ -274,29 +192,17 @@ collectionsRoute.patch("/:collectionId", async (context) => {
     throw error;
   }
 
-  const item = db
-    .select(collectionListSelection)
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
-
-  return context.json(item);
+  return context.json(getCollectionById(collectionId));
 });
 
 collectionsRoute.delete("/:collectionId", (context) => {
   const collectionId = context.req.param("collectionId");
 
-  const collection = db
-    .select({ id: collections.id })
-    .from(collections)
-    .where(eq(collections.id, collectionId))
-    .get();
-
-  if (!collection) {
+  if (!getCollectionArea(collectionId)) {
     return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
-  db.delete(collections).where(eq(collections.id, collectionId)).run();
+  deleteCollection(collectionId);
 
   return context.body(null, 204);
 });

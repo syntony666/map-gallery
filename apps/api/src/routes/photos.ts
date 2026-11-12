@@ -1,21 +1,27 @@
 import { randomUUID } from "node:crypto";
-import { and, eq, inArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import { db } from "../db";
-import { areas, collections, photoCollections, photos } from "../db/schema";
-import { fail, readJsonObject } from "./errors";
+import { areaExists } from "../data/areas";
+import { getCollectionArea } from "../data/collections";
 import {
   checkCollectionsInArea,
-  escapeLikeKeyword,
+  createPhotoWithCollections,
+  deletePhoto,
+  deletePhotos,
   getCollectionIdsByPhotoId,
+  getPhoto,
   getPhotoDetail,
-  orderByBySort,
+  getPhotosByIds,
+  listPhotos,
+  updatePhotoWithCollections,
+} from "../data/photos";
+import type { photos } from "../db/schema";
+import { fail, readJsonObject } from "./errors";
+import {
+  escapeLikeKeyword,
   parsePhotoIdsBody,
   parsePositiveInteger,
   parseSort,
-  photoListSelection,
-  replacePhotoCollections,
-} from "./photos-shared";
+} from "./photos-request";
 import {
   isNonEmptyString,
   isNullableString,
@@ -77,15 +83,9 @@ photosRoute.get("/", (context) => {
   const collectionId = context.req.query("collectionId");
 
   if (collectionId) {
-    const collection = db
-      .select({ id: collections.id })
-      .from(collections)
-      .where(
-        and(eq(collections.id, collectionId), eq(collections.areaId, areaId)),
-      )
-      .get();
+    const collection = getCollectionArea(collectionId);
 
-    if (!collection) {
+    if (!collection || collection.areaId !== areaId) {
       return fail(
         context,
         404,
@@ -95,59 +95,14 @@ photosRoute.get("/", (context) => {
     }
   }
 
-  const keywordPattern = keyword ? escapeLikeKeyword(keyword) : null;
-
-  const keywordCondition = keywordPattern
-    ? sql`(
-        ${photos.title} LIKE ${keywordPattern} ESCAPE '\\'
-        OR COALESCE(${photos.summary}, '') LIKE ${keywordPattern} ESCAPE '\\'
-        OR COALESCE(${photos.description}, '') LIKE ${keywordPattern} ESCAPE '\\'
-      )`
-    : undefined;
-
-  const whereClause = collectionId
-    ? and(
-        eq(photos.areaId, areaId),
-        eq(photoCollections.collectionId, collectionId),
-        keywordCondition,
-      )
-    : and(eq(photos.areaId, areaId), keywordCondition);
-
-  const totalResult = collectionId
-    ? db
-        .select({ count: sql<number>`count(*)` })
-        .from(photos)
-        .innerJoin(photoCollections, eq(photoCollections.photoId, photos.id))
-        .where(whereClause)
-        .get()
-    : db
-        .select({ count: sql<number>`count(*)` })
-        .from(photos)
-        .where(whereClause)
-        .get();
-
-  const total = totalResult?.count ?? 0;
-  const offset = (page - 1) * limit;
-  const orderBy = orderByBySort[sort];
-
-  const items = collectionId
-    ? db
-        .select(photoListSelection)
-        .from(photos)
-        .innerJoin(photoCollections, eq(photoCollections.photoId, photos.id))
-        .where(whereClause)
-        .orderBy(...orderBy)
-        .limit(limit)
-        .offset(offset)
-        .all()
-    : db
-        .select(photoListSelection)
-        .from(photos)
-        .where(whereClause)
-        .orderBy(...orderBy)
-        .limit(limit)
-        .offset(offset)
-        .all();
+  const { items, total } = listPhotos({
+    areaId,
+    collectionId,
+    keywordPattern: keyword ? escapeLikeKeyword(keyword) : null,
+    sort,
+    page,
+    limit,
+  });
 
   const collectionIdsByPhotoId = getCollectionIdsByPhotoId(
     items.map((photo) => photo.id),
@@ -180,17 +135,11 @@ photosRoute.get("/:photoId", (context) => {
 photosRoute.delete("/:photoId", (context) => {
   const photoId = context.req.param("photoId");
 
-  const photo = db
-    .select({ id: photos.id })
-    .from(photos)
-    .where(eq(photos.id, photoId))
-    .get();
-
-  if (!photo) {
+  if (!getPhoto(photoId)) {
     return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
   }
 
-  db.delete(photos).where(eq(photos.id, photoId)).run();
+  deletePhoto(photoId);
 
   return context.body(null, 204);
 });
@@ -208,11 +157,7 @@ photosRoute.post("/batch-delete", async (context) => {
     return fail(context, 400, "INVALID_BODY", parsed.message);
   }
 
-  const existing = db
-    .select({ id: photos.id })
-    .from(photos)
-    .where(inArray(photos.id, parsed.photoIds))
-    .all();
+  const existing = getPhotosByIds(parsed.photoIds);
 
   if (existing.length !== parsed.photoIds.length) {
     return fail(
@@ -223,7 +168,7 @@ photosRoute.post("/batch-delete", async (context) => {
     );
   }
 
-  db.delete(photos).where(inArray(photos.id, parsed.photoIds)).run();
+  deletePhotos(parsed.photoIds);
 
   return context.body(null, 204);
 });
@@ -310,13 +255,7 @@ photosRoute.post("/", async (context) => {
     collectionIds = [...new Set(payload.collectionIds as string[])];
   }
 
-  const area = db
-    .select({ id: areas.id })
-    .from(areas)
-    .where(eq(areas.id, areaId))
-    .get();
-
-  if (!area) {
+  if (!areaExists(areaId)) {
     return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
@@ -345,25 +284,20 @@ photosRoute.post("/", async (context) => {
   const id = randomUUID();
   const now = new Date().toISOString();
 
-  db.transaction(() => {
-    db.insert(photos)
-      .values({
-        id,
-        areaId,
-        title: title.trim(),
-        image: image.trim(),
-        takenAt: new Date(takenAt).toISOString(),
-        summary: summary ?? null,
-        description: description ?? null,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .run();
-
-    if (collectionIds) {
-      replacePhotoCollections(id, collectionIds);
-    }
-  });
+  createPhotoWithCollections(
+    {
+      id,
+      areaId,
+      title: title.trim(),
+      image: image.trim(),
+      takenAt: new Date(takenAt).toISOString(),
+      summary: summary ?? null,
+      description: description ?? null,
+      createdAt: now,
+      updatedAt: now,
+    },
+    collectionIds,
+  );
 
   return context.json(getPhotoDetail(id), 201);
 });
@@ -371,11 +305,7 @@ photosRoute.post("/", async (context) => {
 photosRoute.patch("/:photoId", async (context) => {
   const photoId = context.req.param("photoId");
 
-  const photo = db
-    .select({ id: photos.id, areaId: photos.areaId })
-    .from(photos)
-    .where(eq(photos.id, photoId))
-    .get();
+  const photo = getPhoto(photoId);
 
   if (!photo) {
     return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
@@ -507,16 +437,7 @@ photosRoute.patch("/:photoId", async (context) => {
     }
   }
 
-  db.transaction(() => {
-    if (Object.keys(updates).length > 0) {
-      updates.updatedAt = new Date().toISOString();
-      db.update(photos).set(updates).where(eq(photos.id, photoId)).run();
-    }
-
-    if (collectionIds) {
-      replacePhotoCollections(photoId, collectionIds);
-    }
-  });
+  updatePhotoWithCollections(photoId, updates, collectionIds);
 
   return context.json(getPhotoDetail(photoId));
 });
