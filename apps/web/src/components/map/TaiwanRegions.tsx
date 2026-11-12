@@ -8,7 +8,7 @@ type TaiwanRegionsProps = {
   shapes: RegionShapes;
   areas: Area[] | null;
   selectedAreaId: string | null;
-  onSelectArea: (areaId: string) => void;
+  onSelectArea: (areaId: string | null) => void;
 };
 
 export function TaiwanRegions({
@@ -85,7 +85,12 @@ export function TaiwanRegions({
             aria-label={
               area ? `查看${area.name}內容` : `查看${region.id}內容`
             }
-            onClick={() => onSelectArea(region.id)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelectArea(
+                selectedAreaId === region.id ? null : region.id,
+              );
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();

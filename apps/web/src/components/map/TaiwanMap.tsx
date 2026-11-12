@@ -72,7 +72,11 @@ export function TaiwanMap({ selectedAreaId, onSelectArea }: TaiwanMapProps) {
 
   return (
     <div className="map-viewport">
-      <div className="map-scroller" ref={scrollerRef}>
+      <div
+        className="map-scroller"
+        ref={scrollerRef}
+        onClick={() => onSelectArea(null)}
+      >
         <div className="map-canvas">
           <svg
             className="map-canvas__underlay"
