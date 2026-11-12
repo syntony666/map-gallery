@@ -9,7 +9,7 @@ import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
 import { PhotoPagination } from "../components/area/PhotoPagination";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
 import type { ButtonActionGroup } from "../types/button.type";
-import type { TitleBarActions } from "../types/title-bar.type";
+import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useViewMode } from "../hooks/useViewMode";

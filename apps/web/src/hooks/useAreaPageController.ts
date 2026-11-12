@@ -5,9 +5,16 @@ import { useAreaState } from "./useAreaState";
 import { useAsyncData } from "./useAsyncData";
 import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
 import type { Collection } from "../types/gallery.type";
-import type { TitleBarActions } from "../types/title-bar.type";
 import { galleryStore } from "../stores/gallery.store";
 import { alertError } from "../utils/alert";
+
+export type TitleBarActions = {
+  onEditArea?: () => void;
+  onEditCollection?: () => void;
+  onCancelEdit?: () => void;
+  onSaveEdit?: () => void;
+  onDoneEdit?: () => void;
+};
 
 type UseAreaPageControllerOptions = {
   areaId: string;
