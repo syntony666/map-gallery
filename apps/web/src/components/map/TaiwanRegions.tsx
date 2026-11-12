@@ -23,25 +23,42 @@ export function TaiwanRegions({
   return (
     <g transform={shapes.transform || undefined}>
       <defs>
+        {shapes.regions.map((region) => (
+          <clipPath
+            key={region.id}
+            id={`map-region-clip-${region.id}`}
+            clipPathUnits="userSpaceOnUse"
+          >
+            {region.paths.map((d) => (
+              <path key={d} d={d} />
+            ))}
+          </clipPath>
+        ))}
         {shapes.regions
           .filter((region) => region.holes.length > 0)
           .map((region) => (
-            <clipPath
+            <mask
               key={region.id}
-              id={`map-region-clip-${region.id}`}
-              clipPathUnits="userSpaceOnUse"
+              id={`map-region-mask-${region.id}`}
+              maskUnits="userSpaceOnUse"
             >
-              <path d="M-500,-500 H2100 V2100 H-500 Z" clipRule="evenodd" />
+              <rect
+                x={-1000}
+                y={-1000}
+                width={4000}
+                height={4000}
+                fill="white"
+              />
               {region.holes.map((d) => (
                 <path
                   key={d}
                   d={d}
-                  clipRule="evenodd"
+                  fill="black"
                   stroke="black"
-                  strokeWidth={12}
+                  strokeWidth={4}
                 />
               ))}
-            </clipPath>
+            </mask>
           ))}
       </defs>
       {shapes.regions.map((region) => {
@@ -52,9 +69,10 @@ export function TaiwanRegions({
           <g
             key={region.id}
             id={region.id}
-            clipPath={
+            clipPath={`url(#map-region-clip-${region.id})`}
+            mask={
               region.holes.length > 0
-                ? `url(#map-region-clip-${region.id})`
+                ? `url(#map-region-mask-${region.id})`
                 : undefined
             }
             className={isActive ? "map-region is-active" : "map-region"}
