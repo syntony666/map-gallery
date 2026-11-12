@@ -111,9 +111,7 @@ path:focus {
   stroke: transparent;
   stroke-width: 2;
   pointer-events: none;
-  transition:
-    stroke 160ms ease,
-    filter 160ms ease;
+  transition: stroke 160ms ease;
 }
 
 .map-region:hover .map-region__fill,
@@ -129,7 +127,6 @@ path:focus {
     --region-stroke,
     var(--region-color, rgb(255 255 255 / 0.95))
   );
-  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.2));
 }
 
 .map-page {
