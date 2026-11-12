@@ -68,6 +68,7 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
                   className="mt-0.5 line-clamp-2 text-xs leading-relaxed
                     text-stone-600"
                 >
+                  <i className="bi bi-chat-square-heart mr-1" />
                   {area.description}
                 </p>
               )}
@@ -92,12 +93,7 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
         ))}
 
       {!isMdUp && (
-        <ActionSheet
-          open={area !== null}
-          title={area?.name}
-          titleIcon={<i className="bi bi-chat-square-heart" />}
-          onClose={onClose}
-        >
+        <ActionSheet open={area !== null} title={area?.name} onClose={onClose}>
           <div className="px-2 pb-2">
             <DistrictInfo area={area} heading={false} />
           </div>

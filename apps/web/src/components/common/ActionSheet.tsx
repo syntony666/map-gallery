@@ -4,7 +4,6 @@ import { createPortal } from "react-dom";
 type ActionSheetProps = {
   open: boolean;
   title?: string;
-  titleIcon?: ReactNode;
   children: ReactNode;
   onClose: () => void;
 };
@@ -12,7 +11,6 @@ type ActionSheetProps = {
 export function ActionSheet({
   open,
   title,
-  titleIcon,
   children,
   onClose,
 }: ActionSheetProps) {
@@ -60,11 +58,7 @@ export function ActionSheet({
         <div className="mx-auto mt-3 h-1.5 w-10 rounded-full bg-stone-300" />
 
         {title && (
-          <h2
-            className="flex items-center gap-1.5 px-5 pb-3 pt-4 text-base
-              font-semibold text-stone-800"
-          >
-            {titleIcon}
+          <h2 className="px-5 pb-3 pt-4 text-base font-semibold text-stone-800">
             {title}
           </h2>
         )}
