@@ -272,7 +272,7 @@ function TitleBarContent({
         {
           id: "manage-description",
           icon: "bi-pencil-square",
-          label: "編輯簡介",
+          label: "編輯地區資訊",
           onClick: action.onEditArea ?? (() => alert("非預期操作")),
         },
         {
