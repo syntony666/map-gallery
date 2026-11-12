@@ -23,6 +23,7 @@ import type {
   Photo,
   PhotoDetail,
 } from "../types/gallery.type";
+import { toArea, toCollection, toPhoto, toPhotoDetail } from "./mappers";
 import { getAdminToken } from "../utils/auth";
 
 export type PhotoListResult = {
@@ -76,52 +77,6 @@ async function requestData<T>(
   }
 
   return body as T;
-}
-
-function toPhoto(photo: PhotoListDataResponse["items"][number]): Photo {
-  return {
-    id: photo.id,
-    title: photo.title,
-    date: photo.takenAt.slice(0, 10),
-    image: photo.image,
-    summary: photo.summary ?? undefined,
-    collectionIds: photo.collectionIds,
-  };
-}
-
-function toPhotoDetail(photo: PhotoDataResponse): PhotoDetail {
-  return {
-    id: photo.id,
-    title: photo.title,
-    date: photo.takenAt.slice(0, 10),
-    image: photo.image,
-    summary: photo.summary ?? undefined,
-    description: photo.description ?? undefined,
-    collectionIds: photo.collections.map((collection) => collection.id),
-    collections: photo.collections,
-    areaId: photo.areaId,
-  };
-}
-
-function toCollection(collection: CollectionDataResponse): Collection {
-  return {
-    id: collection.id,
-    name: collection.name,
-    coverImage: collection.coverImage ?? undefined,
-    coverPhotoId: collection.coverPhotoId ?? undefined,
-    photoCount: collection.photoCount,
-  };
-}
-
-function toArea(area: AreaDataResponse): Area {
-  return {
-    id: area.id,
-    name: area.name,
-    coverImage: area.coverImage ?? undefined,
-    coverPhotoId: area.coverPhotoId ?? undefined,
-    description: area.description ?? undefined,
-    photoCount: area.photoCount,
-  };
 }
 
 function toSearchParams(
