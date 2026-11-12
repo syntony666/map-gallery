@@ -3,6 +3,7 @@ import { and, asc, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
 import { areas, collections, photoCollections, photos } from "../db/schema";
+import { fail, readJsonObject } from "./errors";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 24;
@@ -90,8 +91,7 @@ function getCollectionIdsByPhotoId(photoIds: readonly string[]) {
 }
 
 type ParsedPhotoIds =
-  | { ok: true; photoIds: string[] }
-  | { ok: false; message: string };
+  { ok: true; photoIds: string[] } | { ok: false; message: string };
 
 function parsePhotoIdsBody(body: unknown): ParsedPhotoIds {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -205,57 +205,44 @@ photosRoute.get("/", (context) => {
   const areaId = context.req.query("areaId");
 
   if (!areaId) {
-    return context.json(
-      {
-        error: {
-          code: "AREA_ID_REQUIRED",
-          message: "The areaId query parameter is required.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "AREA_ID_REQUIRED",
+      "The areaId query parameter is required.",
     );
   }
 
   const sort = parseSort(context.req.query("sort"));
 
   if (!sort) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_QUERY",
-          message:
-            'The sort query parameter must be "newest", "oldest", or "title".',
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_QUERY",
+      'The sort query parameter must be "newest", "oldest", or "title".',
     );
   }
 
   const page = parsePositiveInteger(context.req.query("page"), DEFAULT_PAGE);
 
   if (!page) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_QUERY",
-          message: "The page query parameter must be a positive integer.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_QUERY",
+      "The page query parameter must be a positive integer.",
     );
   }
 
   const limit = parsePositiveInteger(context.req.query("limit"), DEFAULT_LIMIT);
 
   if (!limit || limit > MAX_LIMIT) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_QUERY",
-          message: `The limit query parameter must be a positive integer not greater than ${MAX_LIMIT}.`,
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_QUERY",
+      `The limit query parameter must be a positive integer not greater than ${MAX_LIMIT}.`,
     );
   }
 
@@ -272,14 +259,11 @@ photosRoute.get("/", (context) => {
       .get();
 
     if (!collection) {
-      return context.json(
-        {
-          error: {
-            code: "COLLECTION_NOT_FOUND",
-            message: "Collection not found.",
-          },
-        },
+      return fail(
+        context,
         404,
+        "COLLECTION_NOT_FOUND",
+        "Collection not found.",
       );
     }
   }
@@ -360,15 +344,7 @@ photosRoute.get("/:photoId", (context) => {
   const photo = getPhotoDetail(context.req.param("photoId"));
 
   if (!photo) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_NOT_FOUND",
-          message: "Photo not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
   }
 
   return context.json(photo);
@@ -384,15 +360,7 @@ photosRoute.delete("/:photoId", (context) => {
     .get();
 
   if (!photo) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_NOT_FOUND",
-          message: "Photo not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
   }
 
   db.delete(photos).where(eq(photos.id, photoId)).run();
@@ -401,34 +369,16 @@ photosRoute.delete("/:photoId", (context) => {
 });
 
 photosRoute.post("/batch-delete", async (context) => {
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const parsed = parsePhotoIdsBody(body);
+  const parsed = parsePhotoIdsBody(parsedBody.payload);
 
   if (!parsed.ok) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: parsed.message,
-        },
-      },
-      400,
-    );
+    return fail(context, 400, "INVALID_BODY", parsed.message);
   }
 
   const existing = db
@@ -438,14 +388,11 @@ photosRoute.post("/batch-delete", async (context) => {
     .all();
 
   if (existing.length !== parsed.photoIds.length) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_NOT_FOUND",
-          message: "One or more photos were not found.",
-        },
-      },
+    return fail(
+      context,
       404,
+      "PHOTO_NOT_FOUND",
+      "One or more photos were not found.",
     );
   }
 
@@ -455,106 +402,66 @@ photosRoute.post("/batch-delete", async (context) => {
 });
 
 photosRoute.post("/", async (context) => {
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "Request body must be a JSON object.",
-        },
-      },
-      400,
-    );
-  }
-
-  const payload = body as Record<string, unknown>;
+  const payload = parsedBody.payload;
   const { areaId, title, image, takenAt, summary, description } = payload;
 
   if (!isNonEmptyString(areaId)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "areaId must be a non-empty string.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "areaId must be a non-empty string.",
     );
   }
 
   if (!isNonEmptyString(title)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "title must be a non-empty string.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "title must be a non-empty string.",
     );
   }
 
   if (!isNonEmptyString(image)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "image must be a non-empty string.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "image must be a non-empty string.",
     );
   }
 
   if (!isNonEmptyString(takenAt) || !isValidDateString(takenAt)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "takenAt must be a valid date string.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "takenAt must be a valid date string.",
     );
   }
 
   if (summary !== undefined && !isNullableString(summary)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "summary must be a string or null.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "summary must be a string or null.",
     );
   }
 
   if (description !== undefined && !isNullableString(description)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "description must be a string or null.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "description must be a string or null.",
     );
   }
 
@@ -565,14 +472,11 @@ photosRoute.post("/", async (context) => {
       !Array.isArray(payload.collectionIds) ||
       payload.collectionIds.some((id) => !isNonEmptyString(id))
     ) {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "collectionIds must be an array of strings.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "collectionIds must be an array of strings.",
       );
     }
 
@@ -586,41 +490,27 @@ photosRoute.post("/", async (context) => {
     .get();
 
   if (!area) {
-    return context.json(
-      {
-        error: {
-          code: "AREA_NOT_FOUND",
-          message: "Area not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
   if (collectionIds) {
     const collectionCheck = checkCollectionsInArea(collectionIds, areaId);
 
     if (collectionCheck === "not_found") {
-      return context.json(
-        {
-          error: {
-            code: "COLLECTION_NOT_FOUND",
-            message: "One or more collections were not found.",
-          },
-        },
+      return fail(
+        context,
         404,
+        "COLLECTION_NOT_FOUND",
+        "One or more collections were not found.",
       );
     }
 
     if (collectionCheck === "mismatch") {
-      return context.json(
-        {
-          error: {
-            code: "PHOTO_AREA_MISMATCH",
-            message: "Collections must belong to the same area as the photo.",
-          },
-        },
+      return fail(
+        context,
         422,
+        "PHOTO_AREA_MISMATCH",
+        "Collections must belong to the same area as the photo.",
       );
     }
   }
@@ -661,58 +551,25 @@ photosRoute.patch("/:photoId", async (context) => {
     .get();
 
   if (!photo) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_NOT_FOUND",
-          message: "Photo not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
   }
 
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "Request body must be a JSON object.",
-        },
-      },
-      400,
-    );
-  }
-
-  const payload = body as Record<string, unknown>;
+  const payload = parsedBody.payload;
   const updates: Partial<typeof photos.$inferInsert> = {};
 
   if (payload.title !== undefined) {
     if (!isNonEmptyString(payload.title)) {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "title must be a non-empty string.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "title must be a non-empty string.",
       );
     }
 
@@ -721,14 +578,11 @@ photosRoute.patch("/:photoId", async (context) => {
 
   if (payload.image !== undefined) {
     if (!isNonEmptyString(payload.image)) {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "image must be a non-empty string.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "image must be a non-empty string.",
       );
     }
 
@@ -740,14 +594,11 @@ photosRoute.patch("/:photoId", async (context) => {
       !isNonEmptyString(payload.takenAt) ||
       !isValidDateString(payload.takenAt)
     ) {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "takenAt must be a valid date string.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "takenAt must be a valid date string.",
       );
     }
 
@@ -756,14 +607,11 @@ photosRoute.patch("/:photoId", async (context) => {
 
   if (payload.summary !== undefined) {
     if (!isNullableString(payload.summary)) {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "summary must be a string or null.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "summary must be a string or null.",
       );
     }
 
@@ -772,14 +620,11 @@ photosRoute.patch("/:photoId", async (context) => {
 
   if (payload.description !== undefined) {
     if (!isNullableString(payload.description)) {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "description must be a string or null.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "description must be a string or null.",
       );
     }
 
@@ -793,14 +638,11 @@ photosRoute.patch("/:photoId", async (context) => {
       !Array.isArray(payload.collectionIds) ||
       payload.collectionIds.some((id) => !isNonEmptyString(id))
     ) {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "collectionIds must be an array of strings.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "collectionIds must be an array of strings.",
       );
     }
 
@@ -808,44 +650,32 @@ photosRoute.patch("/:photoId", async (context) => {
   }
 
   if (Object.keys(updates).length === 0 && collectionIds === undefined) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "At least one updatable field is required.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "At least one updatable field is required.",
     );
   }
 
   if (collectionIds) {
-    const collectionCheck = checkCollectionsInArea(
-      collectionIds,
-      photo.areaId,
-    );
+    const collectionCheck = checkCollectionsInArea(collectionIds, photo.areaId);
 
     if (collectionCheck === "not_found") {
-      return context.json(
-        {
-          error: {
-            code: "COLLECTION_NOT_FOUND",
-            message: "One or more collections were not found.",
-          },
-        },
+      return fail(
+        context,
         404,
+        "COLLECTION_NOT_FOUND",
+        "One or more collections were not found.",
       );
     }
 
     if (collectionCheck === "mismatch") {
-      return context.json(
-        {
-          error: {
-            code: "PHOTO_AREA_MISMATCH",
-            message: "Collections must belong to the same area as the photo.",
-          },
-        },
+      return fail(
+        context,
         422,
+        "PHOTO_AREA_MISMATCH",
+        "Collections must belong to the same area as the photo.",
       );
     }
   }

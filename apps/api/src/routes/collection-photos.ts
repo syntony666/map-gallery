@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { db } from "../db";
 import { collections, photoCollections, photos } from "../db/schema";
 import { collectionListSelection } from "./collections";
+import { fail, readJsonObject } from "./errors";
 
 export const collectionPhotosRoute = new Hono();
 
@@ -46,34 +47,16 @@ function parseCollectionPhotosPayload(body: unknown): ParsedBody {
 }
 
 collectionPhotosRoute.post("/", async (context) => {
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const parsed = parseCollectionPhotosPayload(body);
+  const parsed = parseCollectionPhotosPayload(parsedBody.payload);
 
   if (!parsed.ok) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: parsed.message,
-        },
-      },
-      400,
-    );
+    return fail(context, 400, "INVALID_BODY", parsed.message);
   }
 
   const { collectionId, photoIds } = parsed.payload;
@@ -85,15 +68,7 @@ collectionPhotosRoute.post("/", async (context) => {
     .get();
 
   if (!collection) {
-    return context.json(
-      {
-        error: {
-          code: "COLLECTION_NOT_FOUND",
-          message: "Collection not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
   const foundPhotos = db
@@ -103,35 +78,27 @@ collectionPhotosRoute.post("/", async (context) => {
     .all();
 
   if (foundPhotos.length !== photoIds.length) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_NOT_FOUND",
-          message: "One or more photos were not found.",
-        },
-      },
+    return fail(
+      context,
       404,
+      "PHOTO_NOT_FOUND",
+      "One or more photos were not found.",
     );
   }
 
   if (foundPhotos.some((photo) => photo.areaId !== collection.areaId)) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_AREA_MISMATCH",
-          message: "Photos must belong to the same area as the collection.",
-        },
-      },
+    return fail(
+      context,
       422,
+      "PHOTO_AREA_MISMATCH",
+      "Photos must belong to the same area as the collection.",
     );
   }
 
   const createdAt = new Date().toISOString();
 
   db.insert(photoCollections)
-    .values(
-      photoIds.map((photoId) => ({ photoId, collectionId, createdAt })),
-    )
+    .values(photoIds.map((photoId) => ({ photoId, collectionId, createdAt })))
     .onConflictDoNothing()
     .run();
 
@@ -155,15 +122,7 @@ collectionPhotosRoute.delete("/:collectionId/:photoId", (context) => {
     .get();
 
   if (!collection) {
-    return context.json(
-      {
-        error: {
-          code: "COLLECTION_NOT_FOUND",
-          message: "Collection not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
   const relationFilter = and(
@@ -178,14 +137,11 @@ collectionPhotosRoute.delete("/:collectionId/:photoId", (context) => {
     .get();
 
   if (!relation) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_COLLECTION_NOT_FOUND",
-          message: "Photo is not in the collection.",
-        },
-      },
+    return fail(
+      context,
       404,
+      "PHOTO_COLLECTION_NOT_FOUND",
+      "Photo is not in the collection.",
     );
   }
 
@@ -195,34 +151,16 @@ collectionPhotosRoute.delete("/:collectionId/:photoId", (context) => {
 });
 
 collectionPhotosRoute.post("/batch-delete", async (context) => {
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const parsed = parseCollectionPhotosPayload(body);
+  const parsed = parseCollectionPhotosPayload(parsedBody.payload);
 
   if (!parsed.ok) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: parsed.message,
-        },
-      },
-      400,
-    );
+    return fail(context, 400, "INVALID_BODY", parsed.message);
   }
 
   const { collectionId, photoIds } = parsed.payload;
@@ -234,15 +172,7 @@ collectionPhotosRoute.post("/batch-delete", async (context) => {
     .get();
 
   if (!collection) {
-    return context.json(
-      {
-        error: {
-          code: "COLLECTION_NOT_FOUND",
-          message: "Collection not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
   const relationFilter = and(
@@ -257,14 +187,11 @@ collectionPhotosRoute.post("/batch-delete", async (context) => {
     .all();
 
   if (existing.length !== photoIds.length) {
-    return context.json(
-      {
-        error: {
-          code: "PHOTO_COLLECTION_NOT_FOUND",
-          message: "One or more photos are not in the collection.",
-        },
-      },
+    return fail(
+      context,
       404,
+      "PHOTO_COLLECTION_NOT_FOUND",
+      "One or more photos are not in the collection.",
     );
   }
 

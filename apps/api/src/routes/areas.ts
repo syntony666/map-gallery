@@ -2,6 +2,7 @@ import { asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
 import { areaContents, areas, photos } from "../db/schema";
+import { fail, readJsonObject } from "./errors";
 
 export const areasRoute = new Hono();
 
@@ -59,15 +60,7 @@ areasRoute.get("/:areaId", (context) => {
     .get();
 
   if (!item) {
-    return context.json(
-      {
-        error: {
-          code: "AREA_NOT_FOUND",
-          message: "Area not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
   return context.json(item);
@@ -83,58 +76,25 @@ areasRoute.patch("/:areaId/content", async (context) => {
     .get();
 
   if (!area) {
-    return context.json(
-      {
-        error: {
-          code: "AREA_NOT_FOUND",
-          message: "Area not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "Request body must be a JSON object.",
-        },
-      },
-      400,
-    );
-  }
-
-  const payload = body as Record<string, unknown>;
+  const payload = parsedBody.payload;
   const hasCoverPhotoId = Object.hasOwn(payload, "coverPhotoId");
   const hasDescription = Object.hasOwn(payload, "description");
 
   if (!hasCoverPhotoId && !hasDescription) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "Provide at least one of coverPhotoId or description.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "Provide at least one of coverPhotoId or description.",
     );
   }
 
@@ -146,14 +106,11 @@ areasRoute.patch("/:areaId/content", async (context) => {
     coverPhotoId !== null &&
     typeof coverPhotoId !== "string"
   ) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "coverPhotoId must be a string or null.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "coverPhotoId must be a string or null.",
     );
   }
 
@@ -165,26 +122,15 @@ areasRoute.patch("/:areaId/content", async (context) => {
       .get();
 
     if (!photo) {
-      return context.json(
-        {
-          error: {
-            code: "PHOTO_NOT_FOUND",
-            message: "Photo not found.",
-          },
-        },
-        404,
-      );
+      return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
     }
 
     if (photo.areaId !== areaId) {
-      return context.json(
-        {
-          error: {
-            code: "PHOTO_AREA_MISMATCH",
-            message: "Cover photo must belong to the area.",
-          },
-        },
+      return fail(
+        context,
         422,
+        "PHOTO_AREA_MISMATCH",
+        "Cover photo must belong to the area.",
       );
     }
   }
@@ -194,14 +140,11 @@ areasRoute.patch("/:areaId/content", async (context) => {
     description !== null &&
     typeof description !== "string"
   ) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "description must be a string or null.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "description must be a string or null.",
     );
   }
 

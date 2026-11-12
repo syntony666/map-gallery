@@ -3,6 +3,7 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
 import { areas, collections, photoCollections, photos } from "../db/schema";
+import { fail, readJsonObject } from "./errors";
 
 export const collectionsRoute = new Hono();
 
@@ -57,14 +58,11 @@ collectionsRoute.get("/", (context) => {
   const areaId = context.req.query("areaId");
 
   if (!areaId) {
-    return context.json(
-      {
-        error: {
-          code: "AREA_ID_REQUIRED",
-          message: "The areaId query parameter is required.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "AREA_ID_REQUIRED",
+      "The areaId query parameter is required.",
     );
   }
 
@@ -75,15 +73,7 @@ collectionsRoute.get("/", (context) => {
     .get();
 
   if (!area) {
-    return context.json(
-      {
-        error: {
-          code: "AREA_NOT_FOUND",
-          message: "Area not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
   const items = db
@@ -97,59 +87,31 @@ collectionsRoute.get("/", (context) => {
 });
 
 collectionsRoute.post("/", async (context) => {
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "Request body must be a JSON object.",
-        },
-      },
-      400,
-    );
-  }
-
-  const payload = body as Record<string, unknown>;
+  const payload = parsedBody.payload;
   const areaId = payload.areaId;
   const name = payload.name;
 
   if (typeof areaId !== "string" || areaId.trim() === "") {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "areaId must be a non-empty string.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "areaId must be a non-empty string.",
     );
   }
 
   if (typeof name !== "string" || name.trim() === "") {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "name must be a non-empty string.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "name must be a non-empty string.",
     );
   }
 
@@ -160,15 +122,7 @@ collectionsRoute.post("/", async (context) => {
     .get();
 
   if (!area) {
-    return context.json(
-      {
-        error: {
-          code: "AREA_NOT_FOUND",
-          message: "Area not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
   const id = randomUUID();
@@ -186,14 +140,11 @@ collectionsRoute.post("/", async (context) => {
       .run();
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      return context.json(
-        {
-          error: {
-            code: "COLLECTION_NAME_CONFLICT",
-            message: "A collection with this name already exists in the area.",
-          },
-        },
+      return fail(
+        context,
         409,
+        "COLLECTION_NAME_CONFLICT",
+        "A collection with this name already exists in the area.",
       );
     }
 
@@ -219,72 +170,36 @@ collectionsRoute.patch("/:collectionId", async (context) => {
     .get();
 
   if (!collection) {
-    return context.json(
-      {
-        error: {
-          code: "COLLECTION_NOT_FOUND",
-          message: "Collection not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
-  let body: unknown;
+  const parsedBody = await readJsonObject(context);
 
-  try {
-    body = await context.req.json();
-  } catch {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_JSON",
-          message: "Request body must be valid JSON.",
-        },
-      },
-      400,
-    );
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "Request body must be a JSON object.",
-        },
-      },
-      400,
-    );
-  }
-
-  const payload = body as Record<string, unknown>;
+  const payload = parsedBody.payload;
   const hasName = "name" in payload;
   const hasCoverPhotoId = "coverPhotoId" in payload;
 
   if (!hasName && !hasCoverPhotoId) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "At least one of name or coverPhotoId is required.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "At least one of name or coverPhotoId is required.",
     );
   }
 
   const name = payload.name;
 
   if (hasName && (typeof name !== "string" || name.trim() === "")) {
-    return context.json(
-      {
-        error: {
-          code: "INVALID_BODY",
-          message: "name must be a non-empty string.",
-        },
-      },
+    return fail(
+      context,
       400,
+      "INVALID_BODY",
+      "name must be a non-empty string.",
     );
   }
 
@@ -293,14 +208,11 @@ collectionsRoute.patch("/:collectionId", async (context) => {
 
   if (hasCoverPhotoId) {
     if (coverPhotoId !== null && typeof coverPhotoId !== "string") {
-      return context.json(
-        {
-          error: {
-            code: "INVALID_BODY",
-            message: "coverPhotoId must be a string or null.",
-          },
-        },
+      return fail(
+        context,
         400,
+        "INVALID_BODY",
+        "coverPhotoId must be a string or null.",
       );
     }
 
@@ -312,15 +224,7 @@ collectionsRoute.patch("/:collectionId", async (context) => {
         .get();
 
       if (!photo) {
-        return context.json(
-          {
-            error: {
-              code: "PHOTO_NOT_FOUND",
-              message: "Photo not found.",
-            },
-          },
-          404,
-        );
+        return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
       }
 
       const membership = db
@@ -335,14 +239,11 @@ collectionsRoute.patch("/:collectionId", async (context) => {
         .get();
 
       if (!membership) {
-        return context.json(
-          {
-            error: {
-              code: "PHOTO_COLLECTION_NOT_FOUND",
-              message: "Cover photo must belong to the collection.",
-            },
-          },
+        return fail(
+          context,
           422,
+          "PHOTO_COLLECTION_NOT_FOUND",
+          "Cover photo must belong to the collection.",
         );
       }
 
@@ -361,14 +262,11 @@ collectionsRoute.patch("/:collectionId", async (context) => {
       .run();
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      return context.json(
-        {
-          error: {
-            code: "COLLECTION_NAME_CONFLICT",
-            message: "A collection with this name already exists in the area.",
-          },
-        },
+      return fail(
+        context,
         409,
+        "COLLECTION_NAME_CONFLICT",
+        "A collection with this name already exists in the area.",
       );
     }
 
@@ -394,15 +292,7 @@ collectionsRoute.delete("/:collectionId", (context) => {
     .get();
 
   if (!collection) {
-    return context.json(
-      {
-        error: {
-          code: "COLLECTION_NOT_FOUND",
-          message: "Collection not found.",
-        },
-      },
-      404,
-    );
+    return fail(context, 404, "COLLECTION_NOT_FOUND", "Collection not found.");
   }
 
   db.delete(collections).where(eq(collections.id, collectionId)).run();
