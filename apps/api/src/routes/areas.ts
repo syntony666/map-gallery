@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { db } from "../db";
 import { areaContents, areas, photos } from "../db/schema";
 import { fail, readJsonObject } from "./errors";
+import { isNullableString } from "./validators";
 
 export const areasRoute = new Hono();
 
@@ -101,11 +102,7 @@ areasRoute.patch("/:areaId/content", async (context) => {
   const coverPhotoId = payload.coverPhotoId;
   const description = payload.description;
 
-  if (
-    hasCoverPhotoId &&
-    coverPhotoId !== null &&
-    typeof coverPhotoId !== "string"
-  ) {
+  if (hasCoverPhotoId && !isNullableString(coverPhotoId)) {
     return fail(
       context,
       400,
@@ -135,11 +132,7 @@ areasRoute.patch("/:areaId/content", async (context) => {
     }
   }
 
-  if (
-    hasDescription &&
-    description !== null &&
-    typeof description !== "string"
-  ) {
+  if (hasDescription && !isNullableString(description)) {
     return fail(
       context,
       400,

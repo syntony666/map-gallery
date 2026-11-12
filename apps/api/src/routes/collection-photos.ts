@@ -4,6 +4,7 @@ import { db } from "../db";
 import { collections, photoCollections, photos } from "../db/schema";
 import { collectionListSelection } from "./collections";
 import { fail, readJsonObject } from "./errors";
+import { isNonEmptyString } from "./validators";
 
 export const collectionPhotosRoute = new Hono();
 
@@ -25,14 +26,14 @@ function parseCollectionPhotosPayload(body: unknown): ParsedBody {
   const collectionId = payload.collectionId;
   const photoIds = payload.photoIds;
 
-  if (typeof collectionId !== "string" || collectionId.trim() === "") {
+  if (!isNonEmptyString(collectionId)) {
     return { ok: false, message: "collectionId must be a non-empty string." };
   }
 
   if (
     !Array.isArray(photoIds) ||
     photoIds.length === 0 ||
-    photoIds.some((id) => typeof id !== "string" || id.trim() === "")
+    photoIds.some((id) => !isNonEmptyString(id))
   ) {
     return {
       ok: false,

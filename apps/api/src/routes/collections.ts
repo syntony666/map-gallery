@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { db } from "../db";
 import { areas, collections, photoCollections, photos } from "../db/schema";
 import { fail, readJsonObject } from "./errors";
+import { isNonEmptyString, isNullableString } from "./validators";
 
 export const collectionsRoute = new Hono();
 
@@ -97,7 +98,7 @@ collectionsRoute.post("/", async (context) => {
   const areaId = payload.areaId;
   const name = payload.name;
 
-  if (typeof areaId !== "string" || areaId.trim() === "") {
+  if (!isNonEmptyString(areaId)) {
     return fail(
       context,
       400,
@@ -106,7 +107,7 @@ collectionsRoute.post("/", async (context) => {
     );
   }
 
-  if (typeof name !== "string" || name.trim() === "") {
+  if (!isNonEmptyString(name)) {
     return fail(
       context,
       400,
@@ -194,7 +195,7 @@ collectionsRoute.patch("/:collectionId", async (context) => {
 
   const name = payload.name;
 
-  if (hasName && (typeof name !== "string" || name.trim() === "")) {
+  if (hasName && !isNonEmptyString(name)) {
     return fail(
       context,
       400,
@@ -207,7 +208,7 @@ collectionsRoute.patch("/:collectionId", async (context) => {
   let nextCoverPhotoId: string | null = null;
 
   if (hasCoverPhotoId) {
-    if (coverPhotoId !== null && typeof coverPhotoId !== "string") {
+    if (!isNullableString(coverPhotoId)) {
       return fail(
         context,
         400,
