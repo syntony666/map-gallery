@@ -55,8 +55,8 @@ export function HomePage() {
           type="button"
           onClick={toggleReadonly}
           title={readonly ? "離開閱覽模式" : "閱覽模式"}
-          className="absolute right-8 top-8 z-10 rounded bg-white px-2 py-1
-            text-stone-700 shadow hover:bg-stone-50"
+          className="absolute right-8 top-8 z-10 hidden rounded bg-white px-2
+            py-1 text-stone-700 shadow hover:bg-stone-50 sm:block"
         >
           <i className={`bi ${readonly ? "bi-eye-slash" : "bi-eye"}`} />
         </button>
