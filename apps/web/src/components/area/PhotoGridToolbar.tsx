@@ -8,6 +8,7 @@ export type PhotoGridToolbarAction = {
 
 type PhotoGridToolbarProps = {
   title?: string;
+  hint?: string;
   photoCount: number;
   showActions: boolean;
   action: PhotoGridToolbarAction;
@@ -15,6 +16,7 @@ type PhotoGridToolbarProps = {
 
 export function PhotoGridToolbar({
   title = "所有相片",
+  hint,
   photoCount,
   showActions,
   action,
@@ -40,14 +42,18 @@ export function PhotoGridToolbar({
       ]
     : [];
   return (
-    <section className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span className="text-lg font-semibold">{title}</span>
+    <section>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-semibold">{title}</span>
 
-        {buttons.length > 0 &&
-          buttons.map((button) => <Button key={button.id} button={button} />)}
+          {buttons.length > 0 &&
+            buttons.map((button) => <Button key={button.id} button={button} />)}
+        </div>
+        <span className="text-sm text-stone-500">{photoCount} 個項目</span>
       </div>
-      <span className="text-sm text-stone-500">{photoCount} 個項目</span>
+
+      {hint && <p className="mt-1 text-xs text-stone-500">{hint}</p>}
     </section>
   );
 }

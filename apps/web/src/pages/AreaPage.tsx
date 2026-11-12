@@ -86,6 +86,11 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     return "所有相片";
   })();
 
+  const photoGridHint =
+    UI.isAreaEditMode || UI.collectionPhotoMode === "cover"
+      ? "從下方點選一張，再點一次取消指定"
+      : undefined;
+
   const renderPhotoSection = () => {
     const photos = filters.visiblePhotos;
 
@@ -98,6 +103,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         <>
           <PhotoGridToolbar
             title={photoGridTitle}
+            hint={photoGridHint}
             photoCount={0}
             showActions={!UI.isEditMode && !readonly}
             action={{
@@ -120,6 +126,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       <>
         <PhotoGridToolbar
           title={photoGridTitle}
+          hint={photoGridHint}
           photoCount={filters.pagination?.total ?? photos.length}
           showActions={!UI.isEditMode && !readonly}
           action={{
@@ -214,12 +221,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           onKeywordChange={filters.setKeyword}
           onSortChange={filters.setSort}
         />
-      )}
-
-      {UI.isAreaEditMode && (
-        <p className="-mb-2 text-xs text-stone-500">
-          封面照片：從下方點選一張，再點一次取消指定
-        </p>
       )}
 
       {/* 景點卡片區 */}
