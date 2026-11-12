@@ -125,7 +125,10 @@ path:focus {
 .map-region:hover .map-region__stroke,
 .map-region:focus-visible .map-region__stroke,
 .map-region.is-active .map-region__stroke {
-  stroke: rgb(255 255 255 / 0.95);
+  stroke: var(
+    --region-stroke,
+    var(--region-color, rgb(255 255 255 / 0.95))
+  );
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.2));
 }
 
