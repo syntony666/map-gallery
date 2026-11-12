@@ -55,7 +55,7 @@ export function PhotoCard({
       <img
         src={photo.image}
         alt={photo.title}
-        className="aspect-square w-full object-cover"
+        className="img-loading aspect-square w-full object-cover"
         loading="lazy"
         decoding="async"
       />

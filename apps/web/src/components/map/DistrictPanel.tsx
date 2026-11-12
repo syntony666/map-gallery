@@ -73,7 +73,7 @@ export function DistrictPanel({
                     src={photo.image}
                     alt={photo.title}
                     loading="lazy"
-                    className="aspect-square w-full rounded-md object-cover"
+                    className="img-loading aspect-square w-full rounded-md object-cover"
                   />
                 </Link>
               ))}
