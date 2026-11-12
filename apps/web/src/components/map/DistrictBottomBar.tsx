@@ -28,7 +28,7 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
         >
           <AreaCover
             src={area.coverImage}
-            className="img-loading h-12 w-20 shrink-0 rounded-md object-cover"
+            className="h-12 w-20 shrink-0 rounded-md object-cover"
           />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-stone-800">

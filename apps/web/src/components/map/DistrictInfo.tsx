@@ -22,7 +22,7 @@ export function DistrictInfo({ area, heading = true }: DistrictInfoProps) {
       <AreaCover
         src={area.coverImage}
         alt={`${area.name}封面`}
-        className="img-loading aspect-[16/9] w-full rounded-lg object-cover"
+        className="aspect-[16/9] w-full rounded-lg object-cover"
         iconClassName="text-2xl"
       />
 
