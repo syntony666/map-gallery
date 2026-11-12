@@ -23,6 +23,7 @@ import type {
   Photo,
   PhotoDetail,
 } from "../types/gallery.type";
+import { getAdminToken } from "../utils/auth";
 
 export type PhotoListResult = {
   photos: Photo[];
@@ -48,19 +49,21 @@ async function requestData<T>(
   path: string,
   options: { method?: string; body?: unknown } = {},
 ): Promise<T> {
+  const token = getAdminToken();
+
   const response = await fetch(path, {
     method: options.method ?? "GET",
-    headers:
-      options.body !== undefined
+    headers: {
+      ...(options.body !== undefined
         ? { "Content-Type": "application/json" }
-        : undefined,
+        : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 
   const body = (await response.json().catch(() => null)) as
-    | T
-    | ErrorDataResponse
-    | null;
+    T | ErrorDataResponse | null;
 
   if (!response.ok) {
     const errorResponse = body as ErrorDataResponse | null;

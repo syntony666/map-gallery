@@ -1,12 +1,21 @@
 import { useViewMode } from "../../hooks/useViewMode";
+import { ensureAdminToken } from "../../utils/auth";
 
 export function ReadonlyToggle({ className = "" }: { className?: string }) {
   const { readonly, toggleReadonly } = useViewMode();
 
+  async function handleClick() {
+    if (readonly && !(await ensureAdminToken())) {
+      return;
+    }
+
+    toggleReadonly();
+  }
+
   return (
     <button
       type="button"
-      onClick={toggleReadonly}
+      onClick={handleClick}
       title={readonly ? "離開閱覽模式" : "閱覽模式"}
       className={`rounded bg-white px-2 py-1 text-stone-700 shadow hover:bg-stone-50 ${className}`}
     >

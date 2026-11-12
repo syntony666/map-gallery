@@ -1,6 +1,7 @@
 import path from "node:path";
 import { Hono } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { isAdminAuthorized, requireAdmin } from "./auth";
 import { areasRoute } from "./routes/areas";
 import { collectionPhotosRoute } from "./routes/collection-photos";
 import { collectionsRoute } from "./routes/collections";
@@ -21,6 +22,20 @@ app.get("/api/v1/health", (context) => {
     service: "map-gallery-api",
     version: "v1",
   });
+});
+
+app.get("/api/v1/auth/check", (context) => {
+  return isAdminAuthorized(context)
+    ? context.body(null, 204)
+    : context.body(null, 401);
+});
+
+app.use("/api/v1/*", async (context, next) => {
+  if (context.req.method === "GET" || context.req.method === "HEAD") {
+    return next();
+  }
+
+  return requireAdmin(context, next);
 });
 
 app.route("/api/v1/areas", areasRoute);

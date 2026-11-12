@@ -1,4 +1,5 @@
 export type ErrorCode =
+  | "UNAUTHORIZED"
   | "AREA_ID_REQUIRED"
   | "AREA_NOT_FOUND"
   | "COLLECTION_NOT_FOUND"

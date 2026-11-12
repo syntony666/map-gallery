@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import type { ErrorCode } from "@map-gallery/shared";
 
-type ErrorStatus = 400 | 404 | 409 | 422;
+type ErrorStatus = 400 | 401 | 404 | 409 | 422;
 
 export function fail(
   context: Context,
