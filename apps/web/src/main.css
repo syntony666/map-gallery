@@ -44,3 +44,81 @@ path:focus {
   margin: 12px;
   min-width: 220px;
 }
+
+.map-viewport {
+  position: relative;
+  height: clamp(560px, 75dvh, 860px);
+  overflow: hidden;
+}
+
+.map-scroller {
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.map-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.map-canvas {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 1600 / 1600;
+  width: auto;
+  margin: 0 auto;
+}
+
+.map-canvas__land,
+.map-canvas__overlay {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.map-canvas__land {
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.map-region path {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 8;
+  pointer-events: all;
+  cursor: pointer;
+  transition:
+    fill 160ms ease,
+    stroke 160ms ease,
+    filter 160ms ease;
+}
+
+.map-region:hover path,
+.map-region:focus-visible path,
+.map-region.is-active path {
+  fill: rgb(255 255 255 / 0.28);
+  stroke: rgb(255 255 255 / 0.95);
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.2));
+}
+
+.map-page {
+  min-height: 100dvh;
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgb(255 255 255 / 0.14),
+      transparent 45%
+    ),
+    #9ecdda;
+}
+
+.map-region:focus {
+  outline: none;
+}

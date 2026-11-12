@@ -1,18 +1,23 @@
+import { useState } from "react";
 import { TaiwanMap } from "../components/map/TaiwanMap";
 import { useViewMode } from "../hooks/useViewMode";
 
 export function HomePage() {
   const { readonly, toggleReadonly } = useViewMode();
+  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
 
   return (
-    <main className="h-screen flex flex-col overflow-hidden">
-      <div className="relative flex-1 min-h-0 w-full mx-auto px-4">
-        <TaiwanMap />
+    <main className="map-page">
+      <div className="relative mx-auto max-w-7xl px-4 py-4">
+        <TaiwanMap
+          selectedAreaId={selectedAreaId}
+          onSelectArea={setSelectedAreaId}
+        />
         <button
           type="button"
           onClick={toggleReadonly}
           title={readonly ? "離開閱覽模式" : "閱覽模式"}
-          className="absolute right-8 top-4 z-[1000] rounded bg-white px-2 py-1
+          className="absolute right-8 top-8 z-10 rounded bg-white px-2 py-1
             text-stone-700 shadow hover:bg-stone-50"
         >
           <i className={`bi ${readonly ? "bi-eye-slash" : "bi-eye"}`} />
