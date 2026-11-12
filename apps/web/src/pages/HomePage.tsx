@@ -8,7 +8,7 @@ export function HomePage() {
 
   return (
     <main className="map-page">
-      <div className="relative mx-auto h-full max-w-7xl px-4">
+      <div className="relative h-full">
         <TaiwanMap
           selectedAreaId={selectedAreaId}
           onSelectArea={setSelectedAreaId}
