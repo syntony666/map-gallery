@@ -70,6 +70,28 @@ export function TaiwanMap({
     return () => cancelAnimationFrame(frame);
   }, [shapes]);
 
+  useEffect(() => {
+    if (!selectedAreaId) {
+      return;
+    }
+
+    const scroller = scrollerRef.current;
+    const regionEl = scroller?.querySelector<SVGGElement>(
+      `#${CSS.escape(selectedAreaId)}`,
+    );
+    if (!scroller || !regionEl) {
+      return;
+    }
+
+    const rect = regionEl.getBoundingClientRect();
+    const scrollerRect = scroller.getBoundingClientRect();
+    const dx =
+      rect.left +
+      rect.width / 2 -
+      (scrollerRect.left + scrollerRect.width / 2);
+    scroller.scrollTo({ left: scroller.scrollLeft + dx, behavior: "smooth" });
+  }, [selectedAreaId]);
+
   return (
     <div className="map-viewport">
       <div
