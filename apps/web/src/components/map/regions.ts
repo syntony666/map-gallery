@@ -101,9 +101,9 @@ export function parseRegionsSvg(svgText: string): RegionShapes {
   });
 
   // A region whose bbox sits strictly inside another region's main body is an
-  // enclave (Taipei and Keelung inside New Taipei). The host's own outline
-  // still traces the enclave border, so its highlight needs the enclave cut
-  // out via clipPath.
+  // enclave (Taipei and Keelung inside New Taipei). The host's highlight is
+  // masked out of the enclave interior; the enclave outline itself is stroked
+  // again so the border keeps a visible rim.
   return {
     transform: wrapper?.getAttribute("transform") ?? "",
     regions: regions.map((region) => ({

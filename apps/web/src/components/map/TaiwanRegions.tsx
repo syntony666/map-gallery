@@ -57,14 +57,21 @@ export function TaiwanRegions({
       </defs>
       {shapes.regions.map((region) => {
         const area = areaById.get(region.id);
-        const isActive = selectedAreaId === region.id;
+        const mask =
+          region.holes.length > 0
+            ? `url(#map-region-mask-${region.id})`
+            : undefined;
 
         return (
           <g
             key={region.id}
             id={region.id}
             clipPath={`url(#map-region-clip-${region.id})`}
-            className={isActive ? "map-region is-active" : "map-region"}
+            className={
+              selectedAreaId === region.id
+                ? "map-region is-active"
+                : "map-region"
+            }
             role="button"
             tabIndex={0}
             aria-label={
@@ -83,31 +90,15 @@ export function TaiwanRegions({
                 key={d}
                 d={d}
                 className="map-region__fill"
-                mask={
-                  region.holes.length > 0
-                    ? `url(#map-region-mask-${region.id})`
-                    : undefined
-                }
+                mask={mask}
               />
             ))}
-            {region.paths.map((d) => (
+            {[...region.paths, ...region.holes].map((d) => (
               <path
                 key={d}
                 d={d}
                 className="map-region__stroke"
-                mask={
-                  region.holes.length > 0
-                    ? `url(#map-region-mask-${region.id})`
-                    : undefined
-                }
-              />
-            ))}
-            {region.holes.map((d) => (
-              <path
-                key={d}
-                d={d}
-                className="map-region__stroke"
-                mask={`url(#map-region-mask-${region.id})`}
+                mask={mask}
               />
             ))}
           </g>

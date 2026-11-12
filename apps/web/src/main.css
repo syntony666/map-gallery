@@ -90,7 +90,6 @@ path:focus {
 
 .map-region__fill {
   fill: transparent;
-  stroke: none;
   pointer-events: all;
   cursor: pointer;
   transition: fill 160ms ease;
