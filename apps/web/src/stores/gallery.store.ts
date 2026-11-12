@@ -115,6 +115,7 @@ function toArea(area: AreaDataResponse): Area {
     id: area.id,
     name: area.name,
     coverImage: area.coverImage ?? undefined,
+    coverPhotoId: area.coverPhotoId ?? undefined,
     description: area.description ?? undefined,
     photoCount: area.photoCount,
   };

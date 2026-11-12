@@ -1,25 +1,45 @@
 import { asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { db } from "../db";
-import { areaContents, areas } from "../db/schema";
+import { areaContents, areas, photos } from "../db/schema";
 
 export const areasRoute = new Hono();
 
+export const areaListSelection = {
+  id: areas.id,
+  name: areas.name,
+  coverImage: sql<string | null>`
+  COALESCE(
+    (
+      SELECT p.image
+      FROM photos AS p
+      WHERE p.id = area_contents.cover_photo_id
+        AND p.area_id = areas.id
+      LIMIT 1
+    ),
+    (
+      SELECT p.image
+      FROM photos AS p
+      WHERE p.area_id = areas.id
+      ORDER BY p.taken_at DESC, p.id ASC
+      LIMIT 1
+    )
+  )
+`,
+  coverPhotoId: areaContents.coverPhotoId,
+  description: areaContents.description,
+  photoCount: sql<number>`
+  (
+    SELECT COUNT(*)
+    FROM photos
+    WHERE photos.area_id = areas.id
+  )
+`,
+};
+
 areasRoute.get("/", (context) => {
   const items = db
-    .select({
-      id: areas.id,
-      name: areas.name,
-      coverImage: areaContents.coverImage,
-      description: areaContents.description,
-      photoCount: sql<number>`
-      (
-        SELECT COUNT(*)
-        FROM photos
-        WHERE photos.area_id = areas.id
-      )
-      `,
-    })
+    .select(areaListSelection)
     .from(areas)
     .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
     .orderBy(asc(areas.id))
@@ -32,19 +52,7 @@ areasRoute.get("/:areaId", (context) => {
   const areaId = context.req.param("areaId");
 
   const item = db
-    .select({
-      id: areas.id,
-      name: areas.name,
-      coverImage: areaContents.coverImage,
-      description: areaContents.description,
-      photoCount: sql<number>`
-      (
-        SELECT COUNT(*)
-        FROM photos
-        WHERE photos.area_id = areas.id
-      )
-      `,
-    })
+    .select(areaListSelection)
     .from(areas)
     .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
     .where(eq(areas.id, areaId))
@@ -115,38 +123,70 @@ areasRoute.patch("/:areaId/content", async (context) => {
   }
 
   const payload = body as Record<string, unknown>;
-  const hasCoverImage = Object.hasOwn(payload, "coverImage");
+  const hasCoverPhotoId = Object.hasOwn(payload, "coverPhotoId");
   const hasDescription = Object.hasOwn(payload, "description");
 
-  if (!hasCoverImage && !hasDescription) {
+  if (!hasCoverPhotoId && !hasDescription) {
     return context.json(
       {
         error: {
           code: "INVALID_BODY",
-          message: "Provide at least one of coverImage or description.",
+          message: "Provide at least one of coverPhotoId or description.",
         },
       },
       400,
     );
   }
 
-  const coverImage = payload.coverImage;
+  const coverPhotoId = payload.coverPhotoId;
   const description = payload.description;
 
   if (
-    hasCoverImage &&
-    coverImage !== null &&
-    (typeof coverImage !== "string" || coverImage.trim() === "")
+    hasCoverPhotoId &&
+    coverPhotoId !== null &&
+    typeof coverPhotoId !== "string"
   ) {
     return context.json(
       {
         error: {
           code: "INVALID_BODY",
-          message: "coverImage must be a non-empty string or null.",
+          message: "coverPhotoId must be a string or null.",
         },
       },
       400,
     );
+  }
+
+  if (typeof coverPhotoId === "string") {
+    const photo = db
+      .select({ id: photos.id, areaId: photos.areaId })
+      .from(photos)
+      .where(eq(photos.id, coverPhotoId))
+      .get();
+
+    if (!photo) {
+      return context.json(
+        {
+          error: {
+            code: "PHOTO_NOT_FOUND",
+            message: "Photo not found.",
+          },
+        },
+        404,
+      );
+    }
+
+    if (photo.areaId !== areaId) {
+      return context.json(
+        {
+          error: {
+            code: "PHOTO_AREA_MISMATCH",
+            message: "Cover photo must belong to the area.",
+          },
+        },
+        422,
+      );
+    }
   }
 
   if (
@@ -170,10 +210,7 @@ areasRoute.patch("/:areaId/content", async (context) => {
   db.insert(areaContents)
     .values({
       areaId,
-      coverImage:
-        hasCoverImage && typeof coverImage === "string"
-          ? coverImage.trim()
-          : null,
+      coverPhotoId: hasCoverPhotoId ? (coverPhotoId as string | null) : null,
       description:
         hasDescription && typeof description === "string" ? description : null,
       createdAt: now,
@@ -182,11 +219,8 @@ areasRoute.patch("/:areaId/content", async (context) => {
     .onConflictDoUpdate({
       target: areaContents.areaId,
       set: {
-        ...(hasCoverImage
-          ? {
-              coverImage:
-                coverImage === null ? null : (coverImage as string).trim(),
-            }
+        ...(hasCoverPhotoId
+          ? { coverPhotoId: coverPhotoId as string | null }
           : {}),
         ...(hasDescription
           ? {
@@ -200,12 +234,7 @@ areasRoute.patch("/:areaId/content", async (context) => {
     .run();
 
   const item = db
-    .select({
-      id: areas.id,
-      name: areas.name,
-      coverImage: areaContents.coverImage,
-      description: areaContents.description,
-    })
+    .select(areaListSelection)
     .from(areas)
     .leftJoin(areaContents, eq(areaContents.areaId, areas.id))
     .where(eq(areas.id, areaId))

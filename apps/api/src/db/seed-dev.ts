@@ -22,7 +22,7 @@ function seedDevelopmentData() {
         .onConflictDoUpdate({
           target: areaContents.areaId,
           set: {
-            coverImage: sql`excluded.cover_image`,
+            coverPhotoId: sql`excluded.cover_photo_id`,
             description: sql`excluded.description`,
             updatedAt: sql`excluded.updated_at`,
           },

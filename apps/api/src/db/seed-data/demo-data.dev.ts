@@ -1,6 +1,6 @@
 export type AreaContentSeed = {
   areaId: string;
-  coverImage: string | null;
+  coverPhotoId: string | null;
   description: string | null;
 };
 
@@ -28,26 +28,22 @@ export type PhotoCollectionSeed = {
 export const areaContentSeedData: readonly AreaContentSeed[] = [
   {
     areaId: "taipei-city",
-    coverImage:
-      "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=85",
+    coverPhotoId: "taipei-001",
     description: "台北好貴 爛台北",
   },
   {
     areaId: "new-taipei-city",
-    coverImage:
-      "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=85",
+    coverPhotoId: null,
     description: "跟台北市一樣爛",
   },
   {
     areaId: "taichung-city",
-    coverImage:
-      "https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=1600&q=85",
+    coverPhotoId: "taichung-001",
     description: "台中景點、建築、街區與旅行照片集合。",
   },
   {
     areaId: "kaohsiung-city",
-    coverImage:
-      "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=85",
+    coverPhotoId: "kaohsiung-001",
     description: "高雄港灣、老街、藝術空間與城市日常照片集合。",
   },
 ];

@@ -2,6 +2,7 @@ export type AreaDataResponse = {
   id: string;
   name: string;
   coverImage: string | null;
+  coverPhotoId: string | null;
   description: string | null;
   photoCount: number;
 };
@@ -11,6 +12,6 @@ export type AreaListDataResponse = {
 };
 
 export type UpdateAreaContentRequest = {
-  coverImage?: string | null;
+  coverPhotoId?: string | null;
   description?: string | null;
 };

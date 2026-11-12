@@ -17,6 +17,7 @@ export type Area = {
   id: string;
   name: string;
   coverImage?: string;
+  coverPhotoId?: string;
   description?: string;
   photoCount: number;
 };

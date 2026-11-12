@@ -18,7 +18,10 @@ export const areaContents = sqliteTable("area_contents", {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-  coverImage: text("cover_image"),
+  coverPhotoId: text("cover_photo_id").references(() => photos.id, {
+    onDelete: "set null",
+    onUpdate: "cascade",
+  }),
   description: text("description"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
