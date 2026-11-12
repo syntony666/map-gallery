@@ -73,6 +73,7 @@ path:focus {
   margin: 0 auto;
 }
 
+.map-canvas__underlay,
 .map-canvas__land,
 .map-canvas__overlay {
   position: absolute;
@@ -80,6 +81,16 @@ path:focus {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.map-canvas__underlay {
+  pointer-events: none;
+}
+
+.map-canvas__land-fill {
+  fill: var(--map-land, #f6f1e7);
+  stroke: var(--map-land, #f6f1e7);
+  stroke-width: 6;
 }
 
 .map-canvas__land {

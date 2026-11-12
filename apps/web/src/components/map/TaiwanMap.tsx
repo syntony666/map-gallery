@@ -74,6 +74,34 @@ export function TaiwanMap({ selectedAreaId, onSelectArea }: TaiwanMapProps) {
     <div className="map-viewport">
       <div className="map-scroller" ref={scrollerRef}>
         <div className="map-canvas">
+          <svg
+            className="map-canvas__underlay"
+            viewBox="0 0 1600 1600"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+          >
+            {shapes && (
+              <g transform={shapes.transform || undefined}>
+                <defs>
+                  <clipPath
+                    id="map-land-clip"
+                    clipPathUnits="userSpaceOnUse"
+                  >
+                    {shapes.regions.map((region) =>
+                      region.paths.map((d) => <path key={d} d={d} />),
+                    )}
+                  </clipPath>
+                </defs>
+                <g clipPath="url(#map-land-clip)">
+                  {shapes.regions.map((region) =>
+                    region.paths.map((d) => (
+                      <path key={d} d={d} className="map-canvas__land-fill" />
+                    )),
+                  )}
+                </g>
+              </g>
+            )}
+          </svg>
           <img
             className="map-canvas__land"
             src="/maps/taiwan-land.png"
