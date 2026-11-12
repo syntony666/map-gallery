@@ -7,26 +7,46 @@ img {
 }
 
 /* Shimmer behind loading images; the loaded image paints over it.
-   Only for object-cover so letterboxed images don't animate forever. */
+   transform-based so it composites on the GPU instead of repainting
+   every frame. img-error stops the sweep for broken images. */
 .img-loading {
-  background: linear-gradient(100deg, #e7e5e4 40%, #f5f5f4 50%, #e7e5e4 60%);
-  background-size: 200% 100%;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: #e7e5e4;
+}
+
+.img-loading::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
   animation: img-shimmer 1.4s ease-in-out infinite;
 }
 
+.img-loading img {
+  position: relative;
+}
+
+.img-error::before {
+  display: none;
+}
+
 @keyframes img-shimmer {
-  from {
-    background-position: 150% 0;
-  }
   to {
-    background-position: -150% 0;
+    transform: translateX(100%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .img-loading {
-    animation: none;
-    background: #e7e5e4;
+  .img-loading::before {
+    display: none;
   }
 }
 

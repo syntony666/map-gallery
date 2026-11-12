@@ -52,13 +52,18 @@ export function PhotoCard({
         </span>
       )}
 
-      <img
-        src={photo.image}
-        alt={photo.title}
-        className="img-loading aspect-square w-full object-cover"
-        loading="lazy"
-        decoding="async"
-      />
+      <span className="img-loading aspect-square w-full">
+        <img
+          src={photo.image}
+          alt={photo.title}
+          className="aspect-square w-full object-cover"
+          loading="lazy"
+          decoding="async"
+          onError={(event) =>
+            event.currentTarget.parentElement?.classList.add("img-error")
+          }
+        />
+      </span>
 
       <div className="p-3">
         <h3 className="truncate font-medium">{photo.title}</h3>

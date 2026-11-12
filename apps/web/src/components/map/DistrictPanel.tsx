@@ -68,12 +68,18 @@ export function DistrictPanel({
                   key={photo.id}
                   to={`/area/${area.id}/photo/${photo.id}`}
                   title={photo.title}
+                  className="img-loading rounded-md"
                 >
                   <img
                     src={photo.image}
                     alt={photo.title}
                     loading="lazy"
-                    className="img-loading aspect-square w-full rounded-md object-cover"
+                    className="aspect-square w-full object-cover"
+                    onError={(event) =>
+                      event.currentTarget.parentElement?.classList.add(
+                        "img-error",
+                      )
+                    }
                   />
                 </Link>
               ))}

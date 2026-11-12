@@ -26,11 +26,13 @@ export function AreaCover({
   }
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      onError={() => setFailedSrc(src)}
-    />
+    <span className={`img-loading ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        className="h-full w-full object-cover"
+        onError={() => setFailedSrc(src)}
+      />
+    </span>
   );
 }

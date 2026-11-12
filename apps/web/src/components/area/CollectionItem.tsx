@@ -18,13 +18,18 @@ export function CollectionItem({
       className={`shrink-0 overflow-hidden ${isSelected ? "" : "opacity-60"}`}
     >
       {collection.coverImage ? (
-        <img
-          src={collection.coverImage}
-          alt={collection.name}
-          loading="lazy"
-          decoding="async"
-          className="collection-item img-loading h-18 w-18 rounded-full object-cover sm:h-24 sm:w-24"
-        />
+        <span className="img-loading rounded-full">
+          <img
+            src={collection.coverImage}
+            alt={collection.name}
+            loading="lazy"
+            decoding="async"
+            className="collection-item h-18 w-18 rounded-full object-cover sm:h-24 sm:w-24"
+            onError={(event) =>
+              event.currentTarget.parentElement?.classList.add("img-error")
+            }
+          />
+        </span>
       ) : (
         <span className="collection-item flex h-18 w-18 items-center justify-center rounded-full bg-stone-200 text-2xl text-stone-400 sm:h-24 sm:w-24">
           <i className="bi bi-images" />
