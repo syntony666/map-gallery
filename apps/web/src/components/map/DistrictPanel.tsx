@@ -1,4 +1,7 @@
-import type { Area } from "../../types/gallery.type";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { galleryStore } from "../../stores/gallery.store";
+import type { Area, Photo } from "../../types/gallery.type";
 import { DistrictInfo } from "./DistrictInfo";
 
 type DistrictPanelProps = {
@@ -6,6 +9,33 @@ type DistrictPanelProps = {
 };
 
 export function DistrictPanel({ area }: DistrictPanelProps) {
+  const [photos, setPhotos] = useState<Photo[]>([]);
+
+  useEffect(() => {
+    if (!area) {
+      return;
+    }
+
+    let cancelled = false;
+    galleryStore
+      .getPhotos({ areaId: area.id, limit: 6 })
+      .then((result) => {
+        if (!cancelled) {
+          setPhotos(result.photos);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPhotos([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      setPhotos([]);
+    };
+  }, [area]);
+
   return (
     <aside
       aria-label="地區簡介"
@@ -13,6 +43,25 @@ export function DistrictPanel({ area }: DistrictPanelProps) {
         shadow-lg backdrop-blur lg:block"
     >
       <DistrictInfo area={area} />
+
+      {photos.length > 0 && (
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          {photos.map((photo) => (
+            <Link
+              key={photo.id}
+              to={`/area/${area?.id}/photo/${photo.id}`}
+              title={photo.title}
+            >
+              <img
+                src={photo.image}
+                alt={photo.title}
+                loading="lazy"
+                className="aspect-square w-full rounded-md object-cover"
+              />
+            </Link>
+          ))}
+        </div>
+      )}
     </aside>
   );
 }
