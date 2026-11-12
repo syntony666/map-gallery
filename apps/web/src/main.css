@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Keep alt text hidden while an image is loading or broken; it still
+   reaches assistive technology. */
+img {
+  color: transparent;
+}
+
 :root {
   --map-land: #f6f1e7;
   --region-color: #4a4a4a;
