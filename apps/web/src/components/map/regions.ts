@@ -1,5 +1,5 @@
 /** West coast north→south, then east coast north→south; for region pickers. */
-export const REGION_SORT_ORDER = [
+const REGION_SORT_ORDER = [
   "keelung-city",
   "taipei-city",
   "new-taipei-city",

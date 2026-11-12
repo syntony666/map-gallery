@@ -164,9 +164,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       <TitleBarContent
         areaName={area.name}
         description={
-          UI.isAreaEditMode
-            ? "對於這個地方，你想說..."
-            : area.description
+          UI.isAreaEditMode ? "對於這個地方，你想說..." : area.description
         }
         isEditMode={UI.isEditMode}
         isCollectionEditMode={UI.isCollectionEditMode}
@@ -237,34 +235,13 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
   );
 }
 
-function TitleBarContent({
-  areaName,
-  description,
-  isEditMode = false,
-  isCollectionEditMode = false,
-  showActions = true,
-  action,
-}: {
-  areaName: string;
-  description?: string;
-  isEditMode?: boolean;
-  isCollectionEditMode?: boolean;
-  showActions?: boolean;
-  action?: TitleBarActions;
-}) {
-  const navigate = useNavigate();
-
-  if (!action) {
-    return (
-      <TitleBar
-        areaName={areaName.length !== 0 ? areaName : "回到地圖"}
-        description={description}
-        onBack={() => navigate("/")}
-        buttonGroup={[]}
-      />
-    );
-  }
-
+function buildButtons(
+  areaName: string,
+  showActions: boolean,
+  isEditMode: boolean,
+  isCollectionEditMode: boolean,
+  action: TitleBarActions,
+): ButtonActionGroup[] {
   const browseButtons: ButtonActionGroup[] = [
     {
       id: "title-browser",
@@ -322,14 +299,46 @@ function TitleBarContent({
     },
   ];
 
-  const buttons =
-    areaName.length === 0 || !showActions
-      ? []
-      : !isEditMode
-        ? browseButtons
-        : isCollectionEditMode
-          ? collectionEditButtons
-          : editButtons;
+  if (areaName.length === 0 || !showActions) return [];
+  if (!isEditMode) return browseButtons;
+  return isCollectionEditMode ? collectionEditButtons : editButtons;
+}
+
+function TitleBarContent({
+  areaName,
+  description,
+  isEditMode = false,
+  isCollectionEditMode = false,
+  showActions = true,
+  action,
+}: {
+  areaName: string;
+  description?: string;
+  isEditMode?: boolean;
+  isCollectionEditMode?: boolean;
+  showActions?: boolean;
+  action?: TitleBarActions;
+}) {
+  const navigate = useNavigate();
+
+  if (!action) {
+    return (
+      <TitleBar
+        areaName={areaName.length !== 0 ? areaName : "回到地圖"}
+        description={description}
+        onBack={() => navigate("/")}
+        buttonGroup={[]}
+      />
+    );
+  }
+
+  const buttons = buildButtons(
+    areaName,
+    showActions,
+    isEditMode,
+    isCollectionEditMode,
+    action,
+  );
 
   return (
     <TitleBar

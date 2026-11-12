@@ -16,7 +16,11 @@ export function usePhotoDetailPageController({
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
-    if (!photoId || !areaId) return () => (cancelled = true);
+    if (!photoId || !areaId) {
+      return () => {
+        cancelled = true;
+      };
+    }
 
     Promise.all([
       galleryStore.getPhotoById(photoId),
