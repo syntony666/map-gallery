@@ -33,7 +33,13 @@ export function TaiwanRegions({
             >
               <path d="M-500,-500 H2100 V2100 H-500 Z" clipRule="evenodd" />
               {region.holes.map((d) => (
-                <path key={d} d={d} clipRule="evenodd" />
+                <path
+                  key={d}
+                  d={d}
+                  clipRule="evenodd"
+                  stroke="black"
+                  strokeWidth={12}
+                />
               ))}
             </clipPath>
           ))}
