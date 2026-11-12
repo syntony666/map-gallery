@@ -15,7 +15,7 @@ export function DistrictBottomSheet({
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 1024px)");
+    const query = window.matchMedia("(min-width: 768px)");
     const update = () => setIsDesktop(query.matches);
     update();
     query.addEventListener("change", update);

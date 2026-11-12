@@ -38,8 +38,8 @@ export function HomePage() {
   return (
     <main className="map-page">
       <div
-        className="relative h-full lg:grid
-          lg:grid-cols-[minmax(0,1fr)_22rem] lg:grid-rows-1"
+        className="relative h-full md:grid
+          md:grid-cols-[minmax(0,1fr)_22rem] md:grid-rows-1"
       >
         <TaiwanMap
           areas={areas}
