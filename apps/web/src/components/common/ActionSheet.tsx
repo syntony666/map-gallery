@@ -50,20 +50,36 @@ export function ActionSheet({
         aria-modal="true"
         aria-label={title ?? "操作選單"}
         className={[
-          "absolute inset-x-0 bottom-0",
+          "absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col",
           "rounded-t-2xl bg-stone-100 shadow-2xl",
           "pb-[max(1rem,env(safe-area-inset-bottom))]",
         ].join(" ")}
       >
-        <div className="mx-auto mt-3 h-1.5 w-10 rounded-full bg-stone-300" />
+        <div
+          className="mx-auto mt-3 h-1.5 w-10 shrink-0 rounded-full
+            bg-stone-300"
+        />
 
-        {title && (
-          <h2 className="px-5 pb-3 pt-4 text-base font-semibold text-stone-800">
-            {title}
-          </h2>
-        )}
+        <div className="flex items-center justify-between gap-2 px-5 pb-3 pt-4">
+          {title ? (
+            <h2 className="text-base font-semibold text-stone-800">
+              {title}
+            </h2>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="關閉"
+            className="rounded p-1.5 text-stone-400 hover:bg-stone-200
+              hover:text-stone-600"
+          >
+            <i className="bi bi-x-lg" />
+          </button>
+        </div>
 
-        <div className="px-3">{children}</div>
+        <div className="min-h-0 overflow-y-auto px-3">{children}</div>
       </section>
     </div>,
     document.body,
