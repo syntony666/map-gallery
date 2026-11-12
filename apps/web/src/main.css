@@ -89,7 +89,7 @@ path:focus {
 }
 
 .map-region__fill {
-  fill: transparent;
+  fill: color-mix(in srgb, var(--region-color, transparent) 15%, transparent);
   pointer-events: all;
   cursor: pointer;
   transition: fill 160ms ease;
@@ -108,7 +108,7 @@ path:focus {
 .map-region:hover .map-region__fill,
 .map-region:focus-visible .map-region__fill,
 .map-region.is-active .map-region__fill {
-  fill: rgb(255 255 255 / 0.35);
+  fill: color-mix(in srgb, var(--region-color, #ffffff) 35%, transparent);
 }
 
 .map-region:hover .map-region__stroke,

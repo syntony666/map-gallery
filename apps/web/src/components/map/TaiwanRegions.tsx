@@ -1,5 +1,7 @@
 import { useMemo } from "react";
+import type { CSSProperties } from "react";
 import type { Area } from "../../types/gallery.type";
+import { REGION_COLORS } from "./region-colors";
 import type { RegionShapes } from "./regions";
 
 type TaiwanRegionsProps = {
@@ -61,11 +63,17 @@ export function TaiwanRegions({
           region.holes.length > 0
             ? `url(#map-region-mask-${region.id})`
             : undefined;
+        const color = REGION_COLORS[region.id];
 
         return (
           <g
             key={region.id}
             id={region.id}
+            style={
+              color
+                ? ({ "--region-color": color } as CSSProperties)
+                : undefined
+            }
             clipPath={`url(#map-region-clip-${region.id})`}
             className={
               selectedAreaId === region.id
