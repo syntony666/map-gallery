@@ -58,8 +58,11 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-stone-800">
                 {area.name}
+                <span className="font-normal text-stone-500">
+                  {" "}
+                  • {area.photoCount}張照片
+                </span>
               </p>
-              <p className="text-xs text-stone-500">{area.photoCount} 張照片</p>
               {area.description && (
                 <p
                   className="mt-0.5 line-clamp-2 text-xs leading-relaxed
@@ -89,7 +92,12 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
         ))}
 
       {!isMdUp && (
-        <ActionSheet open={area !== null} title={area?.name} onClose={onClose}>
+        <ActionSheet
+          open={area !== null}
+          title={area?.name}
+          titleIcon={<i className="bi bi-chat-square-heart" />}
+          onClose={onClose}
+        >
           <div className="px-2 pb-2">
             <DistrictInfo area={area} heading={false} />
           </div>

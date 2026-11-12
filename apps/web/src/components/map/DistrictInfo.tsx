@@ -27,7 +27,13 @@ export function DistrictInfo({ area, heading = true }: DistrictInfoProps) {
       )}
 
       {heading && (
-        <h2 className="text-lg font-semibold text-stone-800">{area.name}</h2>
+        <h2
+          className="flex items-center gap-1.5 text-lg font-semibold
+            text-stone-800"
+        >
+          <i className="bi bi-chat-square-heart" />
+          {area.name}
+        </h2>
       )}
 
       <p className="text-xs text-stone-500">{area.photoCount} 張照片</p>
