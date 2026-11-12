@@ -70,9 +70,7 @@ export function TaiwanRegions({
             key={region.id}
             id={region.id}
             style={
-              color
-                ? ({ "--region-color": color } as CSSProperties)
-                : undefined
+              color ? ({ "--region-color": color } as CSSProperties) : undefined
             }
             clipPath={`url(#map-region-clip-${region.id})`}
             className={
@@ -82,14 +80,10 @@ export function TaiwanRegions({
             }
             role="button"
             tabIndex={0}
-            aria-label={
-              area ? `查看${area.name}內容` : `查看${region.id}內容`
-            }
+            aria-label={area ? `查看${area.name}內容` : `查看${region.id}內容`}
             onClick={(event) => {
               event.stopPropagation();
-              onSelectArea(
-                selectedAreaId === region.id ? null : region.id,
-              );
+              onSelectArea(selectedAreaId === region.id ? null : region.id);
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
@@ -99,20 +93,10 @@ export function TaiwanRegions({
             }}
           >
             {region.paths.map((d) => (
-              <path
-                key={d}
-                d={d}
-                className="map-region__fill"
-                mask={mask}
-              />
+              <path key={d} d={d} className="map-region__fill" mask={mask} />
             ))}
             {[...region.paths, ...region.holes].map((d) => (
-              <path
-                key={d}
-                d={d}
-                className="map-region__stroke"
-                mask={mask}
-              />
+              <path key={d} d={d} className="map-region__stroke" mask={mask} />
             ))}
           </g>
         );

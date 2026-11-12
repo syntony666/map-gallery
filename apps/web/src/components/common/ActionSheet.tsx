@@ -64,9 +64,7 @@ export function ActionSheet({
 
         <div className="flex items-center justify-between gap-2 px-5 pb-3 pt-4">
           {title ? (
-            <h2 className="text-base font-semibold text-stone-800">
-              {title}
-            </h2>
+            <h2 className="text-base font-semibold text-stone-800">{title}</h2>
           ) : (
             <span />
           )}

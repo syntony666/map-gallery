@@ -2,9 +2,7 @@ import { useState } from "react";
 import type { Area } from "../types/gallery.type";
 
 export function useAreaEditor(area: Area | null) {
-  const [draftDescription, setDraftDescription] = useState<string | null>(
-    null,
-  );
+  const [draftDescription, setDraftDescription] = useState<string | null>(null);
 
   function startEditing() {
     if (!area) return;
