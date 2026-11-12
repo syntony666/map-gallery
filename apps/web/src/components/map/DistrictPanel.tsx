@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { galleryStore } from "../../stores/gallery.store";
 import type { Area, Photo } from "../../types/gallery.type";
@@ -6,9 +7,10 @@ import { DistrictInfo } from "./DistrictInfo";
 
 type DistrictPanelProps = {
   area: Area | null;
+  action?: ReactNode;
 };
 
-export function DistrictPanel({ area }: DistrictPanelProps) {
+export function DistrictPanel({ area, action }: DistrictPanelProps) {
   const [photos, setPhotos] = useState<Photo[]>([]);
 
   useEffect(() => {
@@ -43,6 +45,7 @@ export function DistrictPanel({ area }: DistrictPanelProps) {
         overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg backdrop-blur
         xl:block"
     >
+      {action && <div className="absolute right-3 top-3">{action}</div>}
       <DistrictInfo area={area} />
 
       {photos.length > 0 && (
