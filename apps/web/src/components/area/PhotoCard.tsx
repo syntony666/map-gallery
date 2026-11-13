@@ -38,7 +38,7 @@ export function PhotoCard({
     <button
       type="button"
       onClick={handleClick}
-      className={`relative flex flex-col overflow-hidden rounded-xl bg-white text-left shadow-sm transition ${interactionClass}`}
+      className={`relative flex flex-col overflow-hidden rounded-md bg-white text-left shadow-sm transition ${interactionClass}`}
     >
       {isSelectionMode && (
         <span
