@@ -26,10 +26,17 @@ export function ReadonlyToggle({
       type="button"
       onClick={handleClick}
       title={readonly ? "切換為編輯模式" : "切換為閱覽模式"}
-      className={`flex items-center gap-1.5 rounded text-stone-700 ${className}`}
+      className={`group flex items-center gap-1.5 rounded text-stone-700 ${className}`}
     >
       <i className={`bi ${readonly ? "bi-lock" : "bi-unlock"}`} />
-      {label && <span>{readonly ? "閱覽模式" : "編輯模式"}</span>}
+      {label && (
+        <span
+          className="max-w-0 overflow-hidden whitespace-nowrap opacity-0
+            transition-all group-hover:max-w-24 group-hover:opacity-100"
+        >
+          {readonly ? "閱覽模式" : "編輯模式"}
+        </span>
+      )}
     </button>
   );
 }

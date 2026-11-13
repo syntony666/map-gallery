@@ -44,8 +44,8 @@ export function HomePage() {
           hintActions={
             <ReadonlyToggle
               label
-              className="px-1 py-1 text-xs text-stone-400
-                hover:text-stone-600"
+              className="bg-stone-100 px-2 py-1 text-xs
+                hover:bg-stone-200"
             />
           }
         />
