@@ -10,6 +10,8 @@ type BottomBarOverlayProps = {
   title: string;
   titleIcon?: string;
   sections: MenuSection[];
+  /** Thin rules between rows (long lists like the region menu). */
+  dividers?: boolean;
   className?: string;
 };
 
@@ -22,6 +24,7 @@ export function BottomBarOverlay({
   title,
   titleIcon,
   sections,
+  dividers,
   className = "",
 }: BottomBarOverlayProps) {
   if (!open) return null;
@@ -37,7 +40,7 @@ export function BottomBarOverlay({
       <FloatingCard
         className={[
           "absolute inset-x-0 bottom-[calc(100%_+_1rem)] flex",
-          "max-h-[calc(100dvh-10rem)] flex-col overflow-hidden p-4 md:left-auto md:w-72",
+          "max-h-[calc(100dvh-10rem)] flex-col overflow-hidden py-4 px-6 md:left-auto md:w-72",
           className,
         ].join(" ")}
       >
@@ -50,7 +53,11 @@ export function BottomBarOverlay({
         />
         <MenuHeading title={title} titleIcon={titleIcon} />
         <div className="scroll-body">
-          <MenuList sections={sections} onSelect={onClose} />
+          <MenuList
+            sections={sections}
+            dividers={dividers}
+            onSelect={onClose}
+          />
         </div>
       </FloatingCard>
     </>

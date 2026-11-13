@@ -10,7 +10,7 @@ type MenuHeadingProps = {
     scrollable row area so it stays put while rows scroll. */
 export function MenuHeading({ title, titleIcon }: MenuHeadingProps) {
   return (
-    <h2 className="pb-2 text-md font-semibold text-stone-800">
+    <h2 className="mb-2 text-md font-semibold text-stone-800">
       {titleIcon && (
         <i
           className={`bi ${titleIcon} mr-1.5 text-stone-600`}
@@ -24,18 +24,25 @@ export function MenuHeading({ title, titleIcon }: MenuHeadingProps) {
 
 type MenuListProps = {
   sections: MenuSection[];
+  /** Thin rules between rows (long lists like the region menu). */
+  dividers?: boolean;
   /** Fires when an enabled row is picked, before its own onClick. */
   onSelect?: (row: MenuRow) => void;
 };
 
 /** The one menu list: RegionList-style rows shared by every menu. */
-export function MenuList({ sections, onSelect }: MenuListProps) {
+export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
   return (
     <>
       {sections.map((section, index) => (
         <div
           key={section.id}
-          className={index > 0 ? "mt-1 border-t border-stone-200/60" : ""}
+          className={[
+            index > 0 ? "mt-1 border-t border-stone-300/60" : "",
+            dividers ? "divide-y divide-stone-200/60" : "",
+          ]
+            .join(" ")
+            .trim()}
         >
           {section.rows.map((row) => (
             <button

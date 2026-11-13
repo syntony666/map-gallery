@@ -87,6 +87,7 @@ export function DistrictPanel({
           </>
         ) : (
           <MenuList
+            dividers
             sections={[
               {
                 id: "regions",

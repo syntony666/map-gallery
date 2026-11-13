@@ -47,6 +47,7 @@ export function AllRegionsOverlay({
           rows: regionRows(areas, selectedAreaId, onSelect),
         },
       ]}
+      dividers
     />
   );
 }
