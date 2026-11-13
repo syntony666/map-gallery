@@ -77,9 +77,9 @@ export function DistrictBottomBar({
 
       {area !== null && (
         <div
-          className="absolute inset-x-4 bottom-4 z-10 max-h-[75dvh]
-            overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg
-            backdrop-blur md:hidden"
+          className="absolute inset-x-4 bottom-4 z-10 flex
+            max-h-[75dvh] flex-col overflow-hidden rounded-2xl bg-white/90
+            p-5 shadow-lg backdrop-blur md:hidden"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-stone-800">
@@ -98,7 +98,9 @@ export function DistrictBottomBar({
               </button>
             </span>
           </div>
-          <DistrictInfo area={area} heading={false} />
+          <div className="min-h-0 overflow-y-auto">
+            <DistrictInfo area={area} heading={false} />
+          </div>
         </div>
       )}
     </>

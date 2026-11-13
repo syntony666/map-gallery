@@ -50,10 +50,11 @@ export function AllRegionsMenu({
               onClick={close}
             />
             <div
-              className="absolute bottom-24 right-4 w-72
+              className="absolute bottom-24 right-4 flex w-72
                 max-h-[calc(100dvh-10rem)] max-w-[calc(100vw-2rem)]
-                overflow-y-auto rounded-2xl bg-white/90 p-4 shadow-lg
-                backdrop-blur"
+                flex-col overflow-hidden rounded-2xl bg-white/90 p-4
+                shadow-lg backdrop-blur [&>ul]:min-h-0 [&>ul]:flex-1
+                [&>ul]:overflow-y-auto"
             >
               <button
                 type="button"

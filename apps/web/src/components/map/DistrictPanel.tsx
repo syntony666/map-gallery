@@ -37,8 +37,8 @@ export function DistrictPanel({
     <aside
       aria-label="地區"
       className="absolute right-6 top-6 bottom-6 z-10 hidden w-80
-        overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg backdrop-blur
-        lg:block"
+        flex-col overflow-hidden rounded-2xl bg-white/90 p-5 shadow-lg
+        backdrop-blur lg:flex"
     >
       <div className="mb-4 flex items-center justify-between gap-2">
         <div>
@@ -57,45 +57,47 @@ export function DistrictPanel({
         {action}
       </div>
 
-      {showInfo ? (
-        <>
-          <DistrictInfo area={area} />
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {showInfo ? (
+          <>
+            <DistrictInfo area={area} />
 
-          {photos.length > 0 && (
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {photos.map((photo) => (
-                <Link
-                  key={photo.id}
-                  to={`/area/${area.id}/photo/${photo.id}`}
-                  title={photo.title}
-                  className="img-loading rounded-md"
-                >
-                  <img
-                    src={photo.image}
-                    alt={photo.title}
-                    loading="lazy"
-                    className="aspect-square w-full object-cover"
-                    onError={(event) =>
-                      event.currentTarget.parentElement?.classList.add(
-                        "img-error",
-                      )
-                    }
-                  />
-                </Link>
-              ))}
-            </div>
-          )}
-        </>
-      ) : (
-        <RegionList
-          areas={areas}
-          selectedAreaId={area?.id}
-          onSelect={(id) => {
-            onSelect(id);
-            setView("info");
-          }}
-        />
-      )}
+            {photos.length > 0 && (
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {photos.map((photo) => (
+                  <Link
+                    key={photo.id}
+                    to={`/area/${area.id}/photo/${photo.id}`}
+                    title={photo.title}
+                    className="img-loading rounded-md"
+                  >
+                    <img
+                      src={photo.image}
+                      alt={photo.title}
+                      loading="lazy"
+                      className="aspect-square w-full object-cover"
+                      onError={(event) =>
+                        event.currentTarget.parentElement?.classList.add(
+                          "img-error",
+                        )
+                      }
+                    />
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <RegionList
+            areas={areas}
+            selectedAreaId={area?.id}
+            onSelect={(id) => {
+              onSelect(id);
+              setView("info");
+            }}
+          />
+        )}
+      </div>
     </aside>
   );
 }
