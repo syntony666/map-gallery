@@ -1,10 +1,11 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import { Link } from "react-router";
 import type { ButtonVariant } from "../../types/button.type";
 
 export type ButtonSize = "sm" | "md";
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
+  onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
   /** Raised chrome: white + shadow, for controls floating over the map. */
   raised?: boolean;
   /** Ghost chrome: transparent until hover. */
@@ -47,6 +48,7 @@ export function Button({
   title,
   children,
   "aria-label": ariaLabel,
+  onClick,
   ...rest
 }: ButtonProps) {
   const classes = [
@@ -97,7 +99,7 @@ export function Button({
         to={to}
         title={title}
         aria-label={ariaLabel}
-        onClick={rest.onClick}
+        onClick={onClick}
         className={classes}
       >
         {content}
@@ -110,6 +112,7 @@ export function Button({
       type={type}
       title={title ?? label}
       aria-label={ariaLabel}
+      onClick={onClick}
       className={classes}
       {...rest}
     >
