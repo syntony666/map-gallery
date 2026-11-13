@@ -86,10 +86,19 @@ path:focus {
   display: none;
 }
 
+/* Reserve space on the non-scrolling wrapper: padding inside the scroller
+   would count toward scrollable overflow and re-enable scrolling. */
 @media (min-width: 1024px) {
-  /* Reserve space for the lg-only district panel (w-80 + right-6 + gap). */
-  .map-scroller {
+  /* lg-only district panel (w-80 + right-6 + gap). */
+  .map-viewport {
     padding-right: 23rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* md-only district bottom bar (h-12 + py-3 + bottom-4). */
+  .map-viewport {
+    padding-bottom: 6rem;
   }
 }
 
