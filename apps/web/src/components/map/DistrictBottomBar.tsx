@@ -25,9 +25,8 @@ export function DistrictBottomBar({
             text-stone-500 shadow-lg backdrop-blur lg:hidden"
         >
           <span>
-            點選地圖上的縣市，
-            <br className="md:hidden" />
-            查看簡介與照片。
+            點選地圖上的縣市
+            <br className="md:hidden" /> 查看簡介與照片
           </span>
           <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
         </div>
