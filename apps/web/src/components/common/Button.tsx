@@ -72,9 +72,12 @@ export function Button({
         <span
           className={
             expandLabel
-              ? `max-w-0 overflow-hidden whitespace-nowrap opacity-0
-                transition-all group-hover:max-w-24 group-hover:opacity-100
-                group-focus:max-w-24 group-focus:opacity-100`
+              ? // The collapsed span still counts as a flex item, so cancel
+                // the container's gap-1.5 to keep the icon centered.
+                `-ml-1.5 max-w-0 overflow-hidden whitespace-nowrap opacity-0
+                transition-all group-hover:ml-0 group-hover:max-w-24
+                group-hover:opacity-100 group-focus:ml-0 group-focus:max-w-24
+                group-focus:opacity-100`
               : undefined
           }
         >
