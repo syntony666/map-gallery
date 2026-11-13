@@ -65,8 +65,9 @@ export function AllRegionsOverlay({
           type="button"
           aria-label="關閉"
           onClick={onClose}
-          className="absolute right-3 top-3 rounded p-1.5
-            text-stone-400 hover:bg-stone-200 hover:text-stone-600"
+          className="absolute right-4 top-4 flex h-6 w-6 items-center
+            justify-center rounded text-stone-400 hover:bg-stone-200
+            hover:text-stone-600"
         >
           <i className="bi bi-x-lg" />
         </button>
