@@ -22,9 +22,15 @@ export function DistrictBottomBar({
         <div
           className="absolute inset-x-4 bottom-4 z-10 flex items-center
             justify-between gap-2 rounded-2xl bg-white/90 px-5 py-3 text-xs
-            text-stone-500 shadow-lg backdrop-blur lg:hidden"
+            text-stone-500 shadow-lg backdrop-blur md:text-sm lg:hidden"
         >
-          <span>點選地圖上的縣市，查看簡介與照片。</span>
+          <span>
+            點選地圖上的縣市
+            <span className="hidden md:inline">，</span>
+            <br className="md:hidden" />
+            查看簡介與照片
+            <span className="hidden md:inline">。</span>
+          </span>
           <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
         </div>
       ) : (
