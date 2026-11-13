@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Area } from "../../types/gallery.type";
-import { ActionSheet } from "../common/ActionSheet";
 import { RegionList } from "./RegionList";
 
 type AllRegionsMenuProps = {
@@ -8,13 +7,6 @@ type AllRegionsMenuProps = {
   selectedAreaId: string | null;
   onSelect: (areaId: string) => void;
 };
-
-const listTitle = (
-  <>
-    <i className="bi bi-chat-square-heart mr-1.5 text-stone-400" />
-    所有地區
-  </>
-);
 
 /** Below lg the district panel is hidden; this opens the same list on demand. */
 export function AllRegionsMenu({
@@ -46,26 +38,10 @@ export function AllRegionsMenu({
         所有地區
       </button>
 
-      {/* Phones use the same bottom sheet as the selection UI. */}
-      <ActionSheet
-        className="md:hidden"
-        open={open}
-        title={listTitle}
-        onClose={close}
-      >
-        <div className="px-2 pb-2 [&>h2]:hidden">
-          <RegionList
-            areas={areas}
-            selectedAreaId={selectedAreaId}
-            onSelect={select}
-          />
-        </div>
-      </ActionSheet>
-
-      {/* Tablets get a floating card under the button, styled like the
-          district bottom bar. */}
+      {/* Floating card styled like the district bottom bar; the max height
+          reserves the bar's zone on md+ so the card never covers it. */}
       {open && (
-        <div className="absolute inset-0 z-20 hidden md:max-lg:block">
+        <div className="absolute inset-0 z-20 lg:hidden">
           <button
             type="button"
             aria-label="關閉所有地區"
@@ -73,9 +49,10 @@ export function AllRegionsMenu({
             onClick={close}
           />
           <div
-            className="absolute left-4 top-16 max-h-[70dvh] w-72
-              overflow-y-auto rounded-2xl bg-white/90 p-4 shadow-lg
-              backdrop-blur"
+            className="absolute left-4 top-16 w-72
+              max-w-[calc(100%-2rem)] overflow-y-auto rounded-2xl
+              bg-white/90 p-4 shadow-lg backdrop-blur
+              max-h-[calc(100%-6rem)] md:max-h-[calc(100%-10rem)]"
           >
             <RegionList
               areas={areas}
