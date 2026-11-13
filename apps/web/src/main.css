@@ -55,11 +55,6 @@ img {
   --map-boundary: #57534e;
   --region-color: #4a4a4a;
   --region-stroke: #232323;
-  /* Space reserved for the floating district cards, applied as scrollable
-     end-padding inside .map-scroller: x mirrors the lg side panel
-     (w-80 + right-6 + gap), y the md bottom bar (card + bottom-4 + margin). */
-  --map-card-reserve-x: 23rem;
-  --map-card-reserve-y: 6rem;
 }
 
 /* Regions with an inline --region-color get a matching rim by default;
@@ -89,20 +84,6 @@ path:focus {
 
 .map-scroller::-webkit-scrollbar {
   display: none;
-}
-
-/* Breakpoints mirror the cards' Tailwind classes: the side panel is
-   lg-only, the bottom bar is md:max-lg. */
-@media (width >= 64rem) {
-  .map-scroller {
-    padding-right: var(--map-card-reserve-x);
-  }
-}
-
-@media (48rem <= width < 64rem) {
-  .map-scroller {
-    padding-bottom: var(--map-card-reserve-y);
-  }
 }
 
 .map-canvas {
