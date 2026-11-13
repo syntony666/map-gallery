@@ -1,5 +1,10 @@
+import { useState } from "react";
 import type { ButtonActionGroup } from "../../types/button.type";
 import type { Collection } from "../../types/gallery.type";
+import { ActionMenuList } from "../common/ActionMenuList";
+import { BottomBarOverlay } from "../common/BottomBarOverlay";
+import { Button } from "../common/Button";
+import { ButtonGroup } from "../common/ButtonGroup";
 import { Toolbar } from "../common/Toolbar";
 
 export type CollectionManageToolbarAction = {
@@ -26,6 +31,8 @@ export function CollectionManageToolbar({
   action,
   extraGroups = [],
 }: CollectionManageToolbarProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   if (!collection) {
     return (
       <Toolbar label="請選取上方相簿..." buttonGroups={extraGroups} bottomBar />
@@ -115,6 +122,30 @@ export function CollectionManageToolbar({
       mobileGroupIcon="bi-pencil-square"
       mobileGroupLabel="管理相簿"
       bottomBar
+      barActions={
+        <>
+          <ButtonGroup
+            groups={[...buttons, ...extraGroups]}
+            mobileMode="none"
+            breakpoint="md"
+          />
+          <Button
+            size="md"
+            icon="bi-list"
+            aria-label="管理相簿"
+            className="md:hidden"
+            onClick={() => setMenuOpen(true)}
+          />
+        </>
+      }
+      barOverlay={
+        <BottomBarOverlay open={menuOpen} onClose={() => setMenuOpen(false)}>
+          <ActionMenuList
+            groups={[...buttons, ...extraGroups]}
+            onSelect={() => setMenuOpen(false)}
+          />
+        </BottomBarOverlay>
+      }
     />
   );
 }

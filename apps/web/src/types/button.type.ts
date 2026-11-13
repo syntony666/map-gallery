@@ -22,5 +22,5 @@ export type ButtonGroupMobileOptions = {
   mobileGroupIcon?: string;
   mobileGroupLabel?: string;
   /** Viewport width where the group switches to its mobile rendering. */
-  breakpoint?: "sm" | "md";
+  breakpoint?: "sm" | "md" | "lg";
 };

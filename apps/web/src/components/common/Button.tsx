@@ -19,6 +19,8 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
   expandLabel?: boolean;
   /** Always hide the label. */
   iconOnly?: boolean;
+  /** Extra classes on the label span (e.g. hiding it below a breakpoint). */
+  labelClassName?: string;
   /** Render as a router Link instead of a button. */
   to?: string;
   children?: ReactNode;
@@ -42,6 +44,7 @@ export function Button({
   label,
   expandLabel = false,
   iconOnly = false,
+  labelClassName,
   to,
   className = "",
   type = "button",
@@ -82,7 +85,7 @@ export function Button({
                 transition-all group-hover:ml-0 group-hover:max-w-24
                 group-hover:opacity-100 group-focus:ml-0 group-focus:max-w-24
                 group-focus:opacity-100`
-              : undefined
+              : labelClassName
           }
         >
           {label}

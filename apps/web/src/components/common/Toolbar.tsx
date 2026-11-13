@@ -1,4 +1,6 @@
+import type { ReactNode } from "react";
 import { BottomBar } from "./BottomBar";
+import { BottomBarStack } from "./BottomBarStack";
 import { ButtonGroup } from "./ButtonGroup";
 import type {
   ButtonActionGroup,
@@ -16,8 +18,13 @@ type ToolbarProps = {
   mobileGroupIcon?: string;
   mobileGroupLabel?: string;
 
-  /** Below sm, replace the strip with a floating bottom bar. */
+  /** Below lg, replace the strip with a floating bottom bar. */
   bottomBar?: boolean;
+
+  /** Replaces the default button group inside the bottom bar. */
+  barActions?: ReactNode;
+  /** Overlay anchored above the bottom bar inside its positioning stack. */
+  barOverlay?: ReactNode;
 
   className?: string;
 };
@@ -31,6 +38,8 @@ export function Toolbar({
   mobileGroupIcon,
   mobileGroupLabel,
   bottomBar = false,
+  barActions,
+  barOverlay,
   className = "",
 }: ToolbarProps) {
   const text = (
@@ -51,7 +60,7 @@ export function Toolbar({
         className={[
           "flex-wrap items-center justify-between gap-3",
           "border-y border-stone-300 text-sm h-15",
-          bottomBar ? "hidden md:flex" : "flex",
+          bottomBar ? "hidden lg:flex" : "flex",
           className,
         ].join(" ")}
       >
@@ -67,19 +76,23 @@ export function Toolbar({
       </section>
 
       {bottomBar && (
-        <BottomBar
-          fixed
-          className="z-50 text-sm md:hidden"
-          actions={
-            <ButtonGroup
-              groups={buttonGroups}
-              mobileMode="inline"
-              breakpoint="md"
-            />
-          }
-        >
-          {text}
-        </BottomBar>
+        <BottomBarStack fixed overlay={barOverlay} className="z-50 lg:hidden">
+          <BottomBar
+            stacked
+            className="text-sm"
+            actions={
+              barActions ?? (
+                <ButtonGroup
+                  groups={buttonGroups}
+                  mobileMode="inline"
+                  breakpoint="md"
+                />
+              )
+            }
+          >
+            {text}
+          </BottomBar>
+        </BottomBarStack>
       )}
     </>
   );

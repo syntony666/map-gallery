@@ -47,7 +47,7 @@ export function PhotoGridToolbar({
         <div className="flex items-center gap-2">
           <span className="text-lg font-semibold">{title}</span>
 
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-2 lg:flex">
             {buttons.map((button) => (
               <Button key={button.id} size="md" {...button} />
             ))}

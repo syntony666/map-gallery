@@ -1,5 +1,10 @@
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
+import { ActionMenuList } from "../components/common/ActionMenuList";
 import { BottomBar } from "../components/common/BottomBar";
+import { BottomBarOverlay } from "../components/common/BottomBarOverlay";
+import { BottomBarStack } from "../components/common/BottomBarStack";
+import { Button } from "../components/common/Button";
 import { ButtonGroup } from "../components/common/ButtonGroup";
 import { CollectionBar } from "../components/area/CollectionBar";
 import { CollectionManageToolbar } from "../components/area/CollectionManageToolbar";
@@ -10,7 +15,7 @@ import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
 import { PhotoPagination } from "../components/area/PhotoPagination";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
-import type { ButtonActionGroup, ButtonConfig } from "../types/button.type";
+import type { ButtonActionGroup } from "../types/button.type";
 import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -54,6 +59,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     });
 
   const { readonly } = useViewMode();
+  const [photoMenuOpen, setPhotoMenuOpen] = useState(false);
 
   useDocumentTitle(area?.name);
   const navigate = useNavigate();
@@ -108,35 +114,33 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     },
   ];
 
-  // Below md all photo actions live in the floating bottom bar.
-  const photoButtons: ButtonConfig[] =
+  // 編輯照片按鈕展開的浮層選單內容
+  const photoMenuGroups: ButtonActionGroup[] =
     !UI.isEditMode && !readonly
       ? [
           {
-            id: "photo-add",
-            label: "新增照片",
-            icon: "bi-plus-lg",
-            onClick: () => navigate(`/area/${area.id}/photo/new`),
+            id: "photo-actions",
+            buttons: [
+              {
+                id: "photo-add",
+                label: "新增照片",
+                icon: "bi-plus-lg",
+                onClick: () => navigate(`/area/${area.id}/photo/new`),
+              },
+              ...(filters.visiblePhotos && filters.visiblePhotos.length > 0
+                ? [
+                    {
+                      id: "photo-delete",
+                      label: "刪除照片",
+                      icon: "bi-trash3",
+                      onClick: actions.startPhotoDeleteSelect,
+                    },
+                  ]
+                : []),
+            ],
           },
-          ...(filters.visiblePhotos && filters.visiblePhotos.length > 0
-            ? [
-                {
-                  id: "photo-delete",
-                  label: "刪除照片",
-                  icon: "bi-trash3",
-                  onClick: actions.startPhotoDeleteSelect,
-                },
-              ]
-            : []),
         ]
       : [];
-
-  const bottomBarGroups: ButtonActionGroup[] = [
-    ...titleButtons,
-    ...(photoButtons.length > 0
-      ? [{ id: "photo-actions", buttons: photoButtons }]
-      : []),
-  ];
 
   const renderPhotoSection = () => {
     const photos = filters.visiblePhotos;
@@ -205,13 +209,13 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   };
 
-  // Reserve space for the floating bottom bar below md; every
+  // Reserve space for the floating bottom bar below lg; every
   // non-readonly mode has one now.
   const needsBottomBarSpace = !readonly;
 
   return (
     <main
-      className={`grid gap-4 ${needsBottomBarSpace ? "pb-24 md:pb-0" : ""}`}
+      className={`grid gap-4 ${needsBottomBarSpace ? "pb-24 lg:pb-0" : ""}`}
     >
       {/* 標題列 */}
       <TitleBarContent
@@ -272,32 +276,61 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         />
       )}
 
-      {/* 景點卡片區 */}
-      {renderPhotoSection()}
-
-      {/* <md 的浮動操作列：標題與照片操作都收進這裡 */}
-      {bottomBarGroups.length > 0 && (
-        <BottomBar
-          fixed
-          className="z-50 text-sm md:hidden"
-          actions={
-            <ButtonGroup
-              groups={bottomBarGroups}
-              mobileMode="inline"
-              breakpoint="md"
-            />
-          }
-        >
-          <p className="min-w-0 flex-1 truncate text-stone-500">{area.name}</p>
-        </BottomBar>
-      )}
-
       {UI.isPhotoDeleteSelectMode && (
         <PhotoSelectionToolbar
           selectedCount={UI.selectedPhotoIds.size}
           onConfirmDelete={actions.confirmPhotoDelete}
           onCancel={actions.cancelPhotoDelete}
         />
+      )}
+
+      {/* 景點卡片區 */}
+      {renderPhotoSection()}
+
+      {/* <lg 的浮動操作列：md–lg 圖加字、<md 純圖示 */}
+      {titleButtons.length > 0 && (
+        <BottomBarStack
+          fixed
+          className="z-50 lg:hidden"
+          overlay={
+            <BottomBarOverlay
+              open={photoMenuOpen}
+              onClose={() => setPhotoMenuOpen(false)}
+            >
+              <ActionMenuList
+                groups={photoMenuGroups}
+                onSelect={() => setPhotoMenuOpen(false)}
+              />
+            </BottomBarOverlay>
+          }
+        >
+          <BottomBar
+            stacked
+            className="text-sm"
+            actions={
+              <>
+                <ButtonGroup
+                  groups={titleButtons}
+                  mobileMode="inline"
+                  breakpoint="md"
+                />
+                {!UI.isEditMode && (
+                  <Button
+                    size="md"
+                    icon="bi-images"
+                    label="編輯照片"
+                    labelClassName="hidden md:inline"
+                    onClick={() => setPhotoMenuOpen(true)}
+                  />
+                )}
+              </>
+            }
+          >
+            <p className="min-w-0 flex-1 truncate text-stone-500">
+              {UI.isEditMode ? "編輯模式" : area.name}
+            </p>
+          </BottomBar>
+        </BottomBarStack>
       )}
     </main>
   );
@@ -375,7 +408,7 @@ function TitleBarContent({
       description={description}
       onBack={() => navigate("/")}
       buttonGroup={buttonGroup}
-      mobileActions={{ mobileMode: "none", breakpoint: "md" }}
+      mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
     />
   );
 }
