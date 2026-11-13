@@ -63,25 +63,6 @@ export function CollectionManageToolbar({
         label="編輯相簿：請選取上方相簿..."
         buttonGroups={extraGroups}
         bottomBar
-        barActions={
-          <>
-            <ButtonGroup
-              groups={extraGroups}
-              mobileMode="none"
-              breakpoint="lg"
-            />
-            {menuButton}
-          </>
-        }
-        barOverlay={
-          <BottomBarOverlay
-            open={menuOpen}
-            onClose={() => setMenuOpen(false)}
-            title="編輯相簿"
-            titleIcon="bi-pencil-square"
-            sections={menuSections(extraGroups)}
-          />
-        }
       />
     );
   }
