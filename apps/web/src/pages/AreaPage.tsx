@@ -299,7 +299,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       {/* <lg 的浮動操作列：md–lg 圖加字、<md 純圖示 */}
       {titleButtons.length > 0 && (
         <BottomBarStack
-          fixed
           className="z-50 lg:hidden"
           overlay={
             <BottomBarOverlay
@@ -315,7 +314,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           }
         >
           <BottomBar
-            stacked
             className="text-sm"
             actions={
               <>

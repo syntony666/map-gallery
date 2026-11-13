@@ -76,9 +76,8 @@ export function Toolbar({
       </section>
 
       {bottomBar && (
-        <BottomBarStack fixed overlay={barOverlay} className="z-50 lg:hidden">
+        <BottomBarStack overlay={barOverlay} className="z-50 lg:hidden">
           <BottomBar
-            stacked
             className="text-sm"
             actions={
               barActions ?? (

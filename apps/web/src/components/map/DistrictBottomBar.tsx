@@ -33,7 +33,6 @@ export function DistrictBottomBar({
     <BottomBarStack overlay={overlay} className="lg:hidden">
       {area === null ? (
         <BottomBar
-          stacked
           className="text-xs text-stone-500 md:text-sm"
           actions={
             <>
@@ -45,14 +44,15 @@ export function DistrictBottomBar({
           <span>點選縣市，以查看簡介。</span>
         </BottomBar>
       ) : collapsed ? (
-        <BottomBar stacked className="text-sm md:hidden">
-          <span className="font-semibold text-stone-800">{area.name}</span>
-          {area.name}
-          <span className="text-stone-500"> • {area.photoCount}張照片</span>
+        <BottomBar className="text-sm" actions={actions}>
+          <p className="min-w-0 truncate">
+            <span className="font-semibold text-stone-800">{area.name}</span>
+            <span className="text-stone-500"> • {area.photoCount}張照片</span>
+          </p>
         </BottomBar>
       ) : null}
 
-      {area !== null && (
+      {area !== null && !collapsed && (
         <FloatingCard className="hidden items-center gap-3 px-4 py-3 md:max-lg:flex">
           <AreaCover
             src={area.coverImage}

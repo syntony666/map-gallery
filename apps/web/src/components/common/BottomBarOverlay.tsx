@@ -6,8 +6,9 @@ type BottomBarOverlayProps = {
   open: boolean;
   onClose: () => void;
   children: ReactNode;
-  /** Optional heading above the menu rows; the close button floats right. */
-  title?: ReactNode;
+  /** Heading above the menu rows; the close button floats right. Required so
+      every menu ships with a label. */
+  title: ReactNode;
   className?: string;
 };
 
@@ -34,7 +35,7 @@ export function BottomBarOverlay({
       <FloatingCard
         className={[
           "absolute inset-x-0 bottom-[calc(100%_+_1rem)] flex",
-          "max-h-[calc(100dvh-10rem)] flex-col overflow-hidden p-4",
+          "max-h-[calc(100dvh-10rem)] flex-col overflow-hidden p-4 md:left-auto md:w-72",
           className,
         ].join(" ")}
       >
@@ -45,11 +46,9 @@ export function BottomBarOverlay({
           onClick={onClose}
           className="absolute right-4 top-4 h-6 w-6 justify-center"
         />
-        {title && (
-          <p className="px-1 pb-2 pr-8 text-sm font-semibold text-stone-700">
-            {title}
-          </p>
-        )}
+        <p className="px-1 pb-2 pr-8 text-sm font-semibold text-stone-700">
+          {title}
+        </p>
         <div className="scroll-body">{children}</div>
       </FloatingCard>
     </>

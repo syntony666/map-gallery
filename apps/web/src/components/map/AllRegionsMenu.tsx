@@ -41,11 +41,7 @@ export function AllRegionsOverlay({
   };
 
   return (
-    <BottomBarOverlay
-      open={open}
-      onClose={onClose}
-      className="md:left-auto md:w-72"
-    >
+    <BottomBarOverlay open={open} onClose={onClose} title="所有地區">
       <RegionList
         areas={areas}
         selectedAreaId={selectedAreaId}
