@@ -93,6 +93,13 @@ path:focus {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* Reserve space for the md-only bottom bar (h-12 + py-3 + bottom-4). */
+  .map-scroller {
+    padding-bottom: 6rem;
+  }
+}
+
 .map-canvas {
   position: relative;
   flex: none;
