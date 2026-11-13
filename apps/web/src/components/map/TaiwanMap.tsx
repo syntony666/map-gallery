@@ -233,6 +233,7 @@ export function TaiwanMap({
           let pannedX = 0;
           let pannedY = 0;
           let lastCenter: { x: number; y: number } | null = null;
+          let lastSvgAnchor: { x: number; y: number } | null = null;
           let pinchEndAt = 0;
 
           // Ease an out-of-bounds pan back inside — the rubber-band return.
@@ -280,15 +281,15 @@ export function TaiwanMap({
           // Fling inertia: decay the release velocity until it dies out,
           // then ease back inside if the pan ended past the bounds.
           hammerManager.on("panend", (ev) => {
+            // A pinch release also fires panend; pinchend already owns the
+            // settle, and leftover pinch velocity must not fling the map.
+            if (performance.now() - pinchEndAt < 50) {
+              return;
+            }
             const pan = instance.getPan();
             const clamped = clampPan(instance, pan);
             if (pan.x !== clamped.x || pan.y !== clamped.y) {
               settleToBounds();
-              return;
-            }
-            // A pinch release also fires panend; leftover pinch velocity
-            // must not fling the map.
-            if (performance.now() - pinchEndAt < 50) {
               return;
             }
             let vx = ev.velocityX;
@@ -321,6 +322,7 @@ export function TaiwanMap({
               gesturing = true;
               initialScale = instance.getZoom();
               lastCenter = null;
+              lastSvgAnchor = null;
             }
             const screenCTM = svgElement.getScreenCTM();
             if (!screenCTM) {
@@ -340,7 +342,8 @@ export function TaiwanMap({
                     MAX_ZOOM + (requested - MAX_ZOOM) * ZOOM_OVERSHOOT,
                     LIB_MAX_ZOOM,
                   );
-            instance.zoomAtPoint(target, { x: point.x, y: point.y });
+            lastSvgAnchor = { x: point.x, y: point.y };
+            instance.zoomAtPoint(target, lastSvgAnchor);
             // Two-finger translate pans the map alongside the zoom.
             if (lastCenter) {
               instance.panBy({
@@ -360,18 +363,32 @@ export function TaiwanMap({
               unlocking = false;
               return;
             }
-            settleToBounds();
-            // Ease an overshot pinch back to the cap.
+            // Ease an overshot pinch back to the cap, anchored under the
+            // last pinch center so the map doesn't jump; the pan settle runs
+            // only afterward so the two tweens never fight.
             if (zoom > MAX_ZOOM) {
               const from = zoom;
+              const anchor = lastSvgAnchor;
               const t0 = performance.now();
               const tick = (now: number) => {
                 const k = Math.min((now - t0) / 220, 1);
-                instance.zoom(from + (MAX_ZOOM - from) * easeOutCubic(k));
-                zoomSettleFrame = k < 1 ? requestAnimationFrame(tick) : 0;
+                const s = from + (MAX_ZOOM - from) * easeOutCubic(k);
+                if (anchor) {
+                  instance.zoomAtPoint(s, anchor);
+                } else {
+                  instance.zoom(s);
+                }
+                if (k < 1) {
+                  zoomSettleFrame = requestAnimationFrame(tick);
+                } else {
+                  zoomSettleFrame = 0;
+                  settleToBounds();
+                }
               };
               zoomSettleFrame = requestAnimationFrame(tick);
+              return;
             }
+            settleToBounds();
           });
         },
         destroy: () => {
