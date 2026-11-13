@@ -138,22 +138,8 @@ export function CollectionManageToolbar({
       value={collection.name}
       meta={`${collection.photoCount} 張照片`}
       buttonGroups={buttons}
+      mobileMode="inline"
       bottomBar
-      barActions={
-        <>
-          <ButtonGroup groups={buttons} mobileMode="none" breakpoint="lg" />
-          {menuButton}
-        </>
-      }
-      barOverlay={
-        <BottomBarOverlay
-          open={menuOpen}
-          onClose={() => setMenuOpen(false)}
-          title={`正在編輯：${collection.name}`}
-          titleIcon="bi-pencil-square"
-          sections={menuSections(buttons)}
-        />
-      }
     />
   ) : (
     <Toolbar
