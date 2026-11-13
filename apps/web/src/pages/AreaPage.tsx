@@ -335,7 +335,9 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             }
           >
             <p className="min-w-0 flex-1 truncate text-stone-500">
-              {UI.isAreaEditMode ? "編輯地區資訊：修改說明" : "編輯模式"}
+              {UI.isAreaEditMode
+                ? "編輯地區資訊：修改說明與封面照片"
+                : "編輯模式"}
             </p>
           </BottomBar>
         </BottomBarStack>
