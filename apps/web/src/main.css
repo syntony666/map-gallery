@@ -57,10 +57,10 @@ img {
   --region-stroke: #232323;
 }
 
-/* Regions with an inline --region-color get a matching rim by default;
-   an explicit --region-stroke still wins. */
+/* Regions with an inline --region-color get a darkened rim of the same
+   hue; an explicit --region-stroke still wins. */
 .map-region[style] {
-  --region-stroke: var(--region-color);
+  --region-stroke: color-mix(in srgb, var(--region-color) 45%, #232323);
 }
 
 path:focus {
@@ -133,7 +133,9 @@ path:focus {
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
-  transition: stroke 160ms ease;
+  transition:
+    stroke 160ms ease,
+    stroke-width 160ms ease;
 }
 
 .map-region:hover .map-region__fill,
@@ -146,6 +148,7 @@ path:focus {
 .map-region:focus-visible .map-region__stroke,
 .map-region.is-active .map-region__stroke {
   stroke: var(--region-stroke);
+  stroke-width: 2px;
 }
 
 .map-page {
