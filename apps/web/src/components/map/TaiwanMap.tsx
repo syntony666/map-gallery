@@ -103,9 +103,9 @@ export function TaiwanMap({
   return (
     <div className="map-viewport">
       {/* Scrollable end-padding mirrors the floating cards' classes:
-          lg side panel (w-80 + right-6 + gap), md-only bottom bar. */}
+          lg side panel (w-80 + right-6 + gap), below-lg bottom bar. */}
       <div
-        className="map-scroller lg:pr-92 md:max-lg:pb-24"
+        className="map-scroller lg:pr-92 max-lg:pb-24"
         ref={scrollerRef}
         onClick={() => onSelectArea(null)}
       >

@@ -13,9 +13,9 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
     <>
       {area === null ? (
         <div
-          className="absolute inset-x-4 bottom-4 z-10 hidden rounded-2xl
+          className="absolute inset-x-4 bottom-4 z-10 rounded-2xl
             bg-white/90 px-5 py-3 text-sm text-stone-500 shadow-lg
-            backdrop-blur md:max-lg:block"
+            backdrop-blur lg:hidden"
         >
           點選地圖上的縣市，查看簡介與照片。
         </div>
