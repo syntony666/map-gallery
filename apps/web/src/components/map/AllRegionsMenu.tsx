@@ -1,7 +1,6 @@
 import { createPortal } from "react-dom";
 import type { Area } from "../../types/gallery.type";
 import { FloatingCard } from "../common/FloatingCard";
-import { ReadonlyToggle } from "../common/ReadonlyToggle";
 import { RegionList } from "./RegionList";
 
 /** Trigger lives inside each bottom card; it is safe to mount more than once
@@ -62,18 +61,16 @@ export function AllRegionsOverlay({
           md:left-auto md:w-72 [&>ul]:min-h-0 [&>ul]:flex-1
           [&>ul]:overflow-y-auto"
       >
-        <div className="absolute right-4 top-4 flex items-center gap-1.5">
-          <ReadonlyToggle label className="bg-stone-100 hover:bg-stone-200" />
-          <button
-            type="button"
-            aria-label="關閉"
-            onClick={onClose}
-            className="flex h-6 w-6 items-center justify-center rounded
-              text-stone-400 hover:bg-stone-200 hover:text-stone-600"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
-        </div>
+        <button
+          type="button"
+          aria-label="關閉"
+          onClick={onClose}
+          className="absolute right-4 top-4 flex h-6 w-6 items-center
+            justify-center rounded text-stone-400 hover:bg-stone-200
+            hover:text-stone-600"
+        >
+          <i className="bi bi-x-lg" />
+        </button>
         <RegionList
           areas={areas}
           selectedAreaId={selectedAreaId}
