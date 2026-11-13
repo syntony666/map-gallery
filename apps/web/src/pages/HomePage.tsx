@@ -29,18 +29,15 @@ export function HomePage() {
           areas={areas}
           photos={photos}
           onSelect={selectArea}
-          action={<ReadonlyToggle />}
+          action={
+            <ReadonlyToggle className="bg-white shadow hover:bg-stone-50" />
+          }
         />
         <DistrictBottomBar
           area={selectedArea}
           onClose={() => selectArea(null)}
           collapsed={regionsOpen}
-          actions={
-            <>
-              <AllRegionsButton onClick={() => setRegionsOpen(true)} />
-              <ReadonlyToggle />
-            </>
-          }
+          actions={<AllRegionsButton onClick={() => setRegionsOpen(true)} />}
         />
         <AllRegionsOverlay
           areas={areas}

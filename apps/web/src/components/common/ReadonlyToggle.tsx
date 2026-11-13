@@ -1,7 +1,16 @@
 import { useViewMode } from "../../hooks/useViewMode";
 import { ensureAdminToken } from "../../utils/auth";
 
-export function ReadonlyToggle({ className = "" }: { className?: string }) {
+type ReadonlyToggleProps = {
+  className?: string;
+  /** show the current mode as text next to the icon */
+  label?: boolean;
+};
+
+export function ReadonlyToggle({
+  className = "",
+  label = false,
+}: ReadonlyToggleProps) {
   const { readonly, toggleReadonly } = useViewMode();
 
   async function handleClick() {
@@ -16,10 +25,13 @@ export function ReadonlyToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={handleClick}
-      title={readonly ? "管理模式" : "閱覽模式"}
-      className={`rounded bg-white px-2 py-1 text-stone-700 shadow hover:bg-stone-50 ${className}`}
+      title={readonly ? "切換為編輯模式" : "切換為閱覽模式"}
+      className={`flex items-center gap-1.5 rounded px-2 py-1 text-stone-700 ${className}`}
     >
       <i className={`bi ${readonly ? "bi-lock" : "bi-unlock"}`} />
+      {label && (
+        <span className="text-xs">{readonly ? "閱覽模式" : "編輯模式"}</span>
+      )}
     </button>
   );
 }
