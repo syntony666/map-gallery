@@ -21,10 +21,10 @@ export function BottomBarStack({
     <div
       className={[
         "inset-x-4 bottom-4 z-10",
-        // On tablet widths the bar hugs its contents instead of stretching
-        // edge to edge.
+        // On tablet widths the stack gets a fixed centered width; bars and
+        // overlays inside stretch across it.
         "md:max-lg:left-1/2 md:max-lg:right-auto",
-        "md:max-lg:w-fit md:max-lg:max-w-[calc(100dvw-2rem)]",
+        "md:max-lg:w-xl md:max-lg:max-w-[calc(100dvw-2rem)]",
         "md:max-lg:-translate-x-1/2",
         fixed ? "fixed" : "absolute",
         className,
