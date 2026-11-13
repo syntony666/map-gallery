@@ -33,16 +33,29 @@ export function CollectionManageToolbar({
 }: CollectionManageToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // The manage bar unmounts in photo-select mode, but this state survives;
-  // close the menu so it does not reopen on the way back.
-  const [menuAllowed, setMenuAllowed] = useState(
-    !!collection && !isCollectionPhotoSelectMode,
-  );
-  const canShowMenu = !!collection && !isCollectionPhotoSelectMode;
-  if (menuAllowed !== canShowMenu) {
-    setMenuAllowed(canShowMenu);
+  // One menu state serves every sub-state; close it whenever the bar switches
+  // between them so it does not reopen across a mode change.
+  const stateKey = collection
+    ? isCollectionPhotoSelectMode
+      ? "select"
+      : "manage"
+    : "none";
+  const [lastStateKey, setLastStateKey] = useState(stateKey);
+  if (lastStateKey !== stateKey) {
+    setLastStateKey(stateKey);
     setMenuOpen(false);
   }
+
+  /** Below md every action moves into the ☰ menu. */
+  const menuButton = (
+    <Button
+      size="md"
+      icon="bi-list"
+      aria-label="管理相簿"
+      className="md:hidden"
+      onClick={() => setMenuOpen(true)}
+    />
+  );
 
   if (!collection) {
     return (
@@ -50,6 +63,25 @@ export function CollectionManageToolbar({
         label="編輯相簿：請選取上方相簿..."
         buttonGroups={extraGroups}
         bottomBar
+        barActions={
+          <>
+            <ButtonGroup
+              groups={extraGroups}
+              mobileMode="none"
+              breakpoint="md"
+            />
+            {menuButton}
+          </>
+        }
+        barOverlay={
+          <BottomBarOverlay
+            open={menuOpen}
+            onClose={() => setMenuOpen(false)}
+            title="編輯相簿"
+            titleIcon="bi-pencil-square"
+            sections={menuSections(extraGroups)}
+          />
+        }
       />
     );
   }
@@ -125,8 +157,22 @@ export function CollectionManageToolbar({
       value={collection.name}
       meta={`${collection.photoCount} 張照片`}
       buttonGroups={buttons}
-      mobileMode="inline"
       bottomBar
+      barActions={
+        <>
+          <ButtonGroup groups={buttons} mobileMode="none" breakpoint="md" />
+          {menuButton}
+        </>
+      }
+      barOverlay={
+        <BottomBarOverlay
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          title={`正在編輯：${collection.name}`}
+          titleIcon="bi-pencil-square"
+          sections={menuSections(buttons)}
+        />
+      }
     />
   ) : (
     <Toolbar
@@ -142,13 +188,7 @@ export function CollectionManageToolbar({
             mobileMode="none"
             breakpoint="md"
           />
-          <Button
-            size="md"
-            icon="bi-list"
-            aria-label="管理相簿"
-            className="md:hidden"
-            onClick={() => setMenuOpen(true)}
-          />
+          {menuButton}
         </>
       }
       barOverlay={
