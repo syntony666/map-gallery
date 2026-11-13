@@ -136,12 +136,6 @@ export function TaiwanMap({
                 </g>
               </g>
             )}
-            <image
-              href="/maps/taiwan-land.png"
-              width={1600}
-              height={1600}
-              preserveAspectRatio="none"
-            />
           </svg>
           <svg
             className="map-canvas__overlay"
