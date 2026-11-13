@@ -7,6 +7,8 @@ type BottomBarProps = {
   actions?: ReactNode;
   /** Use `fixed` for scrolling pages; the map overlays use `absolute`. */
   fixed?: boolean;
+  /** Inside a positioned stack the wrapper owns placement; render in flow. */
+  stacked?: boolean;
   className?: string;
 };
 
@@ -14,13 +16,16 @@ export function BottomBar({
   children,
   actions,
   fixed = false,
+  stacked = false,
   className = "",
 }: BottomBarProps) {
   return (
     <FloatingCard
       className={[
-        "bottom-bar inset-x-4 bottom-4 z-10 px-5 py-3",
-        fixed ? "fixed" : "absolute",
+        "px-5 py-3",
+        stacked
+          ? ""
+          : `inset-x-4 bottom-4 z-10 ${fixed ? "fixed" : "absolute"}`,
         actions ? "flex items-center justify-between gap-2" : "",
         className,
       ].join(" ")}

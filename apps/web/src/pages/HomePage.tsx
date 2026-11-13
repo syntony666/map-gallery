@@ -47,13 +47,15 @@ export function HomePage() {
           collapsed={regionsOpen}
           actions={<AllRegionsButton onClick={() => setRegionsOpen(true)} />}
           hintActions={<ReadonlyToggle label />}
-        />
-        <AllRegionsOverlay
-          areas={areas}
-          selectedAreaId={selectedArea?.id ?? null}
-          onSelect={selectArea}
-          open={regionsOpen}
-          onClose={() => setRegionsOpen(false)}
+          overlay={
+            <AllRegionsOverlay
+              areas={areas}
+              selectedAreaId={selectedArea?.id ?? null}
+              onSelect={selectArea}
+              open={regionsOpen}
+              onClose={() => setRegionsOpen(false)}
+            />
+          }
         />
       </div>
     </main>

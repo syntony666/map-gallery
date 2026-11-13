@@ -15,6 +15,9 @@ type DistrictBottomBarProps = {
   hintActions?: ReactNode;
   /** Collapses the selected card to a slim strip while the region menu is open. */
   collapsed?: boolean;
+  /** Overlay (e.g. the region menu) anchored above the bar inside the same
+      positioning wrapper. */
+  overlay?: ReactNode;
 };
 
 export function DistrictBottomBar({
@@ -23,12 +26,18 @@ export function DistrictBottomBar({
   actions,
   hintActions,
   collapsed,
+  overlay,
 }: DistrictBottomBarProps) {
   return (
-    <>
+    // One positioned wrapper owns the bottom anchoring; the visible card's
+    // height drives it, so the overlay can anchor structurally above the bar.
+    <div className="absolute inset-x-4 bottom-4 z-10 lg:hidden">
+      {overlay}
+
       {area === null ? (
         <BottomBar
-          className="text-xs text-stone-500 md:text-sm lg:hidden"
+          stacked
+          className="text-xs text-stone-500 md:text-sm"
           actions={
             <>
               {hintActions}
@@ -39,7 +48,7 @@ export function DistrictBottomBar({
           <span>點選縣市，以查看簡介。</span>
         </BottomBar>
       ) : collapsed ? (
-        <BottomBar className="text-sm md:hidden">
+        <BottomBar stacked className="text-sm md:hidden">
           <span className="font-semibold text-stone-800">{area.name}</span>
           {area.name}
           <span className="text-stone-500"> • {area.photoCount}張照片</span>
@@ -47,10 +56,7 @@ export function DistrictBottomBar({
       ) : null}
 
       {area !== null && (
-        <FloatingCard
-          className="bottom-bar absolute inset-x-4 bottom-4 z-10 hidden
-            items-center gap-3 px-4 py-3 md:max-lg:flex"
-        >
+        <FloatingCard className="hidden items-center gap-3 px-4 py-3 md:max-lg:flex">
           <AreaCover
             src={area.coverImage}
             className="h-12 w-20 shrink-0 rounded-md object-cover"
@@ -91,8 +97,8 @@ export function DistrictBottomBar({
 
       {area !== null && !collapsed && (
         <FloatingCard
-          className="bottom-bar absolute inset-x-4 bottom-4 z-10 flex
-            max-h-[75dvh] flex-col overflow-hidden p-5 md:hidden"
+          className="flex max-h-[75dvh] flex-col overflow-hidden p-5
+            md:hidden"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-stone-800">
@@ -120,6 +126,6 @@ export function DistrictBottomBar({
           </div>
         </FloatingCard>
       )}
-    </>
+    </div>
   );
 }
