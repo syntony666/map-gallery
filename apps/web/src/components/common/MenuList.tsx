@@ -10,10 +10,10 @@ type MenuHeadingProps = {
     scrollable row area so it stays put while rows scroll. */
 export function MenuHeading({ title, titleIcon }: MenuHeadingProps) {
   return (
-    <h2 className="py-2 px-2 text-md font-semibold text-stone-800">
+    <h2 className="py-2 px-2 text-md font-semibold text-ink-strong">
       {titleIcon && (
         <i
-          className={`bi ${titleIcon} mr-1.5 text-stone-600`}
+          className={`bi ${titleIcon} mr-1.5 text-ink-secondary`}
           aria-hidden="true"
         />
       )}
@@ -35,11 +35,11 @@ type MenuListProps = {
     `dividers` is on, stay lighter — a boundary never gets both. */
 export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
   return (
-    <div className="divide-y divide-stone-300/60">
+    <div className="divide-y divide-line/40">
       {sections.map((section) => (
         <div
           key={section.id}
-          className={dividers ? "divide-y divide-stone-200/60 py-1" : "py-1"}
+          className={dividers ? "divide-y divide-line/20 py-1" : "py-1"}
         >
           {section.rows.map((row) => (
             <button
@@ -56,10 +56,10 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
                 "rounded text-left text-sm transition-colors",
                 "disabled:cursor-not-allowed disabled:opacity-50",
                 row.selected
-                  ? "bg-stone-200/70 font-medium text-stone-800"
+                  ? "bg-fill/70 font-medium text-ink-strong"
                   : row.danger
-                    ? "text-red-700 hover:bg-red-200"
-                    : "text-stone-700 hover:bg-stone-200/80",
+                    ? "text-danger hover:bg-danger/20"
+                    : "text-ink hover:bg-fill/80",
               ].join(" ")}
             >
               <span className="flex min-w-0 items-center gap-2.5">
@@ -69,7 +69,7 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
                 <span className="truncate">{row.label}</span>
               </span>
               {row.meta && (
-                <span className="shrink-0 text-xs text-stone-400">
+                <span className="shrink-0 text-xs text-ink-faint">
                   {row.meta}
                 </span>
               )}

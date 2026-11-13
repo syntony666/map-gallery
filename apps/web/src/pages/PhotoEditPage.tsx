@@ -89,7 +89,7 @@ export function PhotoEditPage() {
   ];
 
   const inputClassName =
-    "rounded border border-stone-500 bg-white px-2 py-2 text-sm text-stone-700 outline-none";
+    "rounded border border-line bg-surface px-2 py-2 text-sm text-ink outline-none";
 
   return (
     <main className="grid gap-4">
@@ -114,7 +114,7 @@ export function PhotoEditPage() {
             onChange={(event) => updateField("image", event.target.value)}
             className={`${inputClassName} w-full`}
           />
-          <div className="mt-2 aspect-square rounded-md bg-stone-100 lg:aspect-4/3">
+          <div className="mt-2 aspect-square rounded-md bg-secondary-bg lg:aspect-4/3">
             {form.image && (
               <img
                 src={form.image}

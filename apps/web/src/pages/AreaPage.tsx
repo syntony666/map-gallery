@@ -242,8 +242,8 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           value={draftDescription}
           onChange={(event) => actions.updateDescription(event.target.value)}
           rows={3}
-          className="rounded border border-stone-500 bg-white px-2 py-2 
-            text-sm text-stone-700 outline-none"
+          className="rounded border border-line bg-surface px-2 py-2 
+            text-sm text-ink outline-none"
         />
       ) : (
         /* 橫向相簿列 */
@@ -272,7 +272,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           extraGroups={collectionDoneGroup}
         />
       ) : (
-        <div className="border-b border-stone-200 -mt-4 pb-4" />
+        <div className="border-b border-line/40 -mt-4 pb-4" />
       )}
 
       {/* 搜尋、篩選與排序列 */}
@@ -331,7 +331,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
               </>
             }
           >
-            <p className="min-w-0 flex-1 truncate text-stone-500">
+            <p className="min-w-0 flex-1 truncate text-ink-muted">
               {UI.isAreaEditMode
                 ? "編輯地區資訊：修改說明與封面照片"
                 : "編輯模式"}
@@ -377,7 +377,7 @@ function buildButtons(
         {
           id: "cancel",
           label: "取消",
-          icon: "bi-x-lg text-red-700",
+          icon: "bi-x-lg text-danger",
           variant: "danger",
           onClick: action.onCancelEdit ?? (() => alert("非預期操作")),
         },

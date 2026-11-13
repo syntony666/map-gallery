@@ -49,7 +49,7 @@ export function BottomBarOverlay({
           icon="bi-x-lg"
           aria-label="關閉"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 h-6 w-6 text-stone-600 justify-center"
+          className="absolute right-4 top-4 z-10 h-6 w-6 text-ink-secondary justify-center"
         />
         <MenuHeading title={title} titleIcon={titleIcon} />
         <div className="scroll-body">

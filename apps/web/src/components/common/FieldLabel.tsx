@@ -16,7 +16,7 @@ export function FieldLabel({
 }: FieldLabelProps) {
   return (
     <Tag
-      className={`mb-1 block text-sm font-medium text-stone-700 ${className}`}
+      className={`mb-1 block text-sm font-medium text-ink ${className}`}
       {...rest}
     >
       {children}

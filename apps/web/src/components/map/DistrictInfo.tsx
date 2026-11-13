@@ -17,7 +17,7 @@ export function DistrictInfo({
 }: DistrictInfoProps) {
   if (!area) {
     return (
-      <p className="text-sm text-stone-500">
+      <p className="text-sm text-ink-muted">
         點選地圖上的縣市，查看簡介與照片。
       </p>
     );
@@ -33,13 +33,13 @@ export function DistrictInfo({
       />
 
       {heading && (
-        <h2 className="text-lg font-semibold text-stone-800">{area.name}</h2>
+        <h2 className="text-lg font-semibold text-ink-strong">{area.name}</h2>
       )}
 
-      <p className="text-xs text-stone-500">{area.photoCount} 張照片</p>
+      <p className="text-xs text-ink-muted">{area.photoCount} 張照片</p>
 
       {area.description && (
-        <p className="text-sm leading-relaxed text-stone-600">
+        <p className="text-sm leading-relaxed text-ink-secondary">
           <i className="bi bi-chat-square-heart" />
           {area.description}
         </p>

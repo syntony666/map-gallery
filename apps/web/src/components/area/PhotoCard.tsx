@@ -28,8 +28,8 @@ export function PhotoCard({
   let interactionClass = "";
   if (isSelectionMode) {
     interactionClass = isSelected
-      ? "ring-2 ring-stone-700 ring-offset-2"
-      : "hover:ring-2 hover:ring-stone-300";
+      ? "ring-2 ring-primary ring-offset-2 ring-offset-page"
+      : "hover:ring-2 hover:ring-secondary";
   } else if (onOpen) {
     interactionClass = "hover:-translate-y-0.5 hover:shadow-md";
   }
@@ -38,14 +38,14 @@ export function PhotoCard({
     <button
       type="button"
       onClick={handleClick}
-      className={`relative flex flex-col overflow-hidden rounded-md bg-white text-left shadow-sm transition ${interactionClass}`}
+      className={`relative flex flex-col overflow-hidden rounded-md bg-surface text-left shadow-sm transition ${interactionClass}`}
     >
       {isSelectionMode && (
         <span
           className={`absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded border text-sm ${
             isSelected
-              ? "border-stone-700 bg-stone-700 text-white"
-              : "border-stone-300 bg-white/90 text-transparent"
+              ? "border-primary bg-primary text-primary-fg"
+              : "border-line bg-surface/90 text-transparent"
           }`}
           aria-hidden="true"
         >
@@ -67,7 +67,7 @@ export function PhotoCard({
         <h3 className="truncate font-medium">{photo.title}</h3>
 
         {photo.summary && (
-          <p className="mt-1 line-clamp-2 text-sm text-stone-500">
+          <p className="mt-1 line-clamp-2 text-sm text-ink-muted">
             {photo.summary}
           </p>
         )}

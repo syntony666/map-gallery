@@ -18,7 +18,7 @@ export function AreaCover({
   if (!src || failedSrc === src) {
     return (
       <span
-        className={`flex items-center justify-center bg-stone-200 text-stone-400 ${className}`}
+        className={`flex items-center justify-center bg-fill text-ink-faint ${className}`}
       >
         <i className={`bi bi-images ${iconClassName ?? ""}`} />
       </span>

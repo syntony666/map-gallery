@@ -46,7 +46,7 @@ export function ButtonGroup({
             key={group.id}
             className={[
               "flex items-center gap-2",
-              index > 0 ? "border-l border-stone-300 pl-2" : "",
+              index > 0 ? "border-l border-line pl-2" : "",
             ].join(" ")}
           >
             {group.buttons.map((button) => (

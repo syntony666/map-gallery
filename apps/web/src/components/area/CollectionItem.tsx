@@ -29,7 +29,7 @@ export function CollectionItem({
           />
         </span>
       ) : (
-        <span className="collection-item flex h-18 w-18 items-center justify-center rounded-full bg-stone-200 text-2xl text-stone-400 sm:h-24 sm:w-24">
+        <span className="collection-item flex h-18 w-18 items-center justify-center rounded-full bg-fill text-2xl text-ink-faint sm:h-24 sm:w-24">
           <i className="bi bi-images" />
         </span>
       )}

@@ -39,14 +39,14 @@ export function Toolbar({
   className = "",
 }: ToolbarProps) {
   const text = (
-    <p className="min-w-0 flex-1 truncate text-stone-500">
+    <p className="min-w-0 flex-1 truncate text-ink-muted">
       <span>{label}</span>
 
       {value !== undefined && value !== "" && (
-        <span className="ml-1 font-medium text-stone-800">{value}</span>
+        <span className="ml-1 font-medium text-ink-strong">{value}</span>
       )}
 
-      {meta && <span className="ml-1 text-stone-400">{meta}</span>}
+      {meta && <span className="ml-1 text-ink-faint">{meta}</span>}
     </p>
   );
 
@@ -55,7 +55,7 @@ export function Toolbar({
       <section
         className={[
           "flex-wrap items-center justify-between gap-3",
-          "border-y border-stone-300 text-sm h-15",
+          "border-y border-line text-sm h-15",
           bottomBar ? "hidden lg:flex" : "flex",
           className,
         ].join(" ")}

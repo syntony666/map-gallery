@@ -21,7 +21,7 @@ export function PhotoPagination({
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
       />
-      <span className="text-sm text-stone-500">
+      <span className="text-sm text-ink-muted">
         第 {page} / {totalPages} 頁
       </span>
       <Button

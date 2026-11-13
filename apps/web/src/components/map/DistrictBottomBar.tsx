@@ -33,7 +33,7 @@ export function DistrictBottomBar({
     <BottomBarStack overlay={overlay} className="lg:hidden">
       {area === null ? (
         <BottomBar
-          className="text-xs text-stone-500 md:text-sm"
+          className="text-xs text-ink-muted md:text-sm"
           actions={
             <>
               {hintActions}
@@ -46,8 +46,8 @@ export function DistrictBottomBar({
       ) : collapsed ? (
         <BottomBar className="text-sm" actions={actions}>
           <p className="min-w-0 truncate">
-            <span className="font-semibold text-stone-800">{area.name}</span>
-            <span className="text-stone-500"> • {area.photoCount}張照片</span>
+            <span className="font-semibold text-ink-strong">{area.name}</span>
+            <span className="text-ink-muted"> • {area.photoCount}張照片</span>
           </p>
         </BottomBar>
       ) : null}
@@ -59,9 +59,9 @@ export function DistrictBottomBar({
             className="h-12 w-20 shrink-0 rounded-md object-cover"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-stone-800">
+            <p className="truncate text-sm font-semibold text-ink-strong">
               {area.name}
-              <span className="font-normal text-stone-500">
+              <span className="font-normal text-ink-muted">
                 {" "}
                 • {area.photoCount}張照片
               </span>
@@ -69,7 +69,7 @@ export function DistrictBottomBar({
             {area.description && (
               <p
                 className="mt-0.5 line-clamp-2 text-xs leading-relaxed
-                  text-stone-600"
+                  text-ink-secondary"
               >
                 <i className="bi bi-chat-square-heart" />
                 {area.description}
@@ -99,7 +99,7 @@ export function DistrictBottomBar({
             md:hidden"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-base font-semibold text-stone-800">
+            <h2 className="text-base font-semibold text-ink-strong">
               {area.name}
             </h2>
             <span className="flex items-center gap-1.5">

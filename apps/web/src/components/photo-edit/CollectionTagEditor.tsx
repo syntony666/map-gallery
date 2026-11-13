@@ -52,13 +52,13 @@ export function CollectionTagEditor({
         {selected.map((collection) => (
           <span
             key={collection.id}
-            className="inline-flex items-center gap-0.5 text-sm text-purple-500"
+            className="inline-flex items-center gap-0.5 text-sm text-accent"
           >
             #{collection.name}
             <button
               type="button"
               onClick={() => onToggle(collection.id)}
-              className="hover:text-purple-700"
+              className="hover:text-primary"
             >
               <i className="bi bi-x" />
             </button>
@@ -68,14 +68,14 @@ export function CollectionTagEditor({
         <button
           type="button"
           onClick={() => setIsPickerOpen((open) => !open)}
-          className="text-sm text-stone-500 hover:text-stone-700"
+          className="text-sm text-ink-muted hover:text-ink"
         >
           {isPickerOpen ? "－ 收合" : "＋ 加入相簿"}
         </button>
       </div>
 
       {isPickerOpen && (
-        <div className="mt-2 grid gap-3 rounded border border-stone-300 p-3">
+        <div className="mt-2 grid gap-3 rounded border border-line p-3">
           {available.length > 0 ? (
             <div className="flex flex-wrap gap-x-3 gap-y-2">
               {available.map((collection) => (
@@ -83,14 +83,14 @@ export function CollectionTagEditor({
                   key={collection.id}
                   type="button"
                   onClick={() => onToggle(collection.id)}
-                  className="text-sm text-stone-500 hover:text-purple-500"
+                  className="text-sm text-ink-muted hover:text-accent"
                 >
                   #{collection.name}
                 </button>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-stone-400">
+            <p className="text-xs text-ink-faint">
               {selected.length > 0
                 ? "此縣市沒有其他相簿"
                 : "尚無相簿，輸入名稱建立第一個"}
@@ -109,13 +109,13 @@ export function CollectionTagEditor({
                 }
               }}
               placeholder="新增相簿名稱"
-              className="w-40 rounded border border-stone-300 bg-white px-2 py-1 text-sm text-stone-700 outline-none"
+              className="w-40 rounded border border-line bg-surface px-2 py-1 text-sm text-ink outline-none"
             />
             <button
               type="button"
               onClick={handleCreate}
               disabled={isCreating || !newName.trim()}
-              className="text-sm text-purple-500 hover:text-purple-700 disabled:text-stone-300"
+              className="text-sm text-accent hover:text-primary disabled:text-ink/25"
             >
               建立
             </button>

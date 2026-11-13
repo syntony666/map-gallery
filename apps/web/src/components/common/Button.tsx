@@ -29,7 +29,7 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
 function getVariantClassName(variant?: ButtonVariant) {
   // Only semantic variants tint the icon; the default inherits the chrome
   // color so ghost/raised buttons keep their muted tone.
-  if (variant === "danger") return "text-red-800";
+  if (variant === "danger") return "text-danger";
   if (variant === "primary") return "text-primary";
   return "";
 }
@@ -59,10 +59,10 @@ export function Button({
     "disabled:cursor-not-allowed disabled:opacity-40",
     size === "md" ? "px-3 py-1.5 text-sm" : "px-2 py-1 text-xs",
     ghost
-      ? "text-stone-400 hover:bg-stone-200 hover:text-stone-600"
+      ? "text-ink-faint hover:bg-fill hover:text-ink-secondary"
       : raised
-        ? "bg-white text-stone-700 shadow hover:bg-stone-50"
-        : "bg-stone-200 text-stone-700 hover:bg-stone-300",
+        ? "bg-surface text-ink shadow hover:bg-page"
+        : "bg-fill text-ink hover:bg-secondary",
     expandLabel ? "group" : "",
     className,
   ].join(" ");

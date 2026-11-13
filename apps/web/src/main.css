@@ -4,10 +4,30 @@
 @import "@sakulime-ui/theme/terra.css";
 
 /* Semantic hooks onto the sakulime variables so utilities like
-   `text-primary` / `bg-page` resolve at runtime. */
+   `text-primary` / `bg-page` resolve at runtime. --color-fill and
+   --color-ink-faint are local ramp steps mixed from the same seeds to
+   cover the quiet fills and faintest ink the theme leaves open. */
 @theme {
-  --color-primary: var(--sl-primary);
   --color-page: var(--sl-bg);
+  --color-surface: var(--sl-surface);
+  --color-line: var(--sl-border);
+  --color-fill: color-mix(in srgb, var(--sl-secondary) 55%, var(--sl-surface));
+  --color-ink: var(--sl-text);
+  --color-ink-strong: var(--sl-text-strong);
+  --color-ink-secondary: var(--sl-text-secondary);
+  --color-ink-muted: var(--sl-text-muted);
+  --color-ink-faint: color-mix(in srgb, var(--sl-text) 45%, transparent);
+  --color-ink-invert: var(--sl-text-invert);
+  --color-accent: var(--sl-text-accent);
+  --color-primary: var(--sl-primary);
+  --color-primary-fg: var(--sl-primary-fg);
+  --color-primary-bg: var(--sl-primary-bg);
+  --color-secondary: var(--sl-secondary);
+  --color-secondary-fg: var(--sl-secondary-fg);
+  --color-secondary-bg: var(--sl-secondary-bg);
+  --color-ok: var(--sl-ok);
+  --color-warn: var(--sl-warn);
+  --color-danger: var(--sl-danger);
 }
 
 /* Keep alt text hidden while an image is loading or broken; it still
@@ -23,7 +43,7 @@ img {
   display: block;
   position: relative;
   overflow: hidden;
-  background: #e7e5e4;
+  background: var(--color-fill);
 }
 
 .img-loading::before {
@@ -33,7 +53,7 @@ img {
   background: linear-gradient(
     100deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.55) 50%,
+    color-mix(in srgb, var(--color-surface) 55%, transparent) 50%,
     transparent 70%
   );
   transform: translateX(-100%);

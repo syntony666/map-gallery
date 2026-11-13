@@ -26,10 +26,10 @@ export function TitleBar({
         <Button ghost onClick={onBack} className="min-w-0">
           <i
             className="bi bi-arrow-left-short shrink-0 text-3xl leading-none
-              text-stone-800"
+              text-ink-strong"
           />
 
-          <span className="truncate text-2xl font-bold text-stone-700 sm:text-3xl">
+          <span className="truncate text-2xl font-bold text-ink sm:text-3xl">
             {areaName}
           </span>
         </Button>
@@ -38,7 +38,7 @@ export function TitleBar({
       </div>
 
       {description && (
-        <div className="ml-3 text-sm text-stone-500">
+        <div className="ml-3 text-sm text-ink-muted">
           <p className="flex items-start">
             <i className="bi bi-chat-square-heart" />
             <span>{description}</span>

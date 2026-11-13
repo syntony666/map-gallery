@@ -53,10 +53,10 @@ export function PhotoGridToolbar({
             ))}
           </div>
         </div>
-        <span className="text-sm text-stone-500">{photoCount} 個項目</span>
+        <span className="text-sm text-ink-muted">{photoCount} 個項目</span>
       </div>
 
-      {hint && <p className="mt-1 text-xs text-stone-500">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
     </section>
   );
 }
