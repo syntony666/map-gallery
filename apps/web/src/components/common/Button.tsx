@@ -30,7 +30,7 @@ function getVariantClassName(variant?: ButtonVariant) {
   // Only semantic variants tint the icon; the default inherits the chrome
   // color so ghost/raised buttons keep their muted tone.
   if (variant === "danger") return "text-red-800";
-  if (variant === "primary") return "text-emerald-800";
+  if (variant === "primary") return "text-primary";
   return "";
 }
 

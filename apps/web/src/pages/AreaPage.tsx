@@ -116,7 +116,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         {
           id: "done",
           label: "完成",
-          icon: "bi-check-lg text-emerald-700",
+          icon: "bi-check-lg text-primary",
           variant: "primary",
           onClick: actions.titleBar.onDoneEdit ?? (() => alert("非預期操作")),
         },
@@ -385,7 +385,7 @@ function buildButtons(
           id: "save",
           label: "儲存",
           variant: "primary",
-          icon: "bi-check-lg text-emerald-700",
+          icon: "bi-check-lg text-primary",
           onClick: action.onSaveEdit ?? (() => alert("非預期操作")),
         },
       ],

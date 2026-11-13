@@ -1,4 +1,14 @@
 @import "tailwindcss";
+/* TERRA palette from sakulime-ui; seeds live under :root[data-theme="terra"]
+   in index.html. Transparency stays local to each component. */
+@import "@sakulime-ui/theme/terra.css";
+
+/* Semantic hooks onto the sakulime variables so utilities like
+   `text-primary` / `bg-page` resolve at runtime. */
+@theme {
+  --color-primary: var(--sl-primary);
+  --color-page: var(--sl-bg);
+}
 
 /* Keep alt text hidden while an image is loading or broken; it still
    reaches assistive technology. */
