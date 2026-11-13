@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { Button } from "./Button";
 
 type ActionSheetProps = {
   open: boolean;
@@ -74,15 +75,7 @@ export function ActionSheet({
           ) : (
             <span />
           )}
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="關閉"
-            className="rounded p-1.5 text-stone-400 hover:bg-stone-200
-              hover:text-stone-600"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
+          <Button ghost icon="bi-x-lg" aria-label="關閉" onClick={onClose} />
         </div>
 
         <div className="min-h-0 overflow-y-auto px-3">{children}</div>
