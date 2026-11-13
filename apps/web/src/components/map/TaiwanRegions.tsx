@@ -11,6 +11,27 @@ type TaiwanRegionsProps = {
   onSelectArea: (areaId: string | null) => void;
 };
 
+type Region = RegionShapes["regions"][number];
+
+function regionMaskUrl(region: Region) {
+  return region.holes.length > 0
+    ? `url(#map-region-mask-${region.id})`
+    : undefined;
+}
+
+function regionStyle(id: string): CSSProperties | undefined {
+  const color = REGION_COLORS[id];
+  return color ? ({ "--region-color": color } as CSSProperties) : undefined;
+}
+
+/** Boundary + coastline strokes for a region, unclipped at full width. */
+function RegionStrokes({ region }: { region: Region }) {
+  const mask = regionMaskUrl(region);
+  return [...region.paths, ...region.holes].map((d) => (
+    <path key={d} d={d} className="map-region__stroke" mask={mask} />
+  ));
+}
+
 export function TaiwanRegions({
   shapes,
   areas,
@@ -26,6 +47,10 @@ export function TaiwanRegions({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const emphasizedIds = [selectedAreaId, hoveredId].filter(
     (id, i, ids): id is string => id !== null && ids.indexOf(id) === i,
+  );
+  const regionById = useMemo(
+    () => new Map(shapes.regions.map((region) => [region.id, region])),
+    [shapes],
   );
 
   return (
@@ -50,6 +75,8 @@ export function TaiwanRegions({
               id={`map-region-mask-${region.id}`}
               maskUnits="userSpaceOnUse"
             >
+              {/* Covers the full artwork extents; enclave holes are
+                  subtracted from it below. */}
               <rect
                 x={-1000}
                 y={-1000}
@@ -65,19 +92,13 @@ export function TaiwanRegions({
       </defs>
       {shapes.regions.map((region) => {
         const area = areaById.get(region.id);
-        const mask =
-          region.holes.length > 0
-            ? `url(#map-region-mask-${region.id})`
-            : undefined;
-        const color = REGION_COLORS[region.id];
+        const mask = regionMaskUrl(region);
 
         return (
           <g
             key={region.id}
             id={region.id}
-            style={
-              color ? ({ "--region-color": color } as CSSProperties) : undefined
-            }
+            style={regionStyle(region.id)}
             className={
               selectedAreaId === region.id
                 ? "map-region is-active"
@@ -106,39 +127,21 @@ export function TaiwanRegions({
                 <path key={d} d={d} className="map-region__fill" mask={mask} />
               ))}
             </g>
-            {[...region.paths, ...region.holes].map((d) => (
-              <path key={d} d={d} className="map-region__stroke" mask={mask} />
-            ))}
+            <RegionStrokes region={region} />
           </g>
         );
       })}
       <g pointerEvents="none">
         {emphasizedIds.map((id) => {
-          const region = shapes.regions.find((r) => r.id === id);
+          const region = regionById.get(id);
           if (!region) return null;
-          const mask =
-            region.holes.length > 0
-              ? `url(#map-region-mask-${region.id})`
-              : undefined;
-          const color = REGION_COLORS[region.id];
           return (
             <g
               key={id}
               className="map-region is-active"
-              style={
-                color
-                  ? ({ "--region-color": color } as CSSProperties)
-                  : undefined
-              }
+              style={regionStyle(id)}
             >
-              {[...region.paths, ...region.holes].map((d) => (
-                <path
-                  key={d}
-                  d={d}
-                  className="map-region__stroke"
-                  mask={mask}
-                />
-              ))}
+              <RegionStrokes region={region} />
             </g>
           );
         })}

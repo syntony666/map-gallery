@@ -11,7 +11,7 @@ type TaiwanMapProps = {
   onSelectArea: (areaId: string | null) => void;
 };
 
-const FULL_VIEWBOX = "0 0 1600 1600";
+/** Extra space around the measured content bounds, in viewBox units. */
 const CROP_PADDING = 20;
 
 /** Dev/test hook: ?crop=x,y,w,h fakes the content bounding box. */
@@ -94,7 +94,7 @@ export function TaiwanMap({
 
   const viewBox = crop
     ? `${crop.x} ${crop.y} ${crop.w} ${crop.h}`
-    : FULL_VIEWBOX;
+    : (shapes?.viewBox ?? undefined);
   const size =
     crop && viewport.w > 0
       ? computeCanvasSize(crop.w, crop.h, viewport.w, viewport.h)

@@ -25,6 +25,8 @@ export function regionSortKey(id: string) {
 }
 
 export type RegionShapes = {
+  /** The source svg's viewBox, used as the fallback before content is measured. */
+  viewBox: string | null;
   transform: string;
   regions: {
     id: string;
@@ -81,6 +83,7 @@ function unionBBox(boxes: BBox[]): BBox {
 
 export function parseRegionsSvg(svgText: string): RegionShapes {
   const doc = new DOMParser().parseFromString(svgText, "image/svg+xml");
+  const svg = doc.querySelector("svg");
   const wrapper = doc.querySelector("svg > g");
 
   const parsed = [...doc.querySelectorAll("svg > g > g[id]")].map((group) => ({
@@ -131,6 +134,7 @@ export function parseRegionsSvg(svgText: string): RegionShapes {
   // masked out of the enclave interior; the enclave outline itself is stroked
   // again so the border keeps a visible rim.
   return {
+    viewBox: svg?.getAttribute("viewBox") ?? null,
     transform: wrapper?.getAttribute("transform") ?? "",
     regions: regions.map((region) => ({
       id: region.id,
