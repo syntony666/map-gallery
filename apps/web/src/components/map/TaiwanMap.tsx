@@ -87,10 +87,9 @@ export function TaiwanMap({
       0,
       (scroller.scrollWidth - scroller.clientWidth) / 2,
     );
-    scroller.scrollTop = Math.max(
-      0,
-      (scroller.scrollHeight - scroller.clientHeight) / 2,
-    );
+    // Vertically overflowing maps start at the top; the bottom end-padding
+    // lets the tail scroll clear of the bottom card.
+    scroller.scrollTop = 0;
   }, [crop, viewport]);
 
   const viewBox = crop
