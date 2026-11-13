@@ -57,7 +57,7 @@ export function Button({
       ? "text-stone-400 hover:bg-stone-200 hover:text-stone-600"
       : raised
         ? "bg-white text-stone-700 shadow hover:bg-stone-50"
-        : "bg-stone-100 text-stone-700 hover:bg-stone-300",
+        : "bg-stone-200 text-stone-700 hover:bg-stone-300",
     expandLabel ? "group" : "",
     className,
   ].join(" ");
