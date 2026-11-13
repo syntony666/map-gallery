@@ -99,13 +99,6 @@ export function DistrictBottomBar({
             </h2>
             <span className="flex items-center gap-1.5">
               {actions}
-              <Link
-                to={`/area/${area.id}`}
-                className="rounded bg-stone-200 px-3 py-1.5 text-xs
-                  text-stone-800 hover:bg-stone-300"
-              >
-                查看內容
-              </Link>
               <button
                 type="button"
                 onClick={onClose}
@@ -119,6 +112,17 @@ export function DistrictBottomBar({
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             <DistrictInfo area={area} heading={false} link={false} />
+          </div>
+          <div className="mt-3 flex justify-end">
+            <Link
+              to={`/area/${area.id}`}
+              className="inline-flex items-center gap-1 rounded
+                bg-stone-200 px-3 py-2 text-xs text-stone-800
+                hover:bg-stone-300"
+            >
+              查看內容
+              <i className="bi bi-arrow-right" />
+            </Link>
           </div>
         </FloatingCard>
       )}
