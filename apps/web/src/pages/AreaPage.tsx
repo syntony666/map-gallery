@@ -1,4 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router";
+import { BottomBar } from "../components/common/BottomBar";
+import { ButtonGroup } from "../components/common/ButtonGroup";
 import { CollectionBar } from "../components/area/CollectionBar";
 import { CollectionManageToolbar } from "../components/area/CollectionManageToolbar";
 import { AreaToolbar } from "../components/area/AreaToolbar";
@@ -8,7 +10,7 @@ import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
 import { PhotoPagination } from "../components/area/PhotoPagination";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
-import type { ButtonActionGroup } from "../types/button.type";
+import type { ButtonActionGroup, ButtonConfig } from "../types/button.type";
 import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -80,6 +82,62 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     collections,
   });
 
+  const titleButtons = readonly
+    ? []
+    : buildButtons(
+        area.name,
+        !UI.isPhotoSelectMode,
+        UI.isEditMode,
+        UI.isCollectionEditMode,
+        actions.titleBar,
+      );
+
+  // The done button lives in the collection toolbar, not the title bar.
+  const collectionDoneGroup: ButtonActionGroup[] = [
+    {
+      id: "collection-edit-done",
+      buttons: [
+        {
+          id: "done",
+          label: "完成",
+          icon: "bi-check-lg text-emerald-700",
+          variant: "primary",
+          onClick: actions.titleBar.onDoneEdit ?? (() => alert("非預期操作")),
+        },
+      ],
+    },
+  ];
+
+  // Below md all photo actions live in the floating bottom bar.
+  const photoButtons: ButtonConfig[] =
+    !UI.isEditMode && !readonly
+      ? [
+          {
+            id: "photo-add",
+            label: "新增照片",
+            icon: "bi-plus-lg",
+            onClick: () => navigate(`/area/${area.id}/photo/new`),
+          },
+          ...(filters.visiblePhotos && filters.visiblePhotos.length > 0
+            ? [
+                {
+                  id: "photo-delete",
+                  label: "刪除照片",
+                  icon: "bi-trash3",
+                  onClick: actions.startPhotoDeleteSelect,
+                },
+              ]
+            : []),
+        ]
+      : [];
+
+  const bottomBarGroups: ButtonActionGroup[] = [
+    ...titleButtons,
+    ...(photoButtons.length > 0
+      ? [{ id: "photo-actions", buttons: photoButtons }]
+      : []),
+  ];
+
   const renderPhotoSection = () => {
     const photos = filters.visiblePhotos;
 
@@ -147,14 +205,13 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   };
 
-  // Reserve space for the floating bottom bar below sm while a
-  // mode toolbar (collection edit, photo delete) is active.
-  const needsBottomBarSpace =
-    UI.isCollectionEditMode || UI.isPhotoDeleteSelectMode;
+  // Reserve space for the floating bottom bar below md; every
+  // non-readonly mode has one now.
+  const needsBottomBarSpace = !readonly;
 
   return (
     <main
-      className={`grid gap-4 ${needsBottomBarSpace ? "pb-24 sm:pb-0" : ""}`}
+      className={`grid gap-4 ${needsBottomBarSpace ? "pb-24 md:pb-0" : ""}`}
     >
       {/* 標題列 */}
       <TitleBarContent
@@ -162,10 +219,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         description={
           UI.isAreaEditMode ? "對於這個地方，你想說..." : area.description
         }
-        isEditMode={UI.isEditMode}
-        isCollectionEditMode={UI.isCollectionEditMode}
-        showActions={!UI.isPhotoSelectMode}
-        action={readonly ? undefined : actions.titleBar}
+        buttonGroup={titleButtons}
       />
 
       {UI.isAreaEditMode && draftDescription !== null ? (
@@ -202,6 +256,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           }
           isCollectionPhotoSelectMode={!!UI.collectionPhotoMode}
           action={actions.collectionToolbar}
+          extraGroups={collectionDoneGroup}
         />
       ) : (
         <div className="border-b border-stone-200 -mt-4 pb-4" />
@@ -219,6 +274,23 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
 
       {/* 景點卡片區 */}
       {renderPhotoSection()}
+
+      {/* <md 的浮動操作列：標題與照片操作都收進這裡 */}
+      {bottomBarGroups.length > 0 && (
+        <BottomBar
+          fixed
+          className="z-50 text-sm md:hidden"
+          actions={
+            <ButtonGroup
+              groups={bottomBarGroups}
+              mobileMode="inline"
+              breakpoint="md"
+            />
+          }
+        >
+          <p className="min-w-0 flex-1 truncate text-stone-500">{area.name}</p>
+        </BottomBar>
+      )}
 
       {UI.isPhotoDeleteSelectMode && (
         <PhotoSelectionToolbar
@@ -280,69 +352,30 @@ function buildButtons(
     },
   ];
 
-  const collectionEditButtons: ButtonActionGroup[] = [
-    {
-      id: "title-collection-edit",
-      buttons: [
-        {
-          id: "done",
-          label: "完成",
-          icon: "bi-check-lg text-emerald-700",
-          variant: "primary",
-          onClick: action.onDoneEdit ?? (() => alert("非預期操作")),
-        },
-      ],
-    },
-  ];
-
   if (areaName.length === 0 || !showActions) return [];
   if (!isEditMode) return browseButtons;
-  return isCollectionEditMode ? collectionEditButtons : editButtons;
+  // Collection edit puts its done button in the manage toolbar instead.
+  return isCollectionEditMode ? [] : editButtons;
 }
 
 function TitleBarContent({
   areaName,
   description,
-  isEditMode = false,
-  isCollectionEditMode = false,
-  showActions = true,
-  action,
+  buttonGroup,
 }: {
   areaName: string;
   description?: string;
-  isEditMode?: boolean;
-  isCollectionEditMode?: boolean;
-  showActions?: boolean;
-  action?: TitleBarActions;
+  buttonGroup: ButtonActionGroup[];
 }) {
   const navigate = useNavigate();
-
-  if (!action) {
-    return (
-      <TitleBar
-        areaName={areaName.length !== 0 ? areaName : "回到地圖"}
-        description={description}
-        onBack={() => navigate("/")}
-        buttonGroup={[]}
-      />
-    );
-  }
-
-  const buttons = buildButtons(
-    areaName,
-    showActions,
-    isEditMode,
-    isCollectionEditMode,
-    action,
-  );
 
   return (
     <TitleBar
       areaName={areaName.length !== 0 ? areaName : "回到地圖"}
       description={description}
       onBack={() => navigate("/")}
-      buttonGroup={buttons}
-      mobileActions={{ mobileMode: "inline" }}
+      buttonGroup={buttonGroup}
+      mobileActions={{ mobileMode: "none", breakpoint: "md" }}
     />
   );
 }

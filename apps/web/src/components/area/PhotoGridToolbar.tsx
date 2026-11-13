@@ -47,10 +47,11 @@ export function PhotoGridToolbar({
         <div className="flex items-center gap-2">
           <span className="text-lg font-semibold">{title}</span>
 
-          {buttons.length > 0 &&
-            buttons.map((button) => (
+          <div className="hidden items-center gap-2 md:flex">
+            {buttons.map((button) => (
               <Button key={button.id} size="md" {...button} />
             ))}
+          </div>
         </div>
         <span className="text-sm text-stone-500">{photoCount} 個項目</span>
       </div>

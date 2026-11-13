@@ -15,10 +15,12 @@ export type ButtonActionGroup = {
   buttons: ButtonConfig[];
 };
 
-export type ButtonGroupMobileMode = "inline" | "menu";
+export type ButtonGroupMobileMode = "inline" | "menu" | "none";
 
 export type ButtonGroupMobileOptions = {
   mobileMode?: ButtonGroupMobileMode;
   mobileGroupIcon?: string;
   mobileGroupLabel?: string;
+  /** Viewport width where the group switches to its mobile rendering. */
+  breakpoint?: "sm" | "md";
 };

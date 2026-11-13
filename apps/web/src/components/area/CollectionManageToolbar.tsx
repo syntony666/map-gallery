@@ -16,15 +16,20 @@ type CollectionManageToolbarProps = {
   collection: Collection | null;
   isCollectionPhotoSelectMode: boolean;
   action: CollectionManageToolbarAction;
+  /** Extra groups appended in manage mode (e.g. the done button). */
+  extraGroups?: ButtonActionGroup[];
 };
 
 export function CollectionManageToolbar({
   collection,
   isCollectionPhotoSelectMode,
   action,
+  extraGroups = [],
 }: CollectionManageToolbarProps) {
   if (!collection) {
-    return <Toolbar label="請選取上方相簿..." bottomBar />;
+    return (
+      <Toolbar label="請選取上方相簿..." buttonGroups={extraGroups} bottomBar />
+    );
   }
   const buttons: ButtonActionGroup[] = isCollectionPhotoSelectMode
     ? [
@@ -106,7 +111,7 @@ export function CollectionManageToolbar({
       label="正在編輯："
       value={collection.name}
       meta={`（${collection.photoCount} 張照片）`}
-      buttonGroups={buttons}
+      buttonGroups={[...buttons, ...extraGroups]}
       mobileGroupIcon="bi-pencil-square"
       mobileGroupLabel="管理相簿"
       bottomBar

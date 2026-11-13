@@ -51,7 +51,7 @@ export function Toolbar({
         className={[
           "flex-wrap items-center justify-between gap-3",
           "border-y border-stone-300 text-sm h-15",
-          bottomBar ? "hidden sm:flex" : "flex",
+          bottomBar ? "hidden md:flex" : "flex",
           className,
         ].join(" ")}
       >
@@ -69,8 +69,14 @@ export function Toolbar({
       {bottomBar && (
         <BottomBar
           fixed
-          className="z-50 text-sm sm:hidden"
-          actions={<ButtonGroup groups={buttonGroups} mobileMode="inline" />}
+          className="z-50 text-sm md:hidden"
+          actions={
+            <ButtonGroup
+              groups={buttonGroups}
+              mobileMode="inline"
+              breakpoint="md"
+            />
+          }
         >
           {text}
         </BottomBar>

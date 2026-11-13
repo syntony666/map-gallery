@@ -13,6 +13,7 @@ type ButtonGroupProps = {
   mobileMode?: ButtonGroupMobileMode;
   mobileGroupIcon?: string;
   mobileGroupLabel?: string;
+  breakpoint?: "sm" | "md";
 };
 
 export function ButtonGroup({
@@ -20,11 +21,14 @@ export function ButtonGroup({
   mobileMode = "menu",
   mobileGroupIcon = "bi-three-dots",
   mobileGroupLabel = "更多操作",
+  breakpoint = "sm",
   classname = "",
 }: ButtonGroupProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const nonEmptyGroups = groups.filter((group) => group.buttons.length > 0);
+  const desktopClass = breakpoint === "md" ? "md:flex" : "sm:flex";
+  const mobileClass = breakpoint === "md" ? "md:hidden" : "sm:hidden";
 
   if (nonEmptyGroups.length === 0) {
     return null;
@@ -42,7 +46,9 @@ export function ButtonGroup({
   return (
     <>
       <div
-        className={["hidden items-center gap-2 sm:flex", classname].join(" ")}
+        className={["hidden items-center gap-2", desktopClass, classname].join(
+          " ",
+        )}
       >
         {nonEmptyGroups.map((group, index) => (
           <div
@@ -59,8 +65,13 @@ export function ButtonGroup({
         ))}
       </div>
 
-      {mobileMode === "inline" ? (
-        <div className="flex flex-wrap items-center justify-end gap-2 sm:hidden">
+      {mobileMode === "none" ? null : mobileMode === "inline" ? (
+        <div
+          className={[
+            "flex flex-wrap items-center justify-end gap-2",
+            mobileClass,
+          ].join(" ")}
+        >
           {nonEmptyGroups.flatMap((group) =>
             group.buttons.map((button) => (
               <Button key={button.id} size="md" {...button} iconOnly />
@@ -68,7 +79,7 @@ export function ButtonGroup({
           )}
         </div>
       ) : (
-        <div className="sm:hidden">
+        <div className={mobileClass}>
           <Button
             size="md"
             label={mobileGroupLabel}
