@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { TitleBar } from "../components/common/TitleBar";
 import { EmptyState } from "../components/common/EmptyState";
+import { FieldLabel } from "../components/common/FieldLabel";
 import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEditor";
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
@@ -103,9 +104,7 @@ export function PhotoEditPage() {
         className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,2fr)] lg:gap-10"
       >
         <div>
-          <label className="mb-1 block text-sm font-medium text-stone-700">
-            圖片網址
-          </label>
+          <FieldLabel>圖片網址</FieldLabel>
           <input
             type="text"
             required
@@ -126,9 +125,7 @@ export function PhotoEditPage() {
 
         <div className="grid content-start gap-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
-              標題
-            </label>
+            <FieldLabel>標題</FieldLabel>
             <input
               type="text"
               required
@@ -139,9 +136,7 @@ export function PhotoEditPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
-              拍攝日期
-            </label>
+            <FieldLabel>拍攝日期</FieldLabel>
             <input
               type="date"
               required
@@ -152,9 +147,7 @@ export function PhotoEditPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
-              簡述
-            </label>
+            <FieldLabel>簡述</FieldLabel>
             <input
               type="text"
               value={form.summary}
@@ -164,9 +157,7 @@ export function PhotoEditPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-stone-700">
-              說明
-            </label>
+            <FieldLabel>說明</FieldLabel>
             <textarea
               rows={5}
               value={form.description}

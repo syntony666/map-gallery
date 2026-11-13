@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import type { Area, Photo } from "../../types/gallery.type";
 import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
+import { ShimmerImg } from "../common/ShimmerImg";
 import { DistrictInfo } from "./DistrictInfo";
 import { RegionList } from "./RegionList";
 
@@ -56,7 +57,7 @@ export function DistrictPanel({
         {action}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="scroll-body">
         {showInfo ? (
           <>
             <DistrictInfo area={area} />
@@ -70,16 +71,11 @@ export function DistrictPanel({
                     title={photo.title}
                     className="img-loading rounded-md"
                   >
-                    <img
+                    <ShimmerImg
                       src={photo.image}
                       alt={photo.title}
                       loading="lazy"
                       className="aspect-square w-full object-cover"
-                      onError={(event) =>
-                        event.currentTarget.parentElement?.classList.add(
-                          "img-error",
-                        )
-                      }
                     />
                   </Link>
                 ))}

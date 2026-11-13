@@ -1,4 +1,5 @@
 import type { Collection } from "../../types/gallery.type";
+import { ShimmerImg } from "../common/ShimmerImg";
 
 type CollectionItemProps = {
   collection: Collection;
@@ -19,15 +20,12 @@ export function CollectionItem({
     >
       {collection.coverImage ? (
         <span className="img-loading rounded-full">
-          <img
+          <ShimmerImg
             src={collection.coverImage}
             alt={collection.name}
             loading="lazy"
             decoding="async"
             className="collection-item h-18 w-18 rounded-full object-cover sm:h-24 sm:w-24"
-            onError={(event) =>
-              event.currentTarget.parentElement?.classList.add("img-error")
-            }
           />
         </span>
       ) : (

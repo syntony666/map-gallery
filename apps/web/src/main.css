@@ -63,8 +63,11 @@ img {
   --region-stroke: var(--region-color);
 }
 
-path:focus {
-  outline: none !important;
+/* Flex body that scrolls within a bounded parent (floating cards). */
+.scroll-body {
+  min-height: 0;
+  flex: 1 1 0%;
+  overflow-y: auto;
 }
 
 /* Optically align the heart-bubble icon with adjacent text. */
@@ -148,6 +151,6 @@ path:focus {
     #9ecdda;
 }
 
-.map-region:focus {
+.map-svg :focus {
   outline: none;
 }

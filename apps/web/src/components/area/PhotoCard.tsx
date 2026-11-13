@@ -1,4 +1,5 @@
 import type { Photo } from "../../types/gallery.type";
+import { ShimmerImg } from "../common/ShimmerImg";
 
 type PhotoCardProps = {
   photo: Photo;
@@ -53,15 +54,12 @@ export function PhotoCard({
       )}
 
       <span className="img-loading aspect-square w-full">
-        <img
+        <ShimmerImg
           src={photo.image}
           alt={photo.title}
           className="aspect-square w-full object-cover"
           loading="lazy"
           decoding="async"
-          onError={(event) =>
-            event.currentTarget.parentElement?.classList.add("img-error")
-          }
         />
       </span>
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Collection } from "../../types/gallery.type";
+import { FieldLabel } from "../common/FieldLabel";
 
 type CollectionTagEditorProps = {
   collections: Collection[];
@@ -45,9 +46,7 @@ export function CollectionTagEditor({
 
   return (
     <div>
-      <span className="mb-1 block text-sm font-medium text-stone-700">
-        相簿
-      </span>
+      <FieldLabel as="span">相簿</FieldLabel>
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         {selected.map((collection) => (

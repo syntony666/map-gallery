@@ -42,7 +42,7 @@ export function BottomBarOverlay({
           onClick={onClose}
           className="absolute right-4 top-4 h-6 w-6 justify-center"
         />
-        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+        <div className="scroll-body">{children}</div>
       </FloatingCard>
     </>
   );

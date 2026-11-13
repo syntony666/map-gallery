@@ -112,7 +112,7 @@ export function DistrictBottomBar({
               />
             </span>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className="scroll-body">
             <DistrictInfo area={area} heading={false} link={false} />
           </div>
           <div className="mt-3 flex justify-end">
