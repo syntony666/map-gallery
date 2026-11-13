@@ -1,5 +1,6 @@
 import { createPortal } from "react-dom";
 import type { Area } from "../../types/gallery.type";
+import { FloatingCard } from "../common/FloatingCard";
 import { RegionList } from "./RegionList";
 
 /** Trigger lives inside each bottom card; it is safe to mount more than once
@@ -54,11 +55,10 @@ export function AllRegionsOverlay({
         className="absolute inset-0 cursor-default"
         onClick={onClose}
       />
-      <div
+      <FloatingCard
         className="absolute bottom-24 right-4 flex w-72
           max-h-[calc(100dvh-10rem)] max-w-[calc(100vw-2rem)]
-          flex-col overflow-hidden rounded-2xl bg-white/90 p-4
-          shadow-lg backdrop-blur [&>ul]:min-h-0 [&>ul]:flex-1
+          flex-col overflow-hidden p-4 [&>ul]:min-h-0 [&>ul]:flex-1
           [&>ul]:overflow-y-auto"
       >
         <button
@@ -76,7 +76,7 @@ export function AllRegionsOverlay({
           selectedAreaId={selectedAreaId}
           onSelect={select}
         />
-      </div>
+      </FloatingCard>
     </div>,
     document.body,
   );

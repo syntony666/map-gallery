@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { Area, Photo } from "../../types/gallery.type";
+import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
 import { RegionList } from "./RegionList";
 
@@ -34,11 +35,11 @@ export function DistrictPanel({
   const showInfo = view === "info" && area !== null;
 
   return (
-    <aside
+    <FloatingCard
+      as="aside"
       aria-label="地區"
       className="absolute right-6 top-6 bottom-6 z-10 hidden w-80
-        flex-col overflow-hidden rounded-2xl bg-white/90 p-5 shadow-lg
-        backdrop-blur lg:flex"
+        flex-col overflow-hidden p-5 lg:flex"
     >
       <div className="mb-4 flex items-center justify-between gap-2">
         <div>
@@ -98,6 +99,6 @@ export function DistrictPanel({
           />
         )}
       </div>
-    </aside>
+    </FloatingCard>
   );
 }

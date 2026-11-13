@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import type { ReactNode } from "react";
 import type { Area } from "../../types/gallery.type";
+import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
 import { AreaCover } from "./AreaCover";
 
@@ -22,29 +23,28 @@ export function DistrictBottomBar({
   return (
     <>
       {area === null ? (
-        <div
+        <FloatingCard
           className="absolute inset-x-4 bottom-4 z-10 flex items-center
-            justify-between gap-2 rounded-2xl bg-white/90 px-5 py-3 text-xs
-            text-stone-500 shadow-lg backdrop-blur md:text-sm lg:hidden"
+            justify-between gap-2 px-5 py-3 text-xs text-stone-500
+            md:text-sm lg:hidden"
         >
           <span>點選縣市，以查看簡介。</span>
           <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
-        </div>
+        </FloatingCard>
       ) : collapsed ? (
-        <div
-          className="absolute inset-x-4 bottom-4 z-10 rounded-2xl
-            bg-white/90 px-5 py-3 text-sm shadow-lg backdrop-blur md:hidden"
+        <FloatingCard
+          className="absolute inset-x-4 bottom-4 z-10 px-5 py-3 text-sm
+            md:hidden"
         >
           <span className="font-semibold text-stone-800">{area.name}</span>
           <span className="text-stone-500"> {area.photoCount} 張照片</span>
-        </div>
+        </FloatingCard>
       ) : null}
 
       {area !== null && (
-        <div
-          className="absolute inset-x-4 bottom-4 z-10 hidden items-center gap-3
-            rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur
-            md:max-lg:flex"
+        <FloatingCard
+          className="absolute inset-x-4 bottom-4 z-10 hidden items-center
+            gap-3 px-4 py-3 md:max-lg:flex"
         >
           <AreaCover
             src={area.coverImage}
@@ -85,14 +85,13 @@ export function DistrictBottomBar({
           >
             <i className="bi bi-x-lg" />
           </button>
-        </div>
+        </FloatingCard>
       )}
 
       {area !== null && !collapsed && (
-        <div
-          className="absolute inset-x-4 bottom-4 z-10 flex
-            max-h-[75dvh] flex-col overflow-hidden rounded-2xl bg-white/90
-            p-5 shadow-lg backdrop-blur md:hidden"
+        <FloatingCard
+          className="absolute inset-x-4 bottom-4 z-10 flex max-h-[75dvh]
+            flex-col overflow-hidden p-5 md:hidden"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-stone-800">
@@ -114,7 +113,7 @@ export function DistrictBottomBar({
           <div className="min-h-0 overflow-y-auto">
             <DistrictInfo area={area} heading={false} />
           </div>
-        </div>
+        </FloatingCard>
       )}
     </>
   );
