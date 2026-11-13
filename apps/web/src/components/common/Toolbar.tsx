@@ -15,8 +15,6 @@ type ToolbarProps = {
   buttonGroups?: ButtonActionGroup[];
 
   mobileMode?: ButtonGroupMobileMode;
-  mobileGroupIcon?: string;
-  mobileGroupLabel?: string;
 
   /** Below lg, replace the strip with a floating bottom bar. */
   bottomBar?: boolean;
@@ -34,9 +32,7 @@ export function Toolbar({
   value,
   meta,
   buttonGroups = [],
-  mobileMode = "menu",
-  mobileGroupIcon,
-  mobileGroupLabel,
+  mobileMode = "inline",
   bottomBar = false,
   barActions,
   barOverlay,
@@ -69,14 +65,12 @@ export function Toolbar({
         <ButtonGroup
           groups={buttonGroups}
           mobileMode={mobileMode}
-          mobileGroupIcon={mobileGroupIcon}
-          mobileGroupLabel={mobileGroupLabel}
           classname="mx-2"
         />
       </section>
 
       {bottomBar && (
-        <BottomBarStack overlay={barOverlay} className="z-50 lg:hidden">
+        <BottomBarStack overlay={barOverlay} className="lg:hidden">
           <BottomBar
             className="text-sm"
             actions={

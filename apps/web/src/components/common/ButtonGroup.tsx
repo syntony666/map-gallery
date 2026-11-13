@@ -1,6 +1,4 @@
-import { useState, type HTMLAttributes } from "react";
-import { ActionMenuList } from "./ActionMenuList";
-import { ActionSheet } from "./ActionSheet";
+import type { HTMLAttributes } from "react";
 import { Button } from "./Button";
 import type {
   ButtonActionGroup,
@@ -11,21 +9,15 @@ type ButtonGroupProps = {
   classname?: HTMLAttributes<HTMLDivElement>["className"];
   groups: ButtonActionGroup[];
   mobileMode?: ButtonGroupMobileMode;
-  mobileGroupIcon?: string;
-  mobileGroupLabel?: string;
   breakpoint?: "sm" | "md" | "lg";
 };
 
 export function ButtonGroup({
   groups,
-  mobileMode = "menu",
-  mobileGroupIcon = "bi-three-dots",
-  mobileGroupLabel = "更多操作",
+  mobileMode = "inline",
   breakpoint = "sm",
   classname = "",
 }: ButtonGroupProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
   const nonEmptyGroups = groups.filter((group) => group.buttons.length > 0);
   const desktopClass = {
     sm: "sm:flex",
@@ -64,7 +56,7 @@ export function ButtonGroup({
         ))}
       </div>
 
-      {mobileMode === "none" ? null : mobileMode === "inline" ? (
+      {mobileMode === "none" ? null : (
         <div
           className={[
             "flex flex-wrap items-center justify-end gap-2",
@@ -76,26 +68,6 @@ export function ButtonGroup({
               <Button key={button.id} size="md" {...button} iconOnly />
             )),
           )}
-        </div>
-      ) : (
-        <div className={mobileClass}>
-          <Button
-            size="md"
-            label={mobileGroupLabel}
-            icon={mobileGroupIcon}
-            onClick={() => setIsOpen(true)}
-          />
-
-          <ActionSheet
-            open={isOpen}
-            title={mobileGroupLabel}
-            onClose={() => setIsOpen(false)}
-          >
-            <ActionMenuList
-              groups={nonEmptyGroups}
-              onSelect={() => setIsOpen(false)}
-            />
-          </ActionSheet>
         </div>
       )}
     </>

@@ -1,25 +1,27 @@
-import type { ReactNode } from "react";
 import { Button } from "./Button";
 import { FloatingCard } from "./FloatingCard";
+import { MenuList } from "./MenuList";
+import type { MenuSection } from "../../types/menu.type";
 
 type BottomBarOverlayProps = {
   open: boolean;
   onClose: () => void;
-  children: ReactNode;
-  /** Heading above the menu rows; the close button floats right. Required so
-      every menu ships with a label. */
-  title: ReactNode;
+  /** Heading row of the menu (icon optional via titleIcon). */
+  title: string;
+  titleIcon?: string;
+  sections: MenuSection[];
   className?: string;
 };
 
-/** Card anchored 1rem above the bottom bar inside `BottomBarStack`. The fixed
-    backdrop escapes to the viewport because no ancestor carries a backdrop
-    filter. The body scrolls as a whole, matching the district panel. */
+/** Menu card anchored 1rem above the bottom bar inside `BottomBarStack`. The
+    fixed backdrop escapes to the viewport because no ancestor carries a
+    backdrop filter. The body scrolls as a whole, matching the district panel. */
 export function BottomBarOverlay({
   open,
   onClose,
-  children,
   title,
+  titleIcon,
+  sections,
   className = "",
 }: BottomBarOverlayProps) {
   if (!open) return null;
@@ -44,12 +46,16 @@ export function BottomBarOverlay({
           icon="bi-x-lg"
           aria-label="關閉"
           onClick={onClose}
-          className="absolute right-4 top-4 h-6 w-6 justify-center"
+          className="absolute right-4 top-4 z-10 h-6 w-6 justify-center"
         />
-        <p className="px-1 pb-2 pr-8 text-sm font-semibold text-stone-700">
-          {title}
-        </p>
-        <div className="scroll-body">{children}</div>
+        <div className="scroll-body">
+          <MenuList
+            title={title}
+            titleIcon={titleIcon}
+            sections={sections}
+            onSelect={onClose}
+          />
+        </div>
       </FloatingCard>
     </>
   );

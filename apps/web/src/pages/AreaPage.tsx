@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { ActionMenuList } from "../components/common/ActionMenuList";
 import { BottomBar } from "../components/common/BottomBar";
 import { BottomBarOverlay } from "../components/common/BottomBarOverlay";
 import { BottomBarStack } from "../components/common/BottomBarStack";
+import { menuSections } from "../types/menu.type";
 import { Button } from "../components/common/Button";
 import { ButtonGroup } from "../components/common/ButtonGroup";
 import { CollectionBar } from "../components/area/CollectionBar";
@@ -299,18 +299,15 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       {/* <lg 的浮動操作列：md–lg 圖加字、<md 純圖示 */}
       {titleButtons.length > 0 && (
         <BottomBarStack
-          className="z-50 lg:hidden"
+          className="lg:hidden"
           overlay={
             <BottomBarOverlay
               open={photoMenuOpen}
               onClose={() => setPhotoMenuOpen(false)}
               title="編輯照片"
-            >
-              <ActionMenuList
-                groups={photoMenuGroups}
-                onSelect={() => setPhotoMenuOpen(false)}
-              />
-            </BottomBarOverlay>
+              titleIcon="bi-images"
+              sections={menuSections(photoMenuGroups)}
+            />
           }
         >
           <BottomBar

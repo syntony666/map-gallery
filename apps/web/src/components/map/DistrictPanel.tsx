@@ -6,7 +6,8 @@ import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { ShimmerImg } from "../common/ShimmerImg";
 import { DistrictInfo } from "./DistrictInfo";
-import { RegionList } from "./RegionList";
+import { MenuList } from "../common/MenuList";
+import { regionRows } from "./regionMenu";
 
 type DistrictPanelProps = {
   area: Area | null;
@@ -83,13 +84,18 @@ export function DistrictPanel({
             )}
           </>
         ) : (
-          <RegionList
-            areas={areas}
-            selectedAreaId={area?.id}
-            onSelect={(id) => {
-              onSelect(id);
-              setView("info");
-            }}
+          <MenuList
+            title="所有地區"
+            titleIcon="bi-geo-alt"
+            sections={[
+              {
+                id: "regions",
+                rows: regionRows(areas, area?.id, (id) => {
+                  onSelect(id);
+                  setView("info");
+                }),
+              },
+            ]}
           />
         )}
       </div>

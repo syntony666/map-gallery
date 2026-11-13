@@ -1,11 +1,11 @@
 import { useState } from "react";
 import type { ButtonActionGroup } from "../../types/button.type";
 import type { Collection } from "../../types/gallery.type";
-import { ActionMenuList } from "../common/ActionMenuList";
 import { BottomBarOverlay } from "../common/BottomBarOverlay";
 import { Button } from "../common/Button";
 import { ButtonGroup } from "../common/ButtonGroup";
 import { Toolbar } from "../common/Toolbar";
+import { menuSections } from "../../types/menu.type";
 
 export type CollectionManageToolbarAction = {
   onCollectionRename: (collection: Collection) => void;
@@ -134,8 +134,6 @@ export function CollectionManageToolbar({
       value={collection.name}
       meta={`（${collection.photoCount} 張照片）`}
       buttonGroups={[...buttons, ...extraGroups]}
-      mobileGroupIcon="bi-pencil-square"
-      mobileGroupLabel="管理相簿"
       bottomBar
       barActions={
         <>
@@ -158,12 +156,9 @@ export function CollectionManageToolbar({
           open={menuOpen}
           onClose={() => setMenuOpen(false)}
           title="管理相簿"
-        >
-          <ActionMenuList
-            groups={[...buttons, ...extraGroups]}
-            onSelect={() => setMenuOpen(false)}
-          />
-        </BottomBarOverlay>
+          titleIcon="bi-pencil-square"
+          sections={menuSections([...buttons, ...extraGroups])}
+        />
       }
     />
   );

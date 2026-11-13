@@ -1,7 +1,7 @@
 import type { Area } from "../../types/gallery.type";
 import { BottomBarOverlay } from "../common/BottomBarOverlay";
 import { Button } from "../common/Button";
-import { RegionList } from "./RegionList";
+import { regionRows } from "./regionMenu";
 
 /** Trigger lives inside each bottom card; it is safe to mount more than once
     because media queries hide every copy except the visible card's. */
@@ -35,18 +35,18 @@ export function AllRegionsOverlay({
   open,
   onClose,
 }: AllRegionsOverlayProps) {
-  const select = (areaId: string) => {
-    onSelect(areaId);
-    onClose();
-  };
-
   return (
-    <BottomBarOverlay open={open} onClose={onClose} title="所有地區">
-      <RegionList
-        areas={areas}
-        selectedAreaId={selectedAreaId}
-        onSelect={select}
-      />
-    </BottomBarOverlay>
+    <BottomBarOverlay
+      open={open}
+      onClose={onClose}
+      title="所有地區"
+      titleIcon="bi-geo-alt"
+      sections={[
+        {
+          id: "regions",
+          rows: regionRows(areas, selectedAreaId, onSelect),
+        },
+      ]}
+    />
   );
 }
