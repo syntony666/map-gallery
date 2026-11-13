@@ -24,13 +24,7 @@ export function DistrictBottomBar({
             justify-between gap-2 rounded-2xl bg-white/90 px-5 py-3 text-xs
             text-stone-500 shadow-lg backdrop-blur md:text-sm lg:hidden"
         >
-          <span>
-            點選地圖上的縣市
-            <span className="hidden md:inline">，</span>
-            <br className="md:hidden" />
-            查看簡介與照片
-            <span className="hidden md:inline">。</span>
-          </span>
+          <span>點選縣市，以查看簡介。</span>
           <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
         </div>
       ) : (
