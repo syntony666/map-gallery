@@ -19,6 +19,7 @@ import type { ButtonActionGroup } from "../types/button.type";
 import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { usePreventZoom } from "../hooks/usePreventZoom";
 import { useViewMode } from "../hooks/useViewMode";
 import { getPhotoGridHeading } from "../utils/photo-grid-heading";
 
@@ -68,6 +69,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     setWasEditMode(UI.isEditMode);
     setPhotoMenuOpen(false);
   }
+  usePreventZoom();
 
   useDocumentTitle(area?.name);
   const navigate = useNavigate();
@@ -240,7 +242,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           value={draftDescription}
           onChange={(event) => actions.updateDescription(event.target.value)}
           rows={3}
-          autoFocus
           className="rounded border border-stone-500 bg-white px-2 py-2 
             text-sm text-stone-700 outline-none"
         />

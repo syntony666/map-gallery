@@ -5,6 +5,7 @@ import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
 import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { usePreventZoom } from "../hooks/usePreventZoom";
 import { usePhotoDetailPageController } from "../hooks/usePhotoDetailPageController";
 import { useViewMode } from "../hooks/useViewMode";
 
@@ -12,6 +13,7 @@ export function PhotoDetailPage() {
   const { areaId, photoId } = useParams();
 
   const controller = usePhotoDetailPageController({ photoId, areaId });
+  usePreventZoom();
 
   const emptyPhoto: PhotoDetail = {
     id: "0",
