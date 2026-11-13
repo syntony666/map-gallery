@@ -10,7 +10,7 @@ type MenuHeadingProps = {
     scrollable row area so it stays put while rows scroll. */
 export function MenuHeading({ title, titleIcon }: MenuHeadingProps) {
   return (
-    <h2 className="mb-2 px-2 text-md font-semibold text-stone-800">
+    <h2 className="py-2 px-2 text-md font-semibold text-stone-800">
       {titleIcon && (
         <i
           className={`bi ${titleIcon} mr-1.5 text-stone-600`}
@@ -58,8 +58,8 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
                 row.selected
                   ? "bg-stone-200/70 font-medium text-stone-800"
                   : row.danger
-                    ? "text-red-700 hover:bg-red-50"
-                    : "text-stone-700 hover:bg-stone-300/80",
+                    ? "text-red-700 hover:bg-red-200"
+                    : "text-stone-700 hover:bg-stone-200/80",
               ].join(" ")}
             >
               <span className="flex min-w-0 items-center gap-2.5">

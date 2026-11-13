@@ -40,7 +40,7 @@ export function BottomBarOverlay({
       <FloatingCard
         className={[
           "absolute inset-x-0 bottom-[calc(100%_+_1rem)] flex",
-          "max-h-[calc(100dvh-10rem)] flex-col overflow-hidden py-4 px-2 md:left-auto md:w-72",
+          "max-h-[calc(100dvh-10rem)] flex-col overflow-hidden py-2 px-2 md:left-auto md:w-72",
           className,
         ].join(" ")}
       >
