@@ -52,6 +52,7 @@ img {
 
 :root {
   --map-land: #f6f1e7;
+  --map-boundary: #57534e;
   --region-color: #4a4a4a;
   --region-stroke: #232323;
 }
@@ -128,8 +129,9 @@ path:focus {
 
 .map-region__stroke {
   fill: none;
-  stroke: transparent;
-  stroke-width: 2;
+  stroke: var(--map-boundary);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
   pointer-events: none;
   transition: stroke 160ms ease;
 }
