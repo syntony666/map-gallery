@@ -6,6 +6,8 @@ const SNAP_RATIO = 1.2;
 const MIN_CANVAS_PX = 360;
 /** The overflowing axis may exceed the viewport by at most this factor. */
 const MAX_SCROLL_RATIO = 1.5;
+/** Below this viewport width the map must fully fit — no scrolling on phones. */
+const SMALL_VIEWPORT_PX = 768;
 
 /**
  * Canvas is height-bound by default. Genuinely wide content scrolls
@@ -26,7 +28,11 @@ export function computeCanvasSize(
   } else if (heightBoundW >= MIN_CANVAS_PX) {
     width = Math.min(heightBoundW, viewportW);
   } else {
-    width = Math.min(viewportW, (viewportH * MAX_SCROLL_RATIO * boxW) / boxH);
+    const heightBoundCap =
+      viewportW < SMALL_VIEWPORT_PX
+        ? heightBoundW
+        : (viewportH * MAX_SCROLL_RATIO * boxW) / boxH;
+    width = Math.min(viewportW, heightBoundCap);
   }
   return { width, height: (width * boxH) / boxW };
 }

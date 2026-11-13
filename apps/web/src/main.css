@@ -156,6 +156,10 @@ path:focus {
   overflow: hidden;
   width: 100dvw;
   margin: -1.5rem 0 -1.5rem calc(50% - 50dvw);
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
   background:
     radial-gradient(
       circle at 50% 42%,

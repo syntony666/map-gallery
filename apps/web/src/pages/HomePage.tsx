@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReadonlyToggle } from "../components/common/ReadonlyToggle";
 import {
   AllRegionsButton,
@@ -15,6 +15,16 @@ export function HomePage() {
   const [regionsOpen, setRegionsOpen] = useState(false);
 
   useDocumentTitle(null);
+
+  // iOS Safari tints the status bar and overscroll areas with the root
+  // background — paint it sea blue while this page is mounted.
+  useEffect(() => {
+    const prev = document.body.style.backgroundColor;
+    document.body.style.backgroundColor = "#9ecdda";
+    return () => {
+      document.body.style.backgroundColor = prev;
+    };
+  }, []);
 
   return (
     <main className="map-page">
