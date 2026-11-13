@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useAsyncData } from "../../hooks/useAsyncData";
 import type { Area } from "../../types/gallery.type";
+import { computeCanvasSize, type MapBox } from "./mapSizing";
 import { parseRegionsSvg } from "./regions";
 import { TaiwanRegions } from "./TaiwanRegions";
 
@@ -9,6 +10,21 @@ type TaiwanMapProps = {
   selectedAreaId: string | null;
   onSelectArea: (areaId: string | null) => void;
 };
+
+const FULL_VIEWBOX = "0 0 1600 1600";
+const CROP_PADDING = 20;
+
+/** Dev/test hook: ?crop=x,y,w,h fakes the content bounding box. */
+function parseCropParam(): MapBox | null {
+  const raw = new URLSearchParams(window.location.search).get("crop");
+  if (!raw) {
+    return null;
+  }
+  const [x, y, w, h] = raw.split(",").map(Number);
+  return [x, y, w, h].every(Number.isFinite) && w > 0 && h > 0
+    ? { x, y, w, h }
+    : null;
+}
 
 export function TaiwanMap({
   areas,
@@ -29,28 +45,61 @@ export function TaiwanMap({
     { errorMessage: "無法載入地圖資料" },
   );
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<SVGGElement>(null);
+  const [crop, setCrop] = useState<MapBox | null>(parseCropParam);
+  const [viewport, setViewport] = useState({ w: 0, h: 0 });
 
-  useEffect(() => {
-    if (!shapes) {
-      return;
-    }
-
+  useLayoutEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) {
       return;
     }
+    const observer = new ResizeObserver(([entry]) => {
+      setViewport({
+        w: entry.contentRect.width,
+        h: entry.contentRect.height,
+      });
+    });
+    observer.observe(scroller);
+    return () => observer.disconnect();
+  }, []);
 
-    const center = () => {
-      scroller.scrollLeft = Math.max(
-        0,
-        (scroller.scrollWidth - scroller.clientWidth) / 2,
-      );
-    };
+  useLayoutEffect(() => {
+    const g = measureRef.current;
+    if (!g || crop) {
+      return;
+    }
+    const bb = g.getBBox();
+    setCrop({
+      x: bb.x - CROP_PADDING,
+      y: bb.y - CROP_PADDING,
+      w: bb.width + CROP_PADDING * 2,
+      h: bb.height + CROP_PADDING * 2,
+    });
+  }, [shapes, crop]);
 
-    center();
-    const frame = requestAnimationFrame(center);
-    return () => cancelAnimationFrame(frame);
-  }, [shapes]);
+  useLayoutEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || !crop) {
+      return;
+    }
+    scroller.scrollLeft = Math.max(
+      0,
+      (scroller.scrollWidth - scroller.clientWidth) / 2,
+    );
+    scroller.scrollTop = Math.max(
+      0,
+      (scroller.scrollHeight - scroller.clientHeight) / 2,
+    );
+  }, [crop, viewport]);
+
+  const viewBox = crop
+    ? `${crop.x} ${crop.y} ${crop.w} ${crop.h}`
+    : FULL_VIEWBOX;
+  const size =
+    crop && viewport.w > 0
+      ? computeCanvasSize(crop.w, crop.h, viewport.w, viewport.h)
+      : null;
 
   return (
     <div className="map-viewport">
@@ -59,10 +108,13 @@ export function TaiwanMap({
         ref={scrollerRef}
         onClick={() => onSelectArea(null)}
       >
-        <div className="map-canvas">
+        <div
+          className="map-canvas"
+          style={size ? { width: size.width, height: size.height } : undefined}
+        >
           <svg
             className="map-canvas__underlay"
-            viewBox="0 0 1600 1600"
+            viewBox={viewBox}
             preserveAspectRatio="xMidYMid meet"
             aria-hidden="true"
           >
@@ -84,29 +136,29 @@ export function TaiwanMap({
                 </g>
               </g>
             )}
+            <image
+              href="/maps/taiwan-land.png"
+              width={1600}
+              height={1600}
+              preserveAspectRatio="none"
+            />
           </svg>
-          <img
-            className="map-canvas__land"
-            src="/maps/taiwan-land.png"
-            alt="台灣行政區地圖"
-            width={1600}
-            height={1600}
-            draggable={false}
-          />
           <svg
             className="map-canvas__overlay"
-            viewBox="0 0 1600 1600"
+            viewBox={viewBox}
             preserveAspectRatio="xMidYMid meet"
             role="group"
             aria-label="選擇行政區"
           >
             {shapes && (
-              <TaiwanRegions
-                shapes={shapes}
-                areas={areas}
-                selectedAreaId={selectedAreaId}
-                onSelectArea={onSelectArea}
-              />
+              <g ref={measureRef}>
+                <TaiwanRegions
+                  shapes={shapes}
+                  areas={areas}
+                  selectedAreaId={selectedAreaId}
+                  onSelectArea={onSelectArea}
+                />
+              </g>
             )}
           </svg>
         </div>
