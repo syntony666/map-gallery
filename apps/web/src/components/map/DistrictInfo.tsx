@@ -6,9 +6,15 @@ type DistrictInfoProps = {
   area: Area | null;
   /** hide the name heading when the container already shows it */
   heading?: boolean;
+  /** hide the gallery link when the container already provides one */
+  link?: boolean;
 };
 
-export function DistrictInfo({ area, heading = true }: DistrictInfoProps) {
+export function DistrictInfo({
+  area,
+  heading = true,
+  link = true,
+}: DistrictInfoProps) {
   if (!area) {
     return (
       <p className="text-sm text-stone-500">
@@ -39,14 +45,16 @@ export function DistrictInfo({ area, heading = true }: DistrictInfoProps) {
         </p>
       )}
 
-      <Link
-        to={`/area/${area.id}`}
-        className="mt-1 inline-flex w-fit items-center gap-1 rounded
-          bg-stone-200 px-3 py-2 text-xs text-stone-800 hover:bg-stone-300"
-      >
-        查看內容
-        <i className="bi bi-arrow-right" />
-      </Link>
+      {link && (
+        <Link
+          to={`/area/${area.id}`}
+          className="mt-1 inline-flex w-fit items-center gap-1 rounded
+            bg-stone-200 px-3 py-2 text-xs text-stone-800 hover:bg-stone-300"
+        >
+          查看內容
+          <i className="bi bi-arrow-right" />
+        </Link>
+      )}
     </div>
   );
 }
