@@ -20,12 +20,12 @@ const CROP_PADDING = 20;
 const PAN_UNLOCK_ZOOM = 1.02;
 /** Maximum relative zoom; pinch may overshoot it slightly with resistance. */
 const MAX_ZOOM = 2;
-/** How much of the overshoot pinch is allowed to show (rubber band). */
-const ZOOM_OVERSHOOT = 0.5;
-/** Fraction of an over-drag shown while past the pan bounds (rubber band). */
-const PAN_OVERSHOOT = 0.35;
+/** Asymptotic pinch overshoot beyond MAX_ZOOM (rubber band, slope 1 at cap). */
+const ZOOM_RANGE = 1;
+/** Asymptotic px overshoot when dragging past the pan bounds. */
+const PAN_RANGE = 60;
 /** Hard library cap so pinch overshoot stays bounded. */
-const LIB_MAX_ZOOM = MAX_ZOOM * (1 + ZOOM_OVERSHOOT);
+const LIB_MAX_ZOOM = MAX_ZOOM + ZOOM_RANGE;
 /** Pixels of pointer travel that turn a click into a drag. */
 const DRAG_THRESHOLD_PX = 6;
 /** Tailwind lg breakpoint; above it the side panel replaces the bottom bar. */
@@ -54,6 +54,13 @@ function clampPan(inst: SvgPanZoom.Instance, pan: PanPoint): PanPoint {
 }
 
 const easeOutCubic = (k: number) => 1 - Math.pow(1 - k, 3);
+
+/**
+ * Rubber-band offset: eases in with slope 1 at the boundary and approaches
+ * `range` asymptotically, so crossing a limit never kinks the motion.
+ */
+const rubber = (excess: number, range: number) =>
+  range * (1 - Math.exp(-excess / range));
 
 /** Dev/test hook: ?crop=x,y,w,h fakes the content bounding box. */
 function parseCropParam(): MapBox | null {
@@ -200,8 +207,14 @@ export function TaiwanMap({
         }
         const clamped = clampPan(inst, newPan);
         return {
-          x: clamped.x + (newPan.x - clamped.x) * PAN_OVERSHOOT,
-          y: clamped.y + (newPan.y - clamped.y) * PAN_OVERSHOOT,
+          x:
+            clamped.x +
+            Math.sign(newPan.x - clamped.x) *
+              rubber(Math.abs(newPan.x - clamped.x), PAN_RANGE),
+          y:
+            clamped.y +
+            Math.sign(newPan.y - clamped.y) *
+              rubber(Math.abs(newPan.y - clamped.y), PAN_RANGE),
         };
       },
       // Outside a pinch gesture nothing may zoom past MAX_ZOOM (the library
@@ -267,14 +280,29 @@ export function TaiwanMap({
             touchAction: "none",
           });
           hammerManager.get("pinch").set({ enable: true });
+          hammerManager.get("pan").set({ direction: Hammer.DIRECTION_ALL });
+          // Let pan and pinch emit together; pinchmove owns the translation
+          // while a pinch is live, and pan takes over seamlessly when a
+          // finger lifts.
+          hammerManager.get("pinch").recognizeWith(hammerManager.get("pan"));
           hammerManager.on("doubletap", () => instance.zoomIn());
           hammerManager.on("panstart pinchstart", stopMotion);
           hammerManager.on("panstart panmove", (ev) => {
+            // ev.deltaX/Y accumulate over the whole touch session, so a pan
+            // re-engaging after a pinch carries the pinch's displacement —
+            // re-baseline on panstart or the map jumps. During an active
+            // pinch the baseline still tracks so the handoff is seamless.
             if (ev.type === "panstart") {
-              pannedX = 0;
-              pannedY = 0;
+              pannedX = ev.deltaX;
+              pannedY = ev.deltaY;
+              return;
             }
-            instance.panBy({ x: ev.deltaX - pannedX, y: ev.deltaY - pannedY });
+            if (!gesturing) {
+              instance.panBy({
+                x: ev.deltaX - pannedX,
+                y: ev.deltaY - pannedY,
+              });
+            }
             pannedX = ev.deltaX;
             pannedY = ev.deltaY;
           });
@@ -332,16 +360,13 @@ export function TaiwanMap({
               ev.center.x,
               ev.center.y,
             ).matrixTransform(screenCTM.inverse());
-            // Rubber band at the cap: beyond MAX_ZOOM only a fraction of the
-            // requested zoom is applied, so the map keeps responding.
+            // Rubber band at the cap: past MAX_ZOOM the zoom approaches
+            // LIB_MAX_ZOOM asymptotically — no kink when crossing the cap.
             const requested = initialScale * ev.scale;
             const target =
               requested <= MAX_ZOOM
                 ? requested
-                : Math.min(
-                    MAX_ZOOM + (requested - MAX_ZOOM) * ZOOM_OVERSHOOT,
-                    LIB_MAX_ZOOM,
-                  );
+                : MAX_ZOOM + rubber(requested - MAX_ZOOM, ZOOM_RANGE);
             lastSvgAnchor = { x: point.x, y: point.y };
             instance.zoomAtPoint(target, lastSvgAnchor);
             // Two-finger translate pans the map alongside the zoom.
@@ -353,7 +378,7 @@ export function TaiwanMap({
             }
             lastCenter = ev.center;
           });
-          hammerManager.on("pinchend", () => {
+          hammerManager.on("pinchend pinchcancel", () => {
             gesturing = false;
             pinchEndAt = performance.now();
             const zoom = instance.getZoom();
@@ -371,7 +396,7 @@ export function TaiwanMap({
               const anchor = lastSvgAnchor;
               const t0 = performance.now();
               const tick = (now: number) => {
-                const k = Math.min((now - t0) / 220, 1);
+                const k = Math.min((now - t0) / 280, 1);
                 const s = from + (MAX_ZOOM - from) * easeOutCubic(k);
                 if (anchor) {
                   instance.zoomAtPoint(s, anchor);
