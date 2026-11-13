@@ -1,7 +1,10 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
+import svgPanZoom from "svg-pan-zoom";
+import Hammer from "hammerjs";
 import { useAsyncData } from "../../hooks/useAsyncData";
 import type { Area } from "../../types/gallery.type";
-import { computeCanvasSize, type MapBox } from "./mapSizing";
+import type { MapBox } from "./mapSizing";
 import { parseRegionsSvg } from "./regions";
 import { TaiwanRegions } from "./TaiwanRegions";
 
@@ -13,6 +16,10 @@ type TaiwanMapProps = {
 
 /** Extra space around the measured content bounds, in viewBox units. */
 const CROP_PADDING = 20;
+/** Relative zoom (1 = fitted) above which panning unlocks. */
+const PAN_UNLOCK_ZOOM = 1.02;
+/** Pixels of pointer travel that turn a click into a drag. */
+const DRAG_THRESHOLD_PX = 6;
 
 /** Dev/test hook: ?crop=x,y,w,h fakes the content bounding box. */
 function parseCropParam(): MapBox | null {
@@ -45,24 +52,11 @@ export function TaiwanMap({
     { errorMessage: "無法載入地圖資料" },
   );
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const viewportRef = useRef<SVGGElement>(null);
   const measureRef = useRef<SVGGElement>(null);
+  const pointerDownAt = useRef<{ x: number; y: number } | null>(null);
   const [crop, setCrop] = useState<MapBox | null>(parseCropParam);
-  const [viewport, setViewport] = useState({ w: 0, h: 0 });
-
-  useLayoutEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) {
-      return;
-    }
-    const observer = new ResizeObserver(([entry]) => {
-      setViewport({
-        w: entry.contentRect.width,
-        h: entry.contentRect.height,
-      });
-    });
-    observer.observe(scroller);
-    return () => observer.disconnect();
-  }, []);
 
   useLayoutEffect(() => {
     const g = measureRef.current;
@@ -78,85 +72,178 @@ export function TaiwanMap({
     });
   }, [shapes, crop]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    const svg = svgRef.current;
+    const viewport = viewportRef.current;
     const scroller = scrollerRef.current;
-    if (!scroller || !crop) {
+    if (!svg || !viewport || !scroller || !crop) {
       return;
     }
-    scroller.scrollLeft = Math.max(
-      0,
-      (scroller.scrollWidth - scroller.clientWidth) / 2,
-    );
-    // Vertically overflowing maps start at the top; the bottom end-padding
-    // lets the tail scroll clear of the bottom card.
-    scroller.scrollTop = 0;
-  }, [crop, viewport]);
+
+    let inst: SvgPanZoom.Instance | null = null;
+    let unlocking = false;
+    let hammerManager: HammerManager | null = null;
+
+    inst = svgPanZoom(svg, {
+      viewportSelector: viewport,
+      fit: true,
+      center: true,
+      minZoom: 1,
+      maxZoom: 6,
+      zoomScaleSensitivity: 0.3,
+      preventMouseEventsDefault: true,
+      // getZoom() returns the zoom relative to the fitted state (1 = fit).
+      // Panning is refused while fitted so the map stays locked in place.
+      beforePan: () =>
+        unlocking || (inst !== null && inst.getZoom() > PAN_UNLOCK_ZOOM),
+      // Zooming out past the fit snaps back to the centered fitted state,
+      // since pan offsets cannot be undone while panning is locked.
+      onZoom: (newZoom) => {
+        if (inst && !unlocking && newZoom <= PAN_UNLOCK_ZOOM) {
+          unlocking = true;
+          inst.reset();
+          unlocking = false;
+        }
+      },
+      customEventsHandler: {
+        haltEventListeners: [
+          "touchstart",
+          "touchend",
+          "touchmove",
+          "touchleave",
+          "touchcancel",
+        ],
+        init: (options) => {
+          const instance = options.instance;
+          const svgElement = options.svgElement;
+          let initialScale = 1;
+          let pannedX = 0;
+          let pannedY = 0;
+
+          hammerManager = new Hammer(svgElement, {
+            inputClass: Hammer.SUPPORT_POINTER_EVENTS
+              ? Hammer.PointerEventInput
+              : Hammer.TouchInput,
+            touchAction: "none",
+          });
+          hammerManager.get("pinch").set({ enable: true });
+          hammerManager.on("doubletap", () => instance.zoomIn());
+          hammerManager.on("panstart panmove", (ev) => {
+            if (ev.type === "panstart") {
+              pannedX = 0;
+              pannedY = 0;
+            }
+            instance.panBy({ x: ev.deltaX - pannedX, y: ev.deltaY - pannedY });
+            pannedX = ev.deltaX;
+            pannedY = ev.deltaY;
+          });
+          hammerManager.on("pinchstart pinchmove", (ev) => {
+            if (ev.type === "pinchstart") {
+              initialScale = instance.getZoom();
+            }
+            const screenCTM = svgElement.getScreenCTM();
+            if (!screenCTM) {
+              return;
+            }
+            const point = new DOMPoint(
+              ev.center.x,
+              ev.center.y,
+            ).matrixTransform(screenCTM.inverse());
+            instance.zoomAtPoint(initialScale * ev.scale, {
+              x: point.x,
+              y: point.y,
+            });
+          });
+        },
+        destroy: () => {
+          hammerManager?.destroy();
+          hammerManager = null;
+        },
+      },
+    });
+
+    const observer = new ResizeObserver(() => inst?.resize());
+    observer.observe(scroller);
+
+    return () => {
+      observer.disconnect();
+      inst?.destroy();
+      inst = null;
+    };
+  }, [crop, shapes]);
 
   const viewBox = crop
     ? `${crop.x} ${crop.y} ${crop.w} ${crop.h}`
     : (shapes?.viewBox ?? undefined);
-  const size =
-    crop && viewport.w > 0
-      ? computeCanvasSize(crop.w, crop.h, viewport.w, viewport.h)
-      : null;
+
+  const isDragClick = (e: ReactMouseEvent) => {
+    const down = pointerDownAt.current;
+    return (
+      down !== null &&
+      Math.hypot(e.clientX - down.x, e.clientY - down.y) > DRAG_THRESHOLD_PX
+    );
+  };
 
   return (
     <div className="map-viewport">
-      {/* Scrollable end-padding mirrors the floating cards' classes:
-          lg side panel (w-80 + right-6 + gap), below-lg bottom bar. */}
       <div
         className="map-scroller lg:pr-92 max-lg:pb-20"
         ref={scrollerRef}
-        onClick={() => onSelectArea(null)}
+        onPointerDown={(e) => {
+          pointerDownAt.current = { x: e.clientX, y: e.clientY };
+        }}
+        onClickCapture={(e) => {
+          if (isDragClick(e)) {
+            e.stopPropagation();
+          }
+        }}
+        onClick={(e) => {
+          if (!isDragClick(e)) {
+            onSelectArea(null);
+          }
+        }}
       >
-        <div
-          className="map-canvas"
-          style={size ? { width: size.width, height: size.height } : undefined}
+        <svg
+          ref={svgRef}
+          className="map-svg"
+          viewBox={viewBox}
+          preserveAspectRatio="xMidYMid meet"
+          role="group"
+          aria-label="選擇行政區"
         >
-          <svg
-            className="map-canvas__underlay"
-            viewBox={viewBox}
-            preserveAspectRatio="xMidYMid meet"
-            aria-hidden="true"
-          >
+          <defs>
+            <clipPath id="map-land-clip" clipPathUnits="userSpaceOnUse">
+              {shapes?.regions.map((region) =>
+                region.paths.map((d) => <path key={d} d={d} />),
+              )}
+            </clipPath>
+          </defs>
+          {/* svg-pan-zoom adopts this group as its transform viewport; it must
+              stay the only non-defs child and carry no transform attribute. */}
+          <g ref={viewportRef} className="svg-pan-zoom_viewport">
             {shapes && (
-              <g transform={shapes.transform || undefined}>
-                <defs>
-                  <clipPath id="map-land-clip" clipPathUnits="userSpaceOnUse">
+              <>
+                <g transform={shapes.transform || undefined} aria-hidden="true">
+                  <g clipPath="url(#map-land-clip)">
                     {shapes.regions.map((region) =>
-                      region.paths.map((d) => <path key={d} d={d} />),
+                      region.paths.map((d) => (
+                        <path key={d} d={d} className="map-canvas__land-fill" />
+                      )),
                     )}
-                  </clipPath>
-                </defs>
-                <g clipPath="url(#map-land-clip)">
-                  {shapes.regions.map((region) =>
-                    region.paths.map((d) => (
-                      <path key={d} d={d} className="map-canvas__land-fill" />
-                    )),
-                  )}
+                  </g>
                 </g>
-              </g>
+                <g ref={measureRef}>
+                  <TaiwanRegions
+                    shapes={shapes}
+                    areas={areas}
+                    selectedAreaId={selectedAreaId}
+                    onSelectArea={onSelectArea}
+                  />
+                </g>
+              </>
             )}
-          </svg>
-          <svg
-            className="map-canvas__overlay"
-            viewBox={viewBox}
-            preserveAspectRatio="xMidYMid meet"
-            role="group"
-            aria-label="選擇行政區"
-          >
-            {shapes && (
-              <g ref={measureRef}>
-                <TaiwanRegions
-                  shapes={shapes}
-                  areas={areas}
-                  selectedAreaId={selectedAreaId}
-                  onSelectArea={onSelectArea}
-                />
-              </g>
-            )}
-          </svg>
-        </div>
+          </g>
+        </svg>
       </div>
 
       {error && (
