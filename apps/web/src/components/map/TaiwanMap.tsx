@@ -139,7 +139,7 @@ export function TaiwanMap({
       fit: true,
       center: true,
       minZoom: 1,
-      maxZoom: 6,
+      maxZoom: 2,
       zoomScaleSensitivity: 0.3,
       preventMouseEventsDefault: true,
       // getZoom() returns the zoom relative to the fitted state (1 = fit).
