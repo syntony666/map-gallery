@@ -21,7 +21,9 @@ const PAN_UNLOCK_ZOOM = 1.02;
 /** Maximum relative zoom; pinch may overshoot it slightly with resistance. */
 const MAX_ZOOM = 2;
 /** How much of the overshoot pinch is allowed to show (rubber band). */
-const ZOOM_OVERSHOOT = 0.3;
+const ZOOM_OVERSHOOT = 0.5;
+/** Fraction of an over-drag shown while past the pan bounds (rubber band). */
+const PAN_OVERSHOOT = 0.35;
 /** Hard library cap so pinch overshoot stays bounded. */
 const LIB_MAX_ZOOM = MAX_ZOOM * (1 + ZOOM_OVERSHOOT);
 /** Pixels of pointer travel that turn a click into a drag. */
@@ -33,6 +35,25 @@ const CHROME_INSET_LG_PX = 368;
 const CHROME_INSET_SM_PX = 80;
 /** Height changes smaller than this are ignored — iOS URL bar show/hide. */
 const RESIZE_IGNORE_PX = 120;
+
+type PanPoint = { x: number; y: number };
+
+/** Legal pan range keeping the content bounds covering the viewport. */
+function clampPan(inst: SvgPanZoom.Instance, pan: PanPoint): PanPoint {
+  const sizes = inst.getSizes();
+  const vb = sizes.viewBox;
+  const rz = sizes.realZoom;
+  // Content screen rect: vb.x * rz + pan.x .. (vb.x + vb.width) * rz + pan.x
+  const minX = sizes.width - (vb.x + vb.width) * rz;
+  const maxX = -vb.x * rz;
+  const minY = sizes.height - (vb.y + vb.height) * rz;
+  const maxY = -vb.y * rz;
+  const axis = (min: number, max: number, v: number) =>
+    min <= max ? Math.min(max, Math.max(min, v)) : (min + max) / 2;
+  return { x: axis(minX, maxX, pan.x), y: axis(minY, maxY, pan.y) };
+}
+
+const easeOutCubic = (k: number) => 1 - Math.pow(1 - k, 3);
 
 /** Dev/test hook: ?crop=x,y,w,h fakes the content bounding box. */
 function parseCropParam(): MapBox | null {
@@ -140,6 +161,23 @@ export function TaiwanMap({
     let unlocking = false;
     let gesturing = false;
     let hammerManager: HammerManager | null = null;
+    let inertiaFrame = 0;
+    let settleFrame = 0;
+    let zoomSettleFrame = 0;
+    const stopMotion = () => {
+      if (inertiaFrame) {
+        cancelAnimationFrame(inertiaFrame);
+        inertiaFrame = 0;
+      }
+      if (settleFrame) {
+        cancelAnimationFrame(settleFrame);
+        settleFrame = 0;
+      }
+      if (zoomSettleFrame) {
+        cancelAnimationFrame(zoomSettleFrame);
+        zoomSettleFrame = 0;
+      }
+    };
 
     inst = svgPanZoom(svg, {
       viewportSelector: viewport,
@@ -151,8 +189,8 @@ export function TaiwanMap({
       preventMouseEventsDefault: true,
       // getZoom() returns the zoom relative to the fitted state (1 = fit).
       // Panning is refused while fitted so the map stays locked in place;
-      // while zoomed, the content bounds must keep covering the viewport —
-      // the map can never be dragged out of view.
+      // while zoomed, the bounds rubber-band: a fraction of any over-drag is
+      // shown, and the pan eases back once the gesture ends.
       beforePan: (_oldPan, newPan) => {
         if (!inst) {
           return true;
@@ -160,23 +198,10 @@ export function TaiwanMap({
         if (!unlocking && inst.getZoom() <= PAN_UNLOCK_ZOOM) {
           return false;
         }
-        const sizes = inst.getSizes();
-        const vb = sizes.viewBox;
-        const rz = sizes.realZoom;
-        // Content screen rect: vb.x * rz + pan.x .. (vb.x + vb.width) * rz + pan.x
-        const minX = sizes.width - (vb.x + vb.width) * rz;
-        const maxX = -vb.x * rz;
-        const minY = sizes.height - (vb.y + vb.height) * rz;
-        const maxY = -vb.y * rz;
+        const clamped = clampPan(inst, newPan);
         return {
-          x:
-            minX <= maxX
-              ? Math.min(maxX, Math.max(minX, newPan.x))
-              : (minX + maxX) / 2,
-          y:
-            minY <= maxY
-              ? Math.min(maxY, Math.max(minY, newPan.y))
-              : (minY + maxY) / 2,
+          x: clamped.x + (newPan.x - clamped.x) * PAN_OVERSHOOT,
+          y: clamped.y + (newPan.y - clamped.y) * PAN_OVERSHOOT,
         };
       },
       // Outside a pinch gesture nothing may zoom past MAX_ZOOM (the library
@@ -208,13 +233,30 @@ export function TaiwanMap({
           let pannedX = 0;
           let pannedY = 0;
           let lastCenter: { x: number; y: number } | null = null;
-          let inertiaFrame = 0;
+          let pinchEndAt = 0;
 
-          const stopInertia = () => {
-            if (inertiaFrame) {
-              cancelAnimationFrame(inertiaFrame);
-              inertiaFrame = 0;
+          // Ease an out-of-bounds pan back inside — the rubber-band return.
+          const settleToBounds = () => {
+            if (settleFrame) {
+              cancelAnimationFrame(settleFrame);
+              settleFrame = 0;
             }
+            const start = instance.getPan();
+            const target = clampPan(instance, start);
+            if (start.x === target.x && start.y === target.y) {
+              return;
+            }
+            const t0 = performance.now();
+            const tick = (now: number) => {
+              const k = Math.min((now - t0) / 200, 1);
+              const e = easeOutCubic(k);
+              instance.pan({
+                x: start.x + (target.x - start.x) * e,
+                y: start.y + (target.y - start.y) * e,
+              });
+              settleFrame = k < 1 ? requestAnimationFrame(tick) : 0;
+            };
+            settleFrame = requestAnimationFrame(tick);
           };
 
           hammerManager = new Hammer(svgElement, {
@@ -225,7 +267,7 @@ export function TaiwanMap({
           });
           hammerManager.get("pinch").set({ enable: true });
           hammerManager.on("doubletap", () => instance.zoomIn());
-          hammerManager.on("panstart pinchstart", stopInertia);
+          hammerManager.on("panstart pinchstart", stopMotion);
           hammerManager.on("panstart panmove", (ev) => {
             if (ev.type === "panstart") {
               pannedX = 0;
@@ -235,9 +277,20 @@ export function TaiwanMap({
             pannedX = ev.deltaX;
             pannedY = ev.deltaY;
           });
-          // Fling inertia: decay the release velocity until it dies out or
-          // the pan clamps against the map bounds.
+          // Fling inertia: decay the release velocity until it dies out,
+          // then ease back inside if the pan ended past the bounds.
           hammerManager.on("panend", (ev) => {
+            const pan = instance.getPan();
+            const clamped = clampPan(instance, pan);
+            if (pan.x !== clamped.x || pan.y !== clamped.y) {
+              settleToBounds();
+              return;
+            }
+            // A pinch release also fires panend; leftover pinch velocity
+            // must not fling the map.
+            if (performance.now() - pinchEndAt < 50) {
+              return;
+            }
             let vx = ev.velocityX;
             let vy = ev.velocityY;
             if (Math.hypot(vx, vy) < 0.1) {
@@ -247,15 +300,16 @@ export function TaiwanMap({
             const step = (now: number) => {
               const dt = Math.min(now - last, 50);
               last = now;
-              const before = instance.getPan();
               instance.panBy({ x: vx * dt, y: vy * dt });
               const after = instance.getPan();
               const damp = Math.exp(-dt * 0.004);
               vx *= damp;
               vy *= damp;
-              const stuck = after.x === before.x && after.y === before.y;
-              if (stuck || Math.hypot(vx, vy) < 0.02) {
+              const legal = clampPan(instance, after);
+              const outside = legal.x !== after.x || legal.y !== after.y;
+              if (outside || Math.hypot(vx, vy) < 0.02) {
                 inertiaFrame = 0;
+                settleToBounds();
                 return;
               }
               inertiaFrame = requestAnimationFrame(step);
@@ -298,6 +352,7 @@ export function TaiwanMap({
           });
           hammerManager.on("pinchend", () => {
             gesturing = false;
+            pinchEndAt = performance.now();
             const zoom = instance.getZoom();
             if (zoom <= PAN_UNLOCK_ZOOM) {
               unlocking = true;
@@ -305,22 +360,22 @@ export function TaiwanMap({
               unlocking = false;
               return;
             }
+            settleToBounds();
             // Ease an overshot pinch back to the cap.
             if (zoom > MAX_ZOOM) {
               const from = zoom;
               const t0 = performance.now();
               const tick = (now: number) => {
-                const k = Math.min((now - t0) / 180, 1);
-                instance.zoom(from + (MAX_ZOOM - from) * k);
-                if (k < 1) {
-                  requestAnimationFrame(tick);
-                }
+                const k = Math.min((now - t0) / 220, 1);
+                instance.zoom(from + (MAX_ZOOM - from) * easeOutCubic(k));
+                zoomSettleFrame = k < 1 ? requestAnimationFrame(tick) : 0;
               };
-              requestAnimationFrame(tick);
+              zoomSettleFrame = requestAnimationFrame(tick);
             }
           });
         },
         destroy: () => {
+          stopMotion();
           hammerManager?.destroy();
           hammerManager = null;
         },
