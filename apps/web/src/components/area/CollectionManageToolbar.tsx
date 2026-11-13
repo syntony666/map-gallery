@@ -46,13 +46,13 @@ export function CollectionManageToolbar({
     setMenuOpen(false);
   }
 
-  /** Below md every action moves into the ☰ menu. */
+  /** Below lg every action moves into the ☰ menu. */
   const menuButton = (
     <Button
       size="md"
       icon="bi-list"
       aria-label="管理相簿"
-      className="md:hidden"
+      className="lg:hidden"
       onClick={() => setMenuOpen(true)}
     />
   );
@@ -68,7 +68,7 @@ export function CollectionManageToolbar({
             <ButtonGroup
               groups={extraGroups}
               mobileMode="none"
-              breakpoint="md"
+              breakpoint="lg"
             />
             {menuButton}
           </>
@@ -160,7 +160,7 @@ export function CollectionManageToolbar({
       bottomBar
       barActions={
         <>
-          <ButtonGroup groups={buttons} mobileMode="none" breakpoint="md" />
+          <ButtonGroup groups={buttons} mobileMode="none" breakpoint="lg" />
           {menuButton}
         </>
       }
@@ -186,7 +186,7 @@ export function CollectionManageToolbar({
           <ButtonGroup
             groups={[...buttons, ...extraGroups]}
             mobileMode="none"
-            breakpoint="md"
+            breakpoint="lg"
           />
           {menuButton}
         </>
