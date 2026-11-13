@@ -16,7 +16,7 @@ export function AllRegionsButton({ onClick }: { onClick: () => void }) {
       className="flex items-center gap-1.5 rounded bg-stone-100 px-2
         py-1 text-xs text-stone-700 hover:bg-stone-200 lg:hidden"
     >
-      <i className="bi bi-grid" />
+      <i className="bi bi-geo-alt" />
       所有地區
     </button>
   );
