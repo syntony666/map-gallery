@@ -30,19 +30,16 @@ type MenuListProps = {
   onSelect?: (row: MenuRow) => void;
 };
 
-/** The one menu list: RegionList-style rows shared by every menu. */
+/** The one menu list: RegionList-style rows shared by every menu. Group
+    boundaries get the deeper group rule (outer divide); row rules, when
+    `dividers` is on, stay lighter — a boundary never gets both. */
 export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
   return (
-    <>
-      {sections.map((section, index) => (
+    <div className="divide-y divide-stone-300/60">
+      {sections.map((section) => (
         <div
           key={section.id}
-          className={[
-            index > 0 ? "mt-1 border-t border-stone-300/60" : "",
-            dividers ? "divide-y divide-stone-200/60" : "",
-          ]
-            .join(" ")
-            .trim()}
+          className={dividers ? "divide-y divide-stone-200/60 py-1" : "py-1"}
         >
           {section.rows.map((row) => (
             <button
@@ -80,6 +77,6 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
           ))}
         </div>
       ))}
-    </>
+    </div>
   );
 }
