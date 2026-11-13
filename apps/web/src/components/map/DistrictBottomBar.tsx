@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import type { ReactNode } from "react";
 import type { Area } from "../../types/gallery.type";
 import { DistrictInfo } from "./DistrictInfo";
 import { AreaCover } from "./AreaCover";
@@ -6,18 +7,25 @@ import { AreaCover } from "./AreaCover";
 type DistrictBottomBarProps = {
   area: Area | null;
   onClose: () => void;
+  /** Right-aligned actions shown inside every bottom card. */
+  actions?: ReactNode;
 };
 
-export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
+export function DistrictBottomBar({
+  area,
+  onClose,
+  actions,
+}: DistrictBottomBarProps) {
   return (
     <>
       {area === null ? (
         <div
-          className="absolute inset-x-4 bottom-4 z-10 rounded-2xl
-            bg-white/90 px-5 py-3 text-sm text-stone-500 shadow-lg
-            backdrop-blur lg:hidden"
+          className="absolute inset-x-4 bottom-4 z-10 flex items-center
+            justify-between gap-2 rounded-2xl bg-white/90 px-5 py-3 text-sm
+            text-stone-500 shadow-lg backdrop-blur lg:hidden"
         >
-          點選地圖上的縣市，查看簡介與照片。
+          <span>點選地圖上的縣市，查看簡介與照片。</span>
+          <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
         </div>
       ) : (
         <div
@@ -54,6 +62,7 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
           >
             查看內容
           </Link>
+          <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
           <button
             type="button"
             onClick={onClose}
@@ -76,15 +85,18 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
             <h2 className="text-base font-semibold text-stone-800">
               {area.name}
             </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="關閉簡介"
-              className="rounded bg-white px-2 py-1 text-stone-700 shadow
+            <span className="flex items-center gap-1.5">
+              {actions}
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="關閉簡介"
+                className="rounded bg-white px-2 py-1 text-stone-700 shadow
                 hover:bg-stone-50"
-            >
-              <i className="bi bi-x-lg" />
-            </button>
+              >
+                <i className="bi bi-x-lg" />
+              </button>
+            </span>
           </div>
           <DistrictInfo area={area} heading={false} />
         </div>

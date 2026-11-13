@@ -29,13 +29,17 @@ export function HomePage() {
         <DistrictBottomBar
           area={selectedArea}
           onClose={() => selectArea(null)}
+          actions={
+            <>
+              <AllRegionsMenu
+                areas={areas}
+                selectedAreaId={selectedArea?.id ?? null}
+                onSelect={selectArea}
+              />
+              <ReadonlyToggle />
+            </>
+          }
         />
-        <AllRegionsMenu
-          areas={areas}
-          selectedAreaId={selectedArea?.id ?? null}
-          onSelect={selectArea}
-        />
-        <ReadonlyToggle className="absolute right-4 top-4 z-10 lg:hidden" />
       </div>
     </main>
   );
