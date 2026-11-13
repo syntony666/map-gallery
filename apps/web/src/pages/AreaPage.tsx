@@ -305,6 +305,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             <BottomBarOverlay
               open={photoMenuOpen}
               onClose={() => setPhotoMenuOpen(false)}
+              title="編輯照片"
             >
               <ActionMenuList
                 groups={photoMenuGroups}
@@ -336,7 +337,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             }
           >
             <p className="min-w-0 flex-1 truncate text-stone-500">
-              {UI.isEditMode ? "編輯模式" : area.name}
+              {UI.isAreaEditMode ? "編輯地區資訊：修改說明" : "編輯模式"}
             </p>
           </BottomBar>
         </BottomBarStack>

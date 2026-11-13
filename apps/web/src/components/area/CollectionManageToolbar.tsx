@@ -154,7 +154,11 @@ export function CollectionManageToolbar({
         </>
       }
       barOverlay={
-        <BottomBarOverlay open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <BottomBarOverlay
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          title="管理相簿"
+        >
           <ActionMenuList
             groups={[...buttons, ...extraGroups]}
             onSelect={() => setMenuOpen(false)}
