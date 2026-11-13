@@ -44,7 +44,7 @@ export function HomePage() {
             <>
               <ReadonlyToggle
                 label
-                className="bg-stone-100 px-3 py-1.5 text-sm
+                className="bg-stone-100 px-2 py-1 text-xs
                   hover:bg-stone-200"
               />
               <AllRegionsButton onClick={() => setRegionsOpen(true)} />
