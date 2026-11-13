@@ -1,5 +1,9 @@
+import { useState } from "react";
 import { ReadonlyToggle } from "../components/common/ReadonlyToggle";
-import { AllRegionsMenu } from "../components/map/AllRegionsMenu";
+import {
+  AllRegionsButton,
+  AllRegionsOverlay,
+} from "../components/map/AllRegionsMenu";
 import { DistrictBottomBar } from "../components/map/DistrictBottomBar";
 import { DistrictPanel } from "../components/map/DistrictPanel";
 import { TaiwanMap } from "../components/map/TaiwanMap";
@@ -8,6 +12,7 @@ import { useMapPageController } from "../hooks/useMapPageController";
 
 export function HomePage() {
   const { areas, selectedArea, selectArea, photos } = useMapPageController();
+  const [regionsOpen, setRegionsOpen] = useState(false);
 
   useDocumentTitle(null);
 
@@ -29,16 +34,20 @@ export function HomePage() {
         <DistrictBottomBar
           area={selectedArea}
           onClose={() => selectArea(null)}
+          collapsed={regionsOpen}
           actions={
             <>
-              <AllRegionsMenu
-                areas={areas}
-                selectedAreaId={selectedArea?.id ?? null}
-                onSelect={selectArea}
-              />
+              <AllRegionsButton onClick={() => setRegionsOpen(true)} />
               <ReadonlyToggle />
             </>
           }
+        />
+        <AllRegionsOverlay
+          areas={areas}
+          selectedAreaId={selectedArea?.id ?? null}
+          onSelect={selectArea}
+          open={regionsOpen}
+          onClose={() => setRegionsOpen(false)}
         />
       </div>
     </main>
