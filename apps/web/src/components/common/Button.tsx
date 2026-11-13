@@ -1,8 +1,26 @@
-import type { ButtonConfig, ButtonVariant } from "../../types/button.type";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Link } from "react-router";
+import type { ButtonVariant } from "../../types/button.type";
 
-type ButtonProps = {
-  button: ButtonConfig;
+export type ButtonSize = "sm" | "md";
+
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Raised chrome: white + shadow, for controls floating over the map. */
+  raised?: boolean;
+  /** Ghost chrome: transparent until hover. */
+  ghost?: boolean;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  icon?: string;
+  iconEnd?: string;
+  label?: string;
+  /** The label rests collapsed to zero width and expands on hover/focus. */
+  expandLabel?: boolean;
+  /** Always hide the label. */
   iconOnly?: boolean;
+  /** Render as a router Link instead of a button. */
+  to?: string;
+  children?: ReactNode;
 };
 
 function getVariantClassName(variant?: ButtonVariant) {
@@ -11,27 +29,86 @@ function getVariantClassName(variant?: ButtonVariant) {
   return "text-stone-800";
 }
 
-export function Button({ button, iconOnly }: ButtonProps) {
+export function Button({
+  raised = false,
+  ghost = false,
+  variant = "default",
+  size = "sm",
+  icon,
+  iconEnd,
+  label,
+  expandLabel = false,
+  iconOnly = false,
+  to,
+  className = "",
+  type = "button",
+  title,
+  children,
+  "aria-label": ariaLabel,
+  ...rest
+}: ButtonProps) {
+  const classes = [
+    "inline-flex items-center gap-1.5 rounded transition-colors",
+    "disabled:cursor-not-allowed disabled:opacity-40",
+    size === "md" ? "px-3 py-1.5 text-sm" : "px-2 py-1 text-xs",
+    ghost
+      ? "text-stone-400 hover:bg-stone-200 hover:text-stone-600"
+      : raised
+        ? "bg-white text-stone-700 shadow hover:bg-stone-50"
+        : "bg-stone-100 text-stone-700 hover:bg-stone-300",
+    expandLabel ? "group" : "",
+    className,
+  ].join(" ");
+
+  const content = (
+    <>
+      {icon && (
+        <i
+          className={`bi ${icon} ${getVariantClassName(variant)}`}
+          aria-hidden="true"
+        />
+      )}
+      {label && !iconOnly && (
+        <span
+          className={
+            expandLabel
+              ? `max-w-0 overflow-hidden whitespace-nowrap opacity-0
+                transition-all group-hover:max-w-24 group-hover:opacity-100
+                group-focus:max-w-24 group-focus:opacity-100`
+              : undefined
+          }
+        >
+          {label}
+        </span>
+      )}
+      {children}
+      {iconEnd && <i className={`bi ${iconEnd}`} aria-hidden="true" />}
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link
+        to={to}
+        title={title}
+        aria-label={ariaLabel}
+        onClick={rest.onClick}
+        className={classes}
+      >
+        {content}
+      </Link>
+    );
+  }
+
   return (
     <button
-      key={button.id}
-      type="button"
-      onClick={button.onClick}
-      disabled={button.disabled}
-      className={[
-        "rounded bg-stone-200 px-3 py-2 text-xs",
-        "hover:bg-stone-300 disabled:cursor-not-allowed disabled:opacity-40",
-      ].join(" ")}
-      title={button.label}
+      type={type}
+      title={title ?? label}
+      aria-label={ariaLabel}
+      className={classes}
+      {...rest}
     >
-      {button.icon && (
-        <i
-          className={`bi ${button.icon} ${getVariantClassName(button.variant)}`}
-        ></i>
-      )}
-      {button.label && !iconOnly && (
-        <span className="ms-2">{button.label}</span>
-      )}
+      {content}
     </button>
   );
 }

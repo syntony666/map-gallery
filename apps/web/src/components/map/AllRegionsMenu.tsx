@@ -1,5 +1,6 @@
 import { createPortal } from "react-dom";
 import type { Area } from "../../types/gallery.type";
+import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { RegionList } from "./RegionList";
 
@@ -9,16 +10,13 @@ export function AllRegionsButton({ onClick }: { onClick: () => void }) {
   return (
     // Once the /areas gallery page ships this becomes a link instead of
     // opening a list.
-    <button
-      type="button"
+    <Button
+      icon="bi-geo-alt"
+      label="所有地區"
       aria-label="所有地區"
       onClick={onClick}
-      className="flex items-center gap-1.5 rounded bg-stone-100 px-2
-        py-1 text-xs text-stone-700 hover:bg-stone-200 lg:hidden"
-    >
-      <i className="bi bi-geo-alt" />
-      所有地區
-    </button>
+      className="lg:hidden"
+    />
   );
 }
 
@@ -62,16 +60,13 @@ export function AllRegionsOverlay({
           md:left-auto md:w-72 [&>ul]:min-h-0 [&>ul]:flex-1
           [&>ul]:overflow-y-auto`}
       >
-        <button
-          type="button"
+        <Button
+          ghost
+          icon="bi-x-lg"
           aria-label="關閉"
           onClick={onClose}
-          className="absolute right-4 top-4 flex h-6 w-6 items-center
-            justify-center rounded text-stone-400 hover:bg-stone-200
-            hover:text-stone-600"
-        >
-          <i className="bi bi-x-lg" />
-        </button>
+          className="absolute right-4 top-4 h-6 w-6 justify-center"
+        />
         <RegionList
           areas={areas}
           selectedAreaId={selectedAreaId}

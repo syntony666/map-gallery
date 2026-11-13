@@ -53,7 +53,7 @@ export function ButtonGroup({
             ].join(" ")}
           >
             {group.buttons.map((button) => (
-              <Button key={button.id} button={button} />
+              <Button key={button.id} {...button} />
             ))}
           </div>
         ))}
@@ -63,19 +63,16 @@ export function ButtonGroup({
         <div className="flex flex-wrap items-center justify-end gap-2 sm:hidden">
           {nonEmptyGroups.flatMap((group) =>
             group.buttons.map((button) => (
-              <Button key={button.id} button={button} iconOnly />
+              <Button key={button.id} {...button} iconOnly />
             )),
           )}
         </div>
       ) : (
         <div className="sm:hidden">
           <Button
-            button={{
-              id: "button-group-menu-trigger",
-              label: mobileGroupLabel,
-              icon: mobileGroupIcon,
-              onClick: () => setIsOpen(true),
-            }}
+            label={mobileGroupLabel}
+            icon={mobileGroupIcon}
+            onClick={() => setIsOpen(true)}
           />
 
           <ActionSheet

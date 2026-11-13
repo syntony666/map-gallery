@@ -1,5 +1,5 @@
-import { Link } from "react-router";
 import type { Area } from "../../types/gallery.type";
+import { Button } from "../common/Button";
 import { AreaCover } from "./AreaCover";
 
 type DistrictInfoProps = {
@@ -46,14 +46,12 @@ export function DistrictInfo({
       )}
 
       {link && (
-        <Link
+        <Button
           to={`/area/${area.id}`}
-          className="mt-1 inline-flex w-fit items-center gap-1 rounded
-            bg-stone-200 px-3 py-2 text-xs text-stone-800 hover:bg-stone-300"
-        >
-          查看內容
-          <i className="bi bi-arrow-right" />
-        </Link>
+          label="查看內容"
+          iconEnd="bi-arrow-right"
+          className="mt-1 w-fit"
+        />
       )}
     </div>
   );

@@ -48,7 +48,7 @@ export function PhotoGridToolbar({
           <span className="text-lg font-semibold">{title}</span>
 
           {buttons.length > 0 &&
-            buttons.map((button) => <Button key={button.id} button={button} />)}
+            buttons.map((button) => <Button key={button.id} {...button} />)}
         </div>
         <span className="text-sm text-stone-500">{photoCount} 個項目</span>
       </div>

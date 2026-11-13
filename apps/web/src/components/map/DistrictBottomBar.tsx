@@ -1,6 +1,6 @@
-import { Link } from "react-router";
 import type { ReactNode } from "react";
 import type { Area } from "../../types/gallery.type";
+import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
 import { AreaCover } from "./AreaCover";
@@ -75,23 +75,19 @@ export function DistrictBottomBar({
               </p>
             )}
           </div>
-          <Link
+          <Button
             to={`/area/${area.id}`}
-            className="shrink-0 rounded bg-stone-200 px-3 py-1.5 text-xs
-              text-stone-800 hover:bg-stone-300"
-          >
-            查看內容
-          </Link>
+            label="查看內容"
+            className="shrink-0"
+          />
           <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
-          <button
-            type="button"
-            onClick={onClose}
+          <Button
+            raised
+            icon="bi-x-lg"
             aria-label="關閉簡介"
-            className="shrink-0 rounded bg-white px-2 py-1 text-stone-700
-              shadow hover:bg-stone-50"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
+            onClick={onClose}
+            className="shrink-0"
+          />
         </FloatingCard>
       )}
 
@@ -106,30 +102,23 @@ export function DistrictBottomBar({
             </h2>
             <span className="flex items-center gap-1.5">
               {actions}
-              <button
-                type="button"
-                onClick={onClose}
+              <Button
+                raised
+                icon="bi-x-lg"
                 aria-label="關閉簡介"
-                className="rounded bg-white px-2 py-1 text-stone-700 shadow
-                hover:bg-stone-50"
-              >
-                <i className="bi bi-x-lg" />
-              </button>
+                onClick={onClose}
+              />
             </span>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             <DistrictInfo area={area} heading={false} link={false} />
           </div>
           <div className="mt-3 flex justify-end">
-            <Link
+            <Button
               to={`/area/${area.id}`}
-              className="inline-flex items-center gap-1 rounded
-                bg-stone-200 px-3 py-2 text-xs text-stone-800
-                hover:bg-stone-300"
-            >
-              查看內容
-              <i className="bi bi-arrow-right" />
-            </Link>
+              label="查看內容"
+              iconEnd="bi-arrow-right"
+            />
           </div>
         </FloatingCard>
       )}

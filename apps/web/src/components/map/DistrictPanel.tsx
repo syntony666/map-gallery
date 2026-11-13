@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { Area, Photo } from "../../types/gallery.type";
+import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
 import { RegionList } from "./RegionList";
@@ -44,15 +45,12 @@ export function DistrictPanel({
       <div className="mb-4 flex items-center justify-between gap-2">
         <div>
           {showInfo && (
-            <button
-              type="button"
-              onClick={() => setView("list")}
+            <Button
+              raised
+              icon="bi-arrow-left"
               aria-label="返回清單"
-              className="rounded bg-white px-2 py-1 text-stone-700 shadow
-                hover:bg-stone-50"
-            >
-              <i className="bi bi-arrow-left" />
-            </button>
+              onClick={() => setView("list")}
+            />
           )}
         </div>
         {action}

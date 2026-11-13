@@ -1,15 +1,21 @@
 import { useViewMode } from "../../hooks/useViewMode";
 import { ensureAdminToken } from "../../utils/auth";
+import { Button, type ButtonSize } from "./Button";
 
 type ReadonlyToggleProps = {
-  className?: string;
-  /** show the current mode as text next to the icon */
+  /** Raised chrome for the floating panel. */
+  raised?: boolean;
+  size?: ButtonSize;
+  /** Show the current mode as a label that expands on hover/focus. */
   label?: boolean;
+  className?: string;
 };
 
 export function ReadonlyToggle({
-  className = "",
+  raised = false,
+  size,
   label = false,
+  className = "",
 }: ReadonlyToggleProps) {
   const { readonly, toggleReadonly } = useViewMode();
 
@@ -22,22 +28,16 @@ export function ReadonlyToggle({
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      raised={raised}
+      size={size}
+      icon={readonly ? "bi-lock" : "bi-unlock"}
+      label={readonly ? "閱覽模式" : "編輯模式"}
+      expandLabel={label}
+      iconOnly={!label}
       onClick={handleClick}
       title={readonly ? "切換為編輯模式" : "切換為閱覽模式"}
-      className={`group flex items-center gap-1.5 rounded text-stone-700 ${className}`}
-    >
-      <i className={`bi ${readonly ? "bi-lock" : "bi-unlock"}`} />
-      {label && (
-        <span
-          className="max-w-0 overflow-hidden whitespace-nowrap opacity-0
-            transition-all group-hover:max-w-24 group-hover:opacity-100
-            group-focus:max-w-24 group-focus:opacity-100"
-        >
-          {readonly ? "閱覽模式" : "編輯模式"}
-        </span>
-      )}
-    </button>
+      className={className}
+    />
   );
 }

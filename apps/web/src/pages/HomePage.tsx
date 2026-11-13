@@ -29,25 +29,14 @@ export function HomePage() {
           areas={areas}
           photos={photos}
           onSelect={selectArea}
-          action={
-            <ReadonlyToggle
-              label
-              className="bg-white px-2 py-1 text-sm shadow hover:bg-stone-50"
-            />
-          }
+          action={<ReadonlyToggle label raised size="md" />}
         />
         <DistrictBottomBar
           area={selectedArea}
           onClose={() => selectArea(null)}
           collapsed={regionsOpen}
           actions={<AllRegionsButton onClick={() => setRegionsOpen(true)} />}
-          hintActions={
-            <ReadonlyToggle
-              label
-              className="bg-stone-100 px-2 py-1 text-xs
-                hover:bg-stone-200"
-            />
-          }
+          hintActions={<ReadonlyToggle label />}
         />
         <AllRegionsOverlay
           areas={areas}
