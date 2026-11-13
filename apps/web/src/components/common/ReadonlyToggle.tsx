@@ -26,12 +26,10 @@ export function ReadonlyToggle({
       type="button"
       onClick={handleClick}
       title={readonly ? "切換為編輯模式" : "切換為閱覽模式"}
-      className={`flex items-center gap-1.5 rounded px-2 py-1 text-stone-700 ${className}`}
+      className={`flex items-center gap-1.5 rounded text-stone-700 ${className}`}
     >
       <i className={`bi ${readonly ? "bi-lock" : "bi-unlock"}`} />
-      {label && (
-        <span className="text-xs">{readonly ? "閱覽模式" : "編輯模式"}</span>
-      )}
+      {label && <span>{readonly ? "閱覽模式" : "編輯模式"}</span>}
     </button>
   );
 }

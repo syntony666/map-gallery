@@ -32,7 +32,7 @@ export function HomePage() {
           action={
             <ReadonlyToggle
               label
-              className="bg-white shadow hover:bg-stone-50"
+              className="bg-white px-2 py-1 text-sm shadow hover:bg-stone-50"
             />
           }
         />
@@ -44,7 +44,8 @@ export function HomePage() {
             <>
               <ReadonlyToggle
                 label
-                className="bg-stone-100 hover:bg-stone-200"
+                className="bg-stone-100 px-3 py-1.5 text-sm
+                  hover:bg-stone-200"
               />
               <AllRegionsButton onClick={() => setRegionsOpen(true)} />
             </>
