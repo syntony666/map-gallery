@@ -67,6 +67,12 @@ path:focus {
   outline: none !important;
 }
 
+/* Optically align the heart-bubble icon with adjacent text. */
+.bi-chat-square-heart {
+  position: relative;
+  top: 0.1em;
+}
+
 .map-viewport {
   position: relative;
   height: 100%;
