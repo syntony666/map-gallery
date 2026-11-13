@@ -32,7 +32,8 @@ export function ReadonlyToggle({
       {label && (
         <span
           className="max-w-0 overflow-hidden whitespace-nowrap opacity-0
-            transition-all group-hover:max-w-24 group-hover:opacity-100"
+            transition-all group-hover:max-w-24 group-hover:opacity-100
+            group-focus:max-w-24 group-focus:opacity-100"
         >
           {readonly ? "閱覽模式" : "編輯模式"}
         </span>
