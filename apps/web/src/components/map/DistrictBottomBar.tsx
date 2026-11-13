@@ -43,7 +43,8 @@ export function DistrictBottomBar({
             md:hidden"
         >
           <span className="font-semibold text-stone-800">{area.name}</span>
-          <span className="text-stone-500"> {area.photoCount} 張照片</span>
+          {area.name}
+          <span className="text-stone-500"> • {area.photoCount}張照片</span>
         </FloatingCard>
       ) : null}
 
@@ -69,7 +70,7 @@ export function DistrictBottomBar({
                 className="mt-0.5 line-clamp-2 text-xs leading-relaxed
                   text-stone-600"
               >
-                <i className="bi bi-chat-square-heart mr-1" />
+                <i className="bi bi-chat-square-heart" />
                 {area.description}
               </p>
             )}

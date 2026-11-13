@@ -71,6 +71,7 @@ path:focus {
 .bi-chat-square-heart {
   position: relative;
   top: 0.1em;
+  margin-right: 0.4em;
 }
 
 .map-viewport {

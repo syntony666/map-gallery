@@ -40,7 +40,7 @@ export function DistrictInfo({
 
       {area.description && (
         <p className="text-sm leading-relaxed text-stone-600">
-          <i className="bi bi-chat-square-heart mr-1.5" />
+          <i className="bi bi-chat-square-heart" />
           {area.description}
         </p>
       )}

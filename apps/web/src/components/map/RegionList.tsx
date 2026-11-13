@@ -15,7 +15,7 @@ export function RegionList({
   return (
     <>
       <h2 className="mb-2 text-sm font-semibold text-stone-800">
-        <i className="bi bi-geo-alt mr-1.5 text-stone-400" />
+        <i className="bi bi-geo-alt mr-1.5 text-stone-600" />
         所有地區
       </h2>
       <ul className="divide-y divide-stone-200/60">
