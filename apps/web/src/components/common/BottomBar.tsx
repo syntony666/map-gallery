@@ -19,7 +19,7 @@ export function BottomBar({
   return (
     <FloatingCard
       className={[
-        "inset-x-4 bottom-4 z-10 px-5 py-3",
+        "bottom-bar inset-x-4 bottom-4 z-10 px-5 py-3",
         fixed ? "fixed" : "absolute",
         actions ? "flex items-center justify-between gap-2" : "",
         className,

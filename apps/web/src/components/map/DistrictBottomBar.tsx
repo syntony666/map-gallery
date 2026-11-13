@@ -48,8 +48,8 @@ export function DistrictBottomBar({
 
       {area !== null && (
         <FloatingCard
-          className="absolute inset-x-4 bottom-4 z-10 hidden items-center
-            gap-3 px-4 py-3 md:max-lg:flex"
+          className="bottom-bar absolute inset-x-4 bottom-4 z-10 hidden
+            items-center gap-3 px-4 py-3 md:max-lg:flex"
         >
           <AreaCover
             src={area.coverImage}
@@ -91,8 +91,8 @@ export function DistrictBottomBar({
 
       {area !== null && !collapsed && (
         <FloatingCard
-          className="absolute inset-x-4 bottom-4 z-10 flex max-h-[75dvh]
-            flex-col overflow-hidden p-5 md:hidden"
+          className="bottom-bar absolute inset-x-4 bottom-4 z-10 flex
+            max-h-[75dvh] flex-col overflow-hidden p-5 md:hidden"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-stone-800">

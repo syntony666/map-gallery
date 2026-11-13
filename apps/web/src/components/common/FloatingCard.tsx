@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 type FloatingCardProps = {
   /** Positioning, padding, and breakpoint visibility stay with the caller. */
   className?: string;
+  style?: CSSProperties;
   children: ReactNode;
   as?: "div" | "aside";
   "aria-label"?: string;
@@ -12,12 +13,14 @@ type FloatingCardProps = {
 export function FloatingCard({
   as: Tag = "div",
   className = "",
+  style,
   children,
   "aria-label": ariaLabel,
 }: FloatingCardProps) {
   return (
     <Tag
       aria-label={ariaLabel}
+      style={style}
       className={`rounded-2xl bg-white/90 shadow-lg backdrop-blur ${className}`}
     >
       {children}
