@@ -310,9 +310,10 @@ export function TaiwanMap({
           };
 
           hammerManager = new Hammer(svgElement, {
-            inputClass: Hammer.SUPPORT_POINTER_EVENTS
-              ? Hammer.PointerEventInput
-              : Hammer.TouchInput,
+            inputClass:
+              typeof PointerEvent !== "undefined"
+                ? Hammer.PointerEventInput
+                : Hammer.TouchInput,
             touchAction: "none",
           });
           hammerManager.get("pinch").set({ enable: true });
