@@ -17,7 +17,7 @@ export function AllRegionsButton({ onClick }: { onClick: () => void }) {
         py-1 text-xs text-stone-700 hover:bg-stone-200 lg:hidden"
     >
       <i className="bi bi-grid" />
-      縣市
+      所有地區
     </button>
   );
 }
