@@ -18,8 +18,8 @@ export function BottomBarStack({
   return (
     <div
       className={[
-        "fixed inset-x-4 z-10",
-        "bottom-[calc(1rem+env(safe-area-inset-bottom))]",
+        "fixed inset-x-4 z-50",
+        "bottom-[calc(0.5rem+env(safe-area-inset-bottom))]",
         className,
       ].join(" ")}
     >
