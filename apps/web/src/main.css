@@ -85,6 +85,13 @@ path:focus {
   display: none;
 }
 
+@media (min-width: 1024px) {
+  /* Reserve space for the lg-only district panel (w-80 + right-6 + gap). */
+  .map-scroller {
+    padding-right: 23rem;
+  }
+}
+
 .map-canvas {
   position: relative;
   flex: none;
