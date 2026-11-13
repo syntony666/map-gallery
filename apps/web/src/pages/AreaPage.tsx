@@ -405,7 +405,8 @@ function TitleBarContent({
 }: {
   areaName: string;
   description?: string;
-  buttonGroup: ButtonActionGroup[];
+  /** Error and loading states render the bar without any actions. */
+  buttonGroup?: ButtonActionGroup[];
 }) {
   const navigate = useNavigate();
 
@@ -414,7 +415,7 @@ function TitleBarContent({
       areaName={areaName.length !== 0 ? areaName : "回到地圖"}
       description={description}
       onBack={() => navigate("/")}
-      buttonGroup={buttonGroup}
+      buttonGroup={buttonGroup ?? []}
       mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
     />
   );
