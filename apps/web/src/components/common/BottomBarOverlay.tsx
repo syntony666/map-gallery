@@ -1,6 +1,6 @@
 import { Button } from "./Button";
 import { FloatingCard } from "./FloatingCard";
-import { MenuList } from "./MenuList";
+import { MenuHeading, MenuList } from "./MenuList";
 import type { MenuSection } from "../../types/menu.type";
 
 type BottomBarOverlayProps = {
@@ -46,15 +46,11 @@ export function BottomBarOverlay({
           icon="bi-x-lg"
           aria-label="關閉"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 h-6 w-6 justify-center"
+          className="absolute right-4 top-4 z-10 h-6 w-6 text-stone-600 justify-center"
         />
+        <MenuHeading title={title} titleIcon={titleIcon} />
         <div className="scroll-body">
-          <MenuList
-            title={title}
-            titleIcon={titleIcon}
-            sections={sections}
-            onSelect={onClose}
-          />
+          <MenuList sections={sections} onSelect={onClose} />
         </div>
       </FloatingCard>
     </>

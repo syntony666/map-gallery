@@ -6,7 +6,7 @@ import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { ShimmerImg } from "../common/ShimmerImg";
 import { DistrictInfo } from "./DistrictInfo";
-import { MenuList } from "../common/MenuList";
+import { MenuHeading, MenuList } from "../common/MenuList";
 import { regionRows } from "./regionMenu";
 
 type DistrictPanelProps = {
@@ -58,6 +58,8 @@ export function DistrictPanel({
         {action}
       </div>
 
+      {!showInfo && <MenuHeading title="所有地區" titleIcon="bi-geo-alt" />}
+
       <div className="scroll-body">
         {showInfo ? (
           <>
@@ -85,8 +87,6 @@ export function DistrictPanel({
           </>
         ) : (
           <MenuList
-            title="所有地區"
-            titleIcon="bi-geo-alt"
             sections={[
               {
                 id: "regions",
