@@ -57,10 +57,10 @@ img {
   --region-stroke: #232323;
 }
 
-/* Regions with an inline --region-color get a darkened rim of the same
-   hue; an explicit --region-stroke still wins. */
+/* Regions with an inline --region-color get a matching rim by default;
+   an explicit --region-stroke still wins. */
 .map-region[style] {
-  --region-stroke: color-mix(in srgb, var(--region-color) 45%, #232323);
+  --region-stroke: var(--region-color);
 }
 
 path:focus {
