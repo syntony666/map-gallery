@@ -38,7 +38,7 @@ export function PhotoCard({
     <button
       type="button"
       onClick={handleClick}
-      className={`relative overflow-hidden rounded-xl bg-white text-left shadow-sm transition ${interactionClass}`}
+      className={`relative flex flex-col overflow-hidden rounded-xl bg-white text-left shadow-sm transition ${interactionClass}`}
     >
       {isSelectionMode && (
         <span
@@ -53,7 +53,7 @@ export function PhotoCard({
         </span>
       )}
 
-      <span className="img-loading aspect-square w-full">
+      <span className="img-loading aspect-square w-full self-start">
         <ShimmerImg
           src={photo.image}
           alt={photo.title}
