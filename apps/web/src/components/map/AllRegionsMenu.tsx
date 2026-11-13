@@ -56,9 +56,9 @@ export function AllRegionsOverlay({
         onClick={onClose}
       />
       <FloatingCard
-        className="absolute bottom-24 right-4 flex w-72
-          max-h-[calc(100dvh-10rem)] max-w-[calc(100vw-2rem)]
-          flex-col overflow-hidden p-4 [&>ul]:min-h-0 [&>ul]:flex-1
+        className="absolute inset-x-4 bottom-24 flex
+          max-h-[calc(100dvh-10rem)] flex-col overflow-hidden p-4
+          md:left-auto md:w-72 [&>ul]:min-h-0 [&>ul]:flex-1
           [&>ul]:overflow-y-auto"
       >
         <button
