@@ -30,7 +30,8 @@ type AllRegionsOverlayProps = {
 
 /** Below lg the district panel is hidden; this opens the same list on demand.
     Mounted once per page — portaled so it escapes the card's backdrop-blur
-    containing block; anchored above the bottom bar like the trigger. */
+    containing block. Anchored 2rem above the BottomBar (48px bar + 1rem
+    margin + 2rem gap = bottom-24; the taller compact bar uses bottom-30). */
 export function AllRegionsOverlay({
   areas,
   selectedAreaId,
@@ -54,8 +55,8 @@ export function AllRegionsOverlay({
         onClick={onClose}
       />
       <FloatingCard
-        className={`absolute inset-x-4 bottom-20 flex
-          ${selectedAreaId ? "md:bottom-24" : ""}
+        className={`absolute inset-x-4 bottom-24 flex
+          ${selectedAreaId ? "md:bottom-30" : ""}
           max-h-[calc(100dvh-10rem)] flex-col overflow-hidden p-4
           md:left-auto md:w-72 [&>ul]:min-h-0 [&>ul]:flex-1
           [&>ul]:overflow-y-auto`}
