@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import type { Area } from "../../types/gallery.type";
-import { ActionSheet } from "../common/ActionSheet";
 import { DistrictInfo } from "./DistrictInfo";
 import { AreaCover } from "./AreaCover";
 
@@ -67,16 +66,29 @@ export function DistrictBottomBar({ area, onClose }: DistrictBottomBarProps) {
         </div>
       )}
 
-      <ActionSheet
-        className="md:hidden"
-        open={area !== null}
-        title={area?.name}
-        onClose={onClose}
-      >
-        <div className="px-2 pb-2">
+      {area !== null && (
+        <div
+          className="absolute inset-x-4 bottom-4 z-10 max-h-[75dvh]
+            overflow-y-auto rounded-2xl bg-white/90 p-5 shadow-lg
+            backdrop-blur md:hidden"
+        >
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <h2 className="text-base font-semibold text-stone-800">
+              {area.name}
+            </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="關閉簡介"
+              className="rounded bg-white px-2 py-1 text-stone-700 shadow
+                hover:bg-stone-50"
+            >
+              <i className="bi bi-x-lg" />
+            </button>
+          </div>
           <DistrictInfo area={area} heading={false} />
         </div>
-      </ActionSheet>
+      )}
     </>
   );
 }
