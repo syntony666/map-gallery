@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Area } from "../../types/gallery.type";
+import { BottomBar } from "../common/BottomBar";
 import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
@@ -26,26 +27,23 @@ export function DistrictBottomBar({
   return (
     <>
       {area === null ? (
-        <FloatingCard
-          className="absolute inset-x-4 bottom-4 z-10 flex items-center
-            justify-between gap-2 px-5 py-3 text-xs text-stone-500
-            md:text-sm lg:hidden"
+        <BottomBar
+          className="text-xs text-stone-500 md:text-sm lg:hidden"
+          actions={
+            <>
+              {hintActions}
+              {actions}
+            </>
+          }
         >
           <span>點選縣市，以查看簡介。</span>
-          <span className="flex shrink-0 items-center gap-1.5">
-            {hintActions}
-            {actions}
-          </span>
-        </FloatingCard>
+        </BottomBar>
       ) : collapsed ? (
-        <FloatingCard
-          className="absolute inset-x-4 bottom-4 z-10 px-5 py-3 text-sm
-            md:hidden"
-        >
+        <BottomBar className="text-sm md:hidden">
           <span className="font-semibold text-stone-800">{area.name}</span>
           {area.name}
           <span className="text-stone-500"> • {area.photoCount}張照片</span>
-        </FloatingCard>
+        </BottomBar>
       ) : null}
 
       {area !== null && (
