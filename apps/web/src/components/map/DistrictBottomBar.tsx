@@ -10,6 +10,8 @@ type DistrictBottomBarProps = {
   onClose: () => void;
   /** Right-aligned actions shown inside every bottom card. */
   actions?: ReactNode;
+  /** Extra actions prepended to the hint bar only. */
+  hintActions?: ReactNode;
   /** Collapses the selected card to a slim strip while the region menu is open. */
   collapsed?: boolean;
 };
@@ -18,6 +20,7 @@ export function DistrictBottomBar({
   area,
   onClose,
   actions,
+  hintActions,
   collapsed,
 }: DistrictBottomBarProps) {
   return (
@@ -29,7 +32,10 @@ export function DistrictBottomBar({
             md:text-sm lg:hidden"
         >
           <span>點選縣市，以查看簡介。</span>
-          <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
+          <span className="flex shrink-0 items-center gap-1.5">
+            {hintActions}
+            {actions}
+          </span>
         </FloatingCard>
       ) : collapsed ? (
         <FloatingCard

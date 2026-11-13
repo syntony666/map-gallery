@@ -40,15 +40,13 @@ export function HomePage() {
           area={selectedArea}
           onClose={() => selectArea(null)}
           collapsed={regionsOpen}
-          actions={
-            <>
-              <ReadonlyToggle
-                label
-                className="bg-stone-100 px-2 py-1 text-xs
-                  hover:bg-stone-200"
-              />
-              <AllRegionsButton onClick={() => setRegionsOpen(true)} />
-            </>
+          actions={<AllRegionsButton onClick={() => setRegionsOpen(true)} />}
+          hintActions={
+            <ReadonlyToggle
+              label
+              className="bg-stone-100 px-2 py-1 text-xs
+                hover:bg-stone-200"
+            />
           }
         />
         <AllRegionsOverlay
