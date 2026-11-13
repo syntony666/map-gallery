@@ -33,9 +33,24 @@ export function CollectionManageToolbar({
 }: CollectionManageToolbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // The manage bar unmounts in photo-select mode, but this state survives;
+  // close the menu so it does not reopen on the way back.
+  const [menuAllowed, setMenuAllowed] = useState(
+    !!collection && !isCollectionPhotoSelectMode,
+  );
+  const canShowMenu = !!collection && !isCollectionPhotoSelectMode;
+  if (menuAllowed !== canShowMenu) {
+    setMenuAllowed(canShowMenu);
+    setMenuOpen(false);
+  }
+
   if (!collection) {
     return (
-      <Toolbar label="請選取上方相簿..." buttonGroups={extraGroups} bottomBar />
+      <Toolbar
+        label="編輯相簿：請選取上方相簿..."
+        buttonGroups={extraGroups}
+        bottomBar
+      />
     );
   }
   const buttons: ButtonActionGroup[] = isCollectionPhotoSelectMode

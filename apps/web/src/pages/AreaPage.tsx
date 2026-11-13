@@ -61,6 +61,14 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
   const { readonly } = useViewMode();
   const [photoMenuOpen, setPhotoMenuOpen] = useState(false);
 
+  // Mode switches unmount the bar but keep this state; close the menu so it
+  // does not reopen when the bar comes back.
+  const [wasEditMode, setWasEditMode] = useState(UI.isEditMode);
+  if (wasEditMode !== UI.isEditMode) {
+    setWasEditMode(UI.isEditMode);
+    setPhotoMenuOpen(false);
+  }
+
   useDocumentTitle(area?.name);
   const navigate = useNavigate();
 
