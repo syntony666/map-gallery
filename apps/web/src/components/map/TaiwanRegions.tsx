@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import type { Area } from "../../types/gallery.type";
 import { REGION_COLORS } from "./region-colors";
@@ -20,6 +20,12 @@ export function TaiwanRegions({
   const areaById = useMemo(
     () => new Map(areas?.map((area) => [area.id, area]) ?? []),
     [areas],
+  );
+  // Neighbors painted later cover part of an emphasized rim; repainting the
+  // hovered/selected strokes on top keeps the outline continuous.
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const emphasizedIds = [selectedAreaId, hoveredId].filter(
+    (id, i, ids): id is string => id !== null && ids.indexOf(id) === i,
   );
 
   return (
@@ -80,6 +86,10 @@ export function TaiwanRegions({
             role="button"
             tabIndex={0}
             aria-label={area ? `查看${area.name}內容` : `查看${region.id}內容`}
+            onMouseEnter={() => setHoveredId(region.id)}
+            onMouseLeave={() => setHoveredId(null)}
+            onFocus={() => setHoveredId(region.id)}
+            onBlur={() => setHoveredId(null)}
             onClick={(event) => {
               event.stopPropagation();
               onSelectArea(selectedAreaId === region.id ? null : region.id);
@@ -102,6 +112,37 @@ export function TaiwanRegions({
           </g>
         );
       })}
+      <g pointerEvents="none">
+        {emphasizedIds.map((id) => {
+          const region = shapes.regions.find((r) => r.id === id);
+          if (!region) return null;
+          const mask =
+            region.holes.length > 0
+              ? `url(#map-region-mask-${region.id})`
+              : undefined;
+          const color = REGION_COLORS[region.id];
+          return (
+            <g
+              key={id}
+              className="map-region is-active"
+              style={
+                color
+                  ? ({ "--region-color": color } as CSSProperties)
+                  : undefined
+              }
+            >
+              {[...region.paths, ...region.holes].map((d) => (
+                <path
+                  key={d}
+                  d={d}
+                  className="map-region__stroke"
+                  mask={mask}
+                />
+              ))}
+            </g>
+          );
+        })}
+      </g>
     </g>
   );
 }
