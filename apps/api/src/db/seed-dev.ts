@@ -12,24 +12,6 @@ const now = new Date().toISOString();
 
 function seedDevelopmentData() {
   db.transaction((tx) => {
-    for (const areaContent of areaContentSeedData) {
-      tx.insert(areaContents)
-        .values({
-          ...areaContent,
-          createdAt: now,
-          updatedAt: now,
-        })
-        .onConflictDoUpdate({
-          target: areaContents.areaId,
-          set: {
-            coverPhotoId: sql`excluded.cover_photo_id`,
-            description: sql`excluded.description`,
-            updatedAt: sql`excluded.updated_at`,
-          },
-        })
-        .run();
-    }
-
     for (const photo of photoSeedData) {
       tx.insert(photos)
         .values({
@@ -64,6 +46,26 @@ function seedDevelopmentData() {
           set: {
             areaId: sql`excluded.area_id`,
             name: sql`excluded.name`,
+            updatedAt: sql`excluded.updated_at`,
+          },
+        })
+        .run();
+    }
+
+    /* area_contents.cover_photo_id FKs into photos, so this must run
+       after the photo inserts above. */
+    for (const areaContent of areaContentSeedData) {
+      tx.insert(areaContents)
+        .values({
+          ...areaContent,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .onConflictDoUpdate({
+          target: areaContents.areaId,
+          set: {
+            coverPhotoId: sql`excluded.cover_photo_id`,
+            description: sql`excluded.description`,
             updatedAt: sql`excluded.updated_at`,
           },
         })
