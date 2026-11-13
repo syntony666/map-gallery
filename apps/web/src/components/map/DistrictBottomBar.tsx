@@ -119,7 +119,9 @@ export function DistrictBottomBar({
           <div className="min-h-0 flex-1 overflow-y-auto">
             <DistrictInfo area={area} heading={false} link={false} />
           </div>
-          <div className="mt-3 flex items-center gap-1.5">{actions}</div>
+          <div className="mt-3 flex items-center justify-end gap-1.5">
+            {actions}
+          </div>
         </FloatingCard>
       )}
     </>
