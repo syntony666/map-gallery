@@ -147,8 +147,15 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   };
 
+  // Reserve space for the floating bottom bar below sm while a
+  // mode toolbar (collection edit, photo delete) is active.
+  const needsBottomBarSpace =
+    UI.isCollectionEditMode || UI.isPhotoDeleteSelectMode;
+
   return (
-    <main className="grid gap-4">
+    <main
+      className={`grid gap-4 ${needsBottomBarSpace ? "pb-24 sm:pb-0" : ""}`}
+    >
       {/* 標題列 */}
       <TitleBarContent
         areaName={area.name}

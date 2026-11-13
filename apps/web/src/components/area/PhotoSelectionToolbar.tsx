@@ -39,6 +39,7 @@ export function PhotoSelectionToolbar({
       value={`${selectedCount} 張照片`}
       buttonGroups={buttons}
       mobileMode="inline"
+      bottomBar
     />
   );
 }

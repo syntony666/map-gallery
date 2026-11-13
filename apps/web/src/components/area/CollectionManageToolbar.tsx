@@ -24,7 +24,7 @@ export function CollectionManageToolbar({
   action,
 }: CollectionManageToolbarProps) {
   if (!collection) {
-    return <Toolbar label="請選取上方相簿..." />;
+    return <Toolbar label="請選取上方相簿..." bottomBar />;
   }
   const buttons: ButtonActionGroup[] = isCollectionPhotoSelectMode
     ? [
@@ -99,6 +99,7 @@ export function CollectionManageToolbar({
       meta={`${collection.photoCount} 張照片`}
       buttonGroups={buttons}
       mobileMode="inline"
+      bottomBar
     />
   ) : (
     <Toolbar
@@ -108,6 +109,7 @@ export function CollectionManageToolbar({
       buttonGroups={buttons}
       mobileGroupIcon="bi-pencil-square"
       mobileGroupLabel="管理相簿"
+      bottomBar
     />
   );
 }
