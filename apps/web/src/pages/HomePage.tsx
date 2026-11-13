@@ -1,4 +1,5 @@
 import { ReadonlyToggle } from "../components/common/ReadonlyToggle";
+import { AllRegionsMenu } from "../components/map/AllRegionsMenu";
 import { DistrictBottomBar } from "../components/map/DistrictBottomBar";
 import { DistrictPanel } from "../components/map/DistrictPanel";
 import { TaiwanMap } from "../components/map/TaiwanMap";
@@ -29,12 +30,12 @@ export function HomePage() {
           area={selectedArea}
           onClose={() => selectArea(null)}
         />
-        <ReadonlyToggle
-          className={[
-            "absolute right-8 top-8 z-10 hidden",
-            selectedArea ? "md:max-lg:block" : "sm:block lg:hidden",
-          ].join(" ")}
+        <AllRegionsMenu
+          areas={areas}
+          selectedAreaId={selectedArea?.id ?? null}
+          onSelect={selectArea}
         />
+        <ReadonlyToggle className="absolute right-4 top-4 z-10 lg:hidden" />
       </div>
     </main>
   );

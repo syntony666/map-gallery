@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 
 type ActionSheetProps = {
   open: boolean;
-  title?: string;
+  title?: ReactNode;
   className?: string;
   children: ReactNode;
   onClose: () => void;
@@ -50,7 +50,8 @@ export function ActionSheet({
       <section
         role="dialog"
         aria-modal="true"
-        aria-label={title ?? "操作選單"}
+        aria-labelledby={title ? "action-sheet-title" : undefined}
+        aria-label={title ? undefined : "操作選單"}
         className={[
           "absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col",
           "rounded-t-2xl bg-stone-100 shadow-2xl",
@@ -64,7 +65,12 @@ export function ActionSheet({
 
         <div className="flex items-center justify-between gap-2 px-5 pb-3 pt-4">
           {title ? (
-            <h2 className="text-base font-semibold text-stone-800">{title}</h2>
+            <h2
+              id="action-sheet-title"
+              className="text-base font-semibold text-stone-800"
+            >
+              {title}
+            </h2>
           ) : (
             <span />
           )}

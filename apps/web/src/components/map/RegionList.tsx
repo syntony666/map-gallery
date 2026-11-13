@@ -14,7 +14,10 @@ export function RegionList({
 }: RegionListProps) {
   return (
     <>
-      <h2 className="mb-2 text-sm font-semibold text-stone-800">所有地區</h2>
+      <h2 className="mb-2 text-sm font-semibold text-stone-800">
+        <i className="bi bi-chat-square-heart mr-1.5 text-stone-400" />
+        所有地區
+      </h2>
       <ul className="divide-y divide-stone-200/60">
         {[...(areas ?? [])]
           .sort((a, b) => regionSortKey(a.id) - regionSortKey(b.id))
