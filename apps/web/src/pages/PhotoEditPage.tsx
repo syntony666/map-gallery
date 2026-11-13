@@ -71,7 +71,7 @@ export function PhotoEditPage() {
         {
           id: "cancel",
           label: "取消",
-          icon: "bi-x-lg text-red-700",
+          icon: "bi-x-lg",
           variant: "danger",
           disabled: isSubmitting,
           onClick: () => navigate(-1),
@@ -79,7 +79,7 @@ export function PhotoEditPage() {
         {
           id: "save",
           label: "儲存",
-          icon: "bi-check-lg text-emerald-700",
+          icon: "bi-check-lg",
           variant: "primary",
           disabled: isSubmitting,
           onClick: () => formRef.current?.requestSubmit(),

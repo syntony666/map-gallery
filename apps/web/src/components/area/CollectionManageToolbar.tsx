@@ -61,14 +61,14 @@ export function CollectionManageToolbar({
             {
               id: "photo-confirm",
               label: "確認",
-              icon: "bi-check-circle-fill",
+              icon: "bi-check-lg",
               variant: "primary",
               onClick: () => action.onConfirmCollectionPhotoSelection(),
             },
             {
               id: "photo-reject",
               label: "取消",
-              icon: "bi-x-circle-fill",
+              icon: "bi-x-lg",
               variant: "danger",
               onClick: () => action.onRejectCollectionPhotoSelection(),
             },
