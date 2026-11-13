@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Area } from "../../types/gallery.type";
 import { BottomBar } from "../common/BottomBar";
+import { BottomBarStack } from "../common/BottomBarStack";
 import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
@@ -29,11 +30,7 @@ export function DistrictBottomBar({
   overlay,
 }: DistrictBottomBarProps) {
   return (
-    // One positioned wrapper owns the bottom anchoring; the visible card's
-    // height drives it, so the overlay can anchor structurally above the bar.
-    <div className="absolute inset-x-4 bottom-4 z-10 lg:hidden">
-      {overlay}
-
+    <BottomBarStack overlay={overlay} className="lg:hidden">
       {area === null ? (
         <BottomBar
           stacked
@@ -82,6 +79,7 @@ export function DistrictBottomBar({
           <Button
             to={`/area/${area.id}`}
             label="查看內容"
+            icon="bi-arrow-up-right"
             className="shrink-0"
           />
           <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
@@ -126,6 +124,6 @@ export function DistrictBottomBar({
           </div>
         </FloatingCard>
       )}
-    </div>
+    </BottomBarStack>
   );
 }
