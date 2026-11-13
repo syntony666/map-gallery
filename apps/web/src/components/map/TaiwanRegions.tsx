@@ -72,7 +72,6 @@ export function TaiwanRegions({
             style={
               color ? ({ "--region-color": color } as CSSProperties) : undefined
             }
-            clipPath={`url(#map-region-clip-${region.id})`}
             className={
               selectedAreaId === region.id
                 ? "map-region is-active"
@@ -92,9 +91,11 @@ export function TaiwanRegions({
               }
             }}
           >
-            {region.paths.map((d) => (
-              <path key={d} d={d} className="map-region__fill" mask={mask} />
-            ))}
+            <g clipPath={`url(#map-region-clip-${region.id})`}>
+              {region.paths.map((d) => (
+                <path key={d} d={d} className="map-region__fill" mask={mask} />
+              ))}
+            </g>
             {[...region.paths, ...region.holes].map((d) => (
               <path key={d} d={d} className="map-region__stroke" mask={mask} />
             ))}
