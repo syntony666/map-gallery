@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { BottomBar } from "../components/common/BottomBar";
 import { BottomBarOverlay } from "../components/common/BottomBarOverlay";
@@ -20,6 +19,7 @@ import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { usePreventZoom } from "../hooks/usePreventZoom";
+import { useResetState } from "../hooks/useResetState";
 import { inputClassName } from "../utils/field-classes";
 import { useViewMode } from "../hooks/useViewMode";
 import { getPhotoGridHeading } from "../utils/photo-grid-heading";
@@ -61,15 +61,12 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     });
 
   const { readonly } = useViewMode();
-  const [photoMenuOpen, setPhotoMenuOpen] = useState(false);
-
-  // Mode switches unmount the bar but keep this state; close the menu so it
-  // does not reopen when the bar comes back.
-  const [wasEditMode, setWasEditMode] = useState(UI.isEditMode);
-  if (wasEditMode !== UI.isEditMode) {
-    setWasEditMode(UI.isEditMode);
-    setPhotoMenuOpen(false);
-  }
+  // Mode switches unmount the bar but keep this state; closing the menu on
+  // mode change prevents it from reopening when the bar comes back.
+  const [photoMenuOpen, setPhotoMenuOpen] = useResetState(
+    false,
+    UI.isEditMode,
+  );
   usePreventZoom();
 
   useDocumentTitle(area?.name);

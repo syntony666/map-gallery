@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { CollectionPhotoMode, SortOption } from "../types/gallery.type";
 import { useAsyncData } from "./useAsyncData";
+import { useResetState } from "./useResetState";
 import { galleryStore } from "../stores/gallery.store";
 
 export function useAreaState(
@@ -22,12 +23,7 @@ export function useAreaState(
     collectionPhotoMode,
   ].join("|");
 
-  const [pageState, setPageState] = useState({ key: "", page: 1 });
-  const page = pageState.key === filterKey ? pageState.page : 1;
-
-  function setPage(nextPage: number) {
-    setPageState({ key: filterKey, page: nextPage });
-  }
+  const [page, setPage] = useResetState(1, filterKey);
 
   const { data: result, error } = useAsyncData(
     () =>
