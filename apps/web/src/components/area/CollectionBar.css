@@ -1,6 +1,8 @@
 /* Glass-magnet disc: soft lift shadow below, inner top-light and bottom
-   shade for edge depth. The hover ring is drawn with box-shadow so the
-   disc itself never resizes. */
+   shade for edge depth. The frost is a radial milky rim bleeding into the
+   photo over a thin uniform veil — frosted glass reads as haze, not a
+   specular streak. The hover ring is drawn with box-shadow so the disc
+   itself never resizes. */
 .collection-item {
   position: relative;
   cursor: pointer;
@@ -10,6 +12,22 @@
     inset 0 1px 2px rgb(255 255 255 / 0.65),
     inset 0 -3px 6px rgb(20 40 55 / 0.18);
   transition: box-shadow 0.15s ease;
+}
+
+.collection-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      circle,
+      transparent 52%,
+      rgb(255 255 255 / 0.45) 78%,
+      rgb(255 255 255 / 0.75) 100%
+    ),
+    linear-gradient(rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.12));
+  pointer-events: none;
 }
 
 /* 桌機／滑鼠 */
