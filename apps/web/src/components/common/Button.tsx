@@ -65,10 +65,10 @@ export function Button({
       ? "text-ink-faint hover:bg-fill hover:text-ink-secondary"
       : raised
         ? translucent
-          ? "bg-surface/70 text-ink shadow hover:bg-page/70"
+          ? "bg-surface/75 text-ink shadow hover:bg-page/75"
           : "bg-surface text-ink shadow hover:bg-page"
         : translucent
-          ? "bg-fill/70 text-ink hover:bg-secondary/70"
+          ? "bg-fill/75 text-ink hover:bg-secondary/75"
           : "bg-fill text-ink hover:bg-secondary",
     expandLabel ? "group" : "",
     className,
