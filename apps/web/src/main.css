@@ -37,14 +37,23 @@
 }
 
 /* The shared frosted-glass surface: mostly-solid warm fill over a
-   hairline edge, backdrop blur underneath. 75% fill keeps a hint of
+   hairline edge, backdrop blur underneath. 60% fill keeps a hint of
    the map bleeding through without competing with the content on top.
    Floaters pair it with shadow-lg, in-flow cards with shadow-sm. */
 @utility glass {
-  background: color-mix(in srgb, var(--color-fill) 75%, transparent);
+  background: color-mix(in srgb, var(--color-fill) 60%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
   /* Keep unprefixed — the minifier adds -webkit- for Safari but drops
      the standard property when both are written by hand. */
+  backdrop-filter: blur(8px) saturate(150%);
+}
+
+/* Lighter glass for toolbars and other low-chrome bars — the map (or
+   photo) behind should visibly bleed through since these rarely carry
+   dense text. */
+@utility glass-thin {
+  background: color-mix(in srgb, var(--color-fill) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
   backdrop-filter: blur(8px) saturate(150%);
 }
 

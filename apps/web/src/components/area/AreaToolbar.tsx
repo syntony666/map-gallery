@@ -15,7 +15,7 @@ export function AreaToolbar({
   onSortChange,
 }: PhotoToolbarProps) {
   return (
-    <section className="glass flex flex-wrap items-center gap-3 rounded-md p-2 shadow-sm">
+    <section className="glass-thin flex flex-wrap items-center gap-3 rounded-md p-2 shadow-sm">
       <input
         type="search"
         aria-label="搜尋景點或照片"
