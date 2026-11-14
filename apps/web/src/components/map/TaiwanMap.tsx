@@ -282,7 +282,7 @@ export function TaiwanMap({
       </div>
 
       {error && (
-        <div className="pointer-events-none absolute left-4 top-4 z-10 rounded bg-surface px-3 py-2 text-sm text-danger shadow">
+        <div className="overlay-enter pointer-events-none absolute left-4 top-4 z-10 rounded bg-surface px-3 py-2 text-sm text-danger shadow">
           {error}
         </div>
       )}
