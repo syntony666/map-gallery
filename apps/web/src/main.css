@@ -1,5 +1,5 @@
 @import "tailwindcss";
-/* TERRA palette from sakulime-ui; seeds live under :root[data-theme="terra"]
+/* terra palette from sakulime-ui; seeds live under :root[data-theme="terra"]
    in index.html. Transparency stays local to each component. */
 @import "@sakulime-ui/theme/terra.css";
 
@@ -8,7 +8,7 @@
    --color-ink-faint are local ramp steps mixed from the same seeds to
    cover the quiet fills and faintest ink the theme leaves open. */
 @theme {
-  /* Kill Tailwind's entire default palette; TERRA semantic tokens below
+  /* Kill Tailwind's entire default palette; terra semantic tokens below
      are the only colors utilities can resolve. transparent/current stay
      (they are keywords, not palette colors) for the img alt-text pattern. */
   --color-*: initial;
