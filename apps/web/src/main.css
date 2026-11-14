@@ -17,7 +17,7 @@
   --color-page: var(--sl-bg);
   --color-surface: var(--sl-surface);
   --color-line: var(--sl-border);
-  --color-fill: color-mix(in srgb, var(--sl-secondary) 55%, var(--sl-surface));
+  --color-fill: color-mix(in srgb, var(--sl-secondary) 30%, var(--sl-surface));
   --color-ink: var(--sl-text);
   --color-ink-strong: var(--sl-text-strong);
   --color-ink-secondary: var(--sl-text-secondary);
@@ -43,7 +43,7 @@
    with shadow-sm. */
 @utility glass {
   background: color-mix(in srgb, var(--color-fill) 55%, transparent);
-  border: 1px solid var(--color-line);
+  border: 1px solid color-mix(in srgb, var(--color-line) 40%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -142,6 +142,10 @@ img {
   height: 100%;
   touch-action: none;
   user-select: none;
+  /* Lifts the island off the sea like an acrylic slab. Applied to the svg
+     element, not the island group — CSS filters misrender on transformed
+     SVG nodes in Chromium. */
+  filter: drop-shadow(0 8px 16px rgb(20 60 80 / 0.22));
 }
 
 .map-canvas__land-fill {

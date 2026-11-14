@@ -73,10 +73,15 @@ export function TaiwanMap({
   const svgRef = useRef<SVGSVGElement>(null);
   const viewportRef = useRef<SVGGElement>(null);
   const measureRef = useRef<SVGGElement>(null);
+  const landRef = useRef<SVGGElement>(null);
   const instanceRef = useRef<SvgPanZoom.Instance | null>(null);
   const pointerDownAt = useRef<{ x: number; y: number } | null>(null);
   const prevSize = useRef({ w: 0, h: 0 });
   const [crop, setCrop] = useState<MapBox | null>(parseCropParam);
+  // Island bounds in the artwork's own coordinate space — the sheen rect
+  // renders inside the shapes transform, so it needs these units, not the
+  // viewport-space `crop`.
+  const [landBox, setLandBox] = useState<MapBox | null>(null);
   const [viewportSize, setViewportSize] = useState({ w: 0, h: 0 });
   const [mapReady, setMapReady] = useState(false);
 
@@ -96,6 +101,11 @@ export function TaiwanMap({
   }, []);
 
   useLayoutEffect(() => {
+    const land = landRef.current;
+    if (land && !landBox) {
+      const lb = land.getBBox();
+      setLandBox({ x: lb.x, y: lb.y, w: lb.width, h: lb.height });
+    }
     const g = measureRef.current;
     if (!g || crop) {
       return;
@@ -107,7 +117,7 @@ export function TaiwanMap({
       w: bb.width + CROP_PADDING * 2,
       h: bb.height + CROP_PADDING * 2,
     });
-  }, [shapes, crop]);
+  }, [shapes, crop, landBox]);
 
   // An invisible rect extends the content bounds toward the floating chrome
   // (side panel on lg+, bottom bar below) so fit, centering and the pan clamp
@@ -244,6 +254,16 @@ export function TaiwanMap({
                 region.paths.map((d) => <path key={d} d={d} />),
               )}
             </clipPath>
+            {/* Frosted-acrylic sheen across the whole island: bright at the
+                top, clear through the middle, a cool shadow at the bottom
+                edge. Rendered under the translucent region fills so the
+                light reads through them. */}
+            <linearGradient id="map-sheen" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
+              <stop offset="0.4" stopColor="#ffffff" stopOpacity="0.14" />
+              <stop offset="0.7" stopColor="#ffffff" stopOpacity="0" />
+              <stop offset="1" stopColor="#2e5768" stopOpacity="0.12" />
+            </linearGradient>
           </defs>
           {/* svg-pan-zoom adopts this group as its transform viewport; it must
               stay the only non-defs child and carry no transform attribute. */}
@@ -260,12 +280,29 @@ export function TaiwanMap({
             )}
             {shapes && (
               <>
-                <g transform={shapes.transform || undefined} aria-hidden="true">
+                <g
+                  ref={landRef}
+                  transform={shapes.transform || undefined}
+                  aria-hidden="true"
+                  className="map-canvas"
+                >
                   <g clipPath="url(#map-land-clip)">
                     {shapes.regions.map((region) =>
                       region.paths.map((d) => (
                         <path key={d} d={d} className="map-canvas__land-fill" />
                       )),
+                    )}
+                    {/* The gradient maps to this rect's box, so it must match
+                        the island bounds; clip keeps it off the sea. */}
+                    {landBox && (
+                      <rect
+                        x={landBox.x}
+                        y={landBox.y}
+                        width={landBox.w}
+                        height={landBox.h}
+                        fill="url(#map-sheen)"
+                        pointerEvents="none"
+                      />
                     )}
                   </g>
                 </g>
