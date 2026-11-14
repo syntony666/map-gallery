@@ -63,7 +63,9 @@ export function PhotoCard({
         />
       </span>
 
-      <div className="p-3">
+      {/* Caption overlays the image's bottom edge; /80 keeps the photo
+          faintly visible through the surface veil. */}
+      <div className="absolute inset-x-0 bottom-0 bg-surface/80 px-3 py-2.5">
         <h3 className="truncate font-medium">{photo.title}</h3>
 
         {photo.summary && (
