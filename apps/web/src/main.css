@@ -57,26 +57,6 @@
   backdrop-filter: blur(4px) saturate(120%);
 }
 
-/* Page depth: a faint light-source wash at top over a gentle vertical
-   falloff, layered as background-image so the bg-page utility still
-   provides the base color. Theme-scoped vars make TERRA and UMBRA
-   resolve their own tones. Fixed attachment keeps the gradient stable
-   while scrolling so glass surfaces blur a consistent backdrop. */
-body {
-  background-image:
-    radial-gradient(
-      90rem 55rem at 50% -25%,
-      color-mix(in oklch, var(--color-page), white 25%),
-      transparent 70%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in oklch, var(--color-page), white 8%),
-      oklch(from var(--color-page) calc(l - 0.035) c h)
-    );
-  background-attachment: fixed;
-}
-
 /* Keep alt text hidden while an image is loading or broken; it still
    reaches assistive technology. */
 img {
