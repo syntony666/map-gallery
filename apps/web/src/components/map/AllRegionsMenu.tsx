@@ -10,6 +10,7 @@ export function AllRegionsButton({ onClick }: { onClick: () => void }) {
     // Once the /areas gallery page ships this becomes a link instead of
     // opening a list.
     <Button
+      translucent
       icon="bi-geo-alt"
       label="所有地區"
       aria-label="所有地區"

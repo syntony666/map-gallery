@@ -8,6 +8,8 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
   onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
   /** Raised chrome: white + shadow, for controls floating over the map. */
   raised?: boolean;
+  /** Translucent chrome, for controls sitting on a glass FloatingCard. */
+  translucent?: boolean;
   /** Ghost chrome: transparent until hover. */
   ghost?: boolean;
   variant?: ButtonVariant;
@@ -36,6 +38,7 @@ function getVariantClassName(variant?: ButtonVariant) {
 
 export function Button({
   raised = false,
+  translucent = false,
   ghost = false,
   variant = "default",
   size = "sm",
@@ -61,8 +64,12 @@ export function Button({
     ghost
       ? "text-ink-faint hover:bg-fill hover:text-ink-secondary"
       : raised
-        ? "bg-surface text-ink shadow hover:bg-page"
-        : "bg-fill text-ink hover:bg-secondary",
+        ? translucent
+          ? "bg-surface/70 text-ink shadow hover:bg-page/70"
+          : "bg-surface text-ink shadow hover:bg-page"
+        : translucent
+          ? "bg-fill/70 text-ink hover:bg-secondary/70"
+          : "bg-fill text-ink hover:bg-secondary",
     expandLabel ? "group" : "",
     className,
   ].join(" ");
@@ -82,9 +89,9 @@ export function Button({
               ? // The collapsed span still counts as a flex item, so cancel
                 // the container's gap-1.5 to keep the icon centered.
                 `-ml-1.5 max-w-0 overflow-hidden whitespace-nowrap opacity-0
-                transition-all group-hover:ml-0 group-hover:max-w-24
-                group-hover:opacity-100 group-focus:ml-0 group-focus:max-w-24
-                group-focus:opacity-100`
+                transition-all delay-50 duration-200 group-hover:ml-0 group-hover:max-w-24
+                group-hover:opacity-100 group-focus-visible:ml-0
+                group-focus-visible:max-w-24 group-focus-visible:opacity-100`
               : labelClassName
           }
         >

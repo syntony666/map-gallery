@@ -92,6 +92,7 @@ export function DistrictBottomBar({
               )}
             </div>
             <Button
+              translucent
               to={`/area/${cardArea.id}`}
               label="查看內容"
               icon="bi-arrow-up-right"
@@ -102,6 +103,7 @@ export function DistrictBottomBar({
             </span>
             <Button
               raised
+              translucent
               icon="bi-x-lg"
               aria-label="關閉簡介"
               onClick={onClose}
@@ -128,6 +130,7 @@ export function DistrictBottomBar({
                 {actions}
                 <Button
                   raised
+                  translucent
                   icon="bi-x-lg"
                   aria-label="關閉簡介"
                   onClick={onClose}
@@ -139,6 +142,7 @@ export function DistrictBottomBar({
             </div>
             <div className="mt-3 flex justify-end">
               <Button
+                translucent
                 to={`/area/${cardArea.id}`}
                 label="查看內容"
                 iconEnd="bi-arrow-right"
