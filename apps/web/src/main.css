@@ -8,6 +8,12 @@
    --color-ink-faint are local ramp steps mixed from the same seeds to
    cover the quiet fills and faintest ink the theme leaves open. */
 @theme {
+  /* Kill Tailwind's entire default palette; TERRA semantic tokens below
+     are the only colors utilities can resolve. transparent/current stay
+     (they are keywords, not palette colors) for the img alt-text pattern. */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentcolor;
   --color-page: var(--sl-bg);
   --color-surface: var(--sl-surface);
   --color-line: var(--sl-border);
