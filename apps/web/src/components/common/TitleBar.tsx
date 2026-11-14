@@ -50,7 +50,12 @@ export function TitleBar({
       </div>
 
       {description && (
-        <p className="ml-3 text-sm text-ink-muted">{description}</p>
+        <div className="ml-3 text-sm text-ink-muted">
+          <p className="flex items-start">
+            <Icon name="bi-chat-square-heart" className="desc-icon" />
+            <span>{description}</span>
+          </p>
+        </div>
       )}
     </header>
   );
