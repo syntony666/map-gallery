@@ -28,7 +28,7 @@ export const orderByBySort = {
 
 export function getPhoto(photoId: string) {
   return db
-    .select({ id: photos.id, areaId: photos.areaId })
+    .select({ id: photos.id, areaId: photos.areaId, image: photos.image })
     .from(photos)
     .where(eq(photos.id, photoId))
     .get();
@@ -64,7 +64,7 @@ export function getPhotoDetail(photoId: string) {
 
 export function getPhotosByIds(photoIds: string[]) {
   return db
-    .select({ id: photos.id, areaId: photos.areaId })
+    .select({ id: photos.id, areaId: photos.areaId, image: photos.image })
     .from(photos)
     .where(inArray(photos.id, photoIds))
     .all();

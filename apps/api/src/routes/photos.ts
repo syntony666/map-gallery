@@ -15,6 +15,7 @@ import {
   updatePhotoWithCollections,
 } from "../data/photos";
 import { fail, readJsonObject } from "./errors";
+import { removeUploadedImage } from "./uploads";
 import {
   escapeLikeKeyword,
   parsePhotoFields,
@@ -165,14 +166,17 @@ photosRoute.get("/:photoId", (context) => {
   return context.json(photo);
 });
 
-photosRoute.delete("/:photoId", (context) => {
+photosRoute.delete("/:photoId", async (context) => {
   const photoId = context.req.param("photoId");
 
-  if (!getPhoto(photoId)) {
+  const photo = getPhoto(photoId);
+
+  if (!photo) {
     return fail(context, 404, "PHOTO_NOT_FOUND", "Photo not found.");
   }
 
   deletePhoto(photoId);
+  await removeUploadedImage(photo.image);
 
   return context.body(null, 204);
 });
@@ -202,6 +206,9 @@ photosRoute.post("/batch-delete", async (context) => {
   }
 
   deletePhotos(parsed.photoIds);
+  await Promise.all(
+    existing.map((photo) => removeUploadedImage(photo.image)),
+  );
 
   return context.body(null, 204);
 });
