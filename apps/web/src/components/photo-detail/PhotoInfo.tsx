@@ -26,7 +26,7 @@ export function PhotoInfo({ photo }: PhotoInfoProps) {
                   state: { collectionId: collection.id },
                 })
               }
-              className="rounded-full bg-fill/75 px-3 py-1 text-sm text-accent hover:bg-fill"
+              className="rounded-full bg-fill/70 px-3 py-1 text-sm text-accent hover:bg-fill"
             >
               #{collection.name}
             </button>

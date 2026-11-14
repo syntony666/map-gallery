@@ -45,7 +45,7 @@ export function PhotoCard({
           className={`absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded border text-sm ${
             isSelected
               ? "border-primary bg-primary text-primary-fg"
-              : "border-line bg-fill/75 text-transparent"
+              : "border-line bg-fill/70 text-transparent"
           }`}
           aria-hidden="true"
         >

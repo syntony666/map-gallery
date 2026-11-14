@@ -20,13 +20,13 @@ export function AreaToolbar({
         value={keyword}
         onChange={(event) => onKeywordChange(event.target.value)}
         placeholder="搜尋景點或照片"
-        className="min-w-0 flex-1 rounded border border-line/75 bg-page/60 px-3 py-2 text-sm"
+        className="min-w-0 flex-1 rounded border border-line/70 bg-page/60 px-3 py-2 text-sm"
       />
 
       <select
         value={sort}
         onChange={(event) => onSortChange(event.target.value as SortOption)}
-        className="rounded border border-line/75 bg-page/60 px-3 py-2 text-sm"
+        className="rounded border border-line/70 bg-page/60 px-3 py-2 text-sm"
       >
         <option value="newest">最新</option>
         <option value="oldest">最舊</option>

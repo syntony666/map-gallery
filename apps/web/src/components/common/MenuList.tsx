@@ -56,10 +56,10 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
                 "rounded text-left text-sm transition-colors",
                 "disabled:cursor-not-allowed disabled:opacity-50",
                 row.selected
-                  ? "bg-fill/75 font-medium text-ink-strong"
+                  ? "bg-fill/70 font-medium text-ink-strong"
                   : row.danger
                     ? "text-danger hover:bg-danger/20"
-                    : "text-ink hover:bg-fill/75",
+                    : "text-ink hover:bg-fill/70",
               ].join(" ")}
             >
               <span className="flex min-w-0 items-center gap-2.5">
