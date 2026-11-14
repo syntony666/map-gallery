@@ -175,7 +175,7 @@ export function CollectionManageToolbar({
           onClose={() => setMenuOpen(false)}
           title="管理相簿"
           titleIcon="bi-pencil-square"
-          sections={menuSections([...buttons, ...extraGroups])}
+          sections={menuSections(buttons)}
         />
       }
     />
