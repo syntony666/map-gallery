@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { CollectionPhotoMode, SortOption } from "../types/gallery.type";
 import { useAsyncData } from "./useAsyncData";
 import { useResetState } from "./useResetState";
@@ -43,19 +43,28 @@ export function useAreaState(
     [areaId, keyword, selectedCollectionId, sort, collectionPhotoMode, page],
   );
 
-  const visiblePhotos = error
-    ? null
-    : result
-      ? collectionPhotoMode === "add" && selectedCollectionId
-        ? result.photos.filter(
-            (photo) => !photo.collectionIds.includes(selectedCollectionId),
-          )
-        : result.photos
-      : null;
+  const visiblePhotos = useMemo(
+    () =>
+      error
+        ? null
+        : result
+          ? collectionPhotoMode === "add" && selectedCollectionId
+            ? result.photos.filter(
+                (photo) =>
+                  !photo.collectionIds.includes(selectedCollectionId),
+              )
+            : result.photos
+          : null,
+    [error, result, collectionPhotoMode, selectedCollectionId],
+  );
 
-  const pagination = result
-    ? { total: result.total, totalPages: result.totalPages }
-    : null;
+  const pagination = useMemo(
+    () =>
+      result
+        ? { total: result.total, totalPages: result.totalPages }
+        : null,
+    [result],
+  );
 
   function toggleCollection(collection: string) {
     setSelectedCollectionId((current) =>
