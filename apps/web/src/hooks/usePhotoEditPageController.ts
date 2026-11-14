@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAsyncData } from "./useAsyncData";
 import { useDialogs } from "./useDialogs";
 import { galleryStore } from "../stores/gallery.store";
@@ -43,6 +43,36 @@ export function usePhotoEditPageController({
   >(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  // The /uploads/ file this session sent but hasn't saved into a record
+  // yet; deleted on clear/cancel/leave so it never orphans.
+  const pendingUploadRef = useRef<string | null>(null);
+  const originalImageRef = useRef<string | null>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    const discardPending = (keepalive = false) => {
+      const pending = pendingUploadRef.current;
+
+      if (!pending) {
+        return;
+      }
+
+      pendingUploadRef.current = null;
+      void galleryStore.deleteUpload(pending, { keepalive });
+    };
+
+    const onPageHide = () => discardPending(true);
+
+    window.addEventListener("pagehide", onPageHide);
+
+    return () => {
+      window.removeEventListener("pagehide", onPageHide);
+      mountedRef.current = false;
+      discardPending();
+    };
+  }, []);
 
   const { data, error } = useAsyncData(
     () => {
@@ -65,6 +95,7 @@ export function usePhotoEditPageController({
     {
       errorMessage: "無法載入資料",
       onData: (d) => {
+        originalImageRef.current = d?.photo?.image ?? null;
         setCollections(d?.collections ?? null);
         setSelectedCollectionIds(
           new Set(
@@ -123,12 +154,40 @@ export function usePhotoEditPageController({
     try {
       const blob = await compressImage(file);
       const { image } = await galleryStore.uploadImage(blob);
+
+      // The page left mid-upload; the file has no owner, drop it.
+      if (!mountedRef.current) {
+        await galleryStore.deleteUpload(image);
+        return;
+      }
+
+      const stale = pendingUploadRef.current;
+      pendingUploadRef.current = image;
       updateField("image", image);
+
+      if (stale) {
+        await galleryStore.deleteUpload(stale);
+      }
     } catch (reason) {
-      await dialogs.alert(alertMessage(reason, "上傳失敗"));
+      if (mountedRef.current) {
+        await dialogs.alert(alertMessage(reason, "上傳失敗"));
+      }
     } finally {
-      setIsUploading(false);
+      if (mountedRef.current) {
+        setIsUploading(false);
+      }
     }
+  }
+
+  async function clearImage(): Promise<void> {
+    const pending = pendingUploadRef.current;
+
+    if (pending && pending === form?.image) {
+      pendingUploadRef.current = null;
+      await galleryStore.deleteUpload(pending);
+    }
+
+    updateField("image", "");
   }
 
   async function submit(): Promise<PhotoDetail | null> {
@@ -148,9 +207,31 @@ export function usePhotoEditPageController({
     };
 
     try {
-      return photoId
+      const saved = photoId
         ? await galleryStore.updatePhoto(photoId, payload)
         : await galleryStore.createPhoto({ areaId, ...payload });
+
+      // The pending file is referenced by the record now; drop whatever
+      // it replaced and whatever the field no longer points at.
+      const pending = pendingUploadRef.current;
+      pendingUploadRef.current = null;
+
+      if (pending && pending !== saved.image) {
+        await galleryStore.deleteUpload(pending);
+      }
+
+      const original = originalImageRef.current;
+      originalImageRef.current = saved.image;
+
+      if (
+        original &&
+        original !== saved.image &&
+        original.startsWith("/uploads/")
+      ) {
+        await galleryStore.deleteUpload(original);
+      }
+
+      return saved;
     } catch (reason) {
       await dialogs.alert(alertMessage(reason, "儲存失敗"));
       return null;
@@ -169,6 +250,7 @@ export function usePhotoEditPageController({
     isSubmitting,
     isUploading,
     uploadImage,
+    clearImage,
     updateField,
     toggleCollection,
     createCollection,

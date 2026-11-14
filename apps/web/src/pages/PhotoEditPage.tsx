@@ -35,6 +35,7 @@ export function PhotoEditPage() {
     isSubmitting,
     isUploading,
     uploadImage,
+    clearImage,
     updateField,
     toggleCollection,
     createCollection,
@@ -124,16 +125,27 @@ export function PhotoEditPage() {
             label="圖片網址"
             type="text"
             required
+            disabled={form.image.startsWith("/uploads/")}
             value={form.image}
             onChange={(value) => updateField("image", value)}
           >
             <div className="mt-2 flex items-center gap-3">
-              <Button
-                icon="bi-upload"
-                label="上傳圖片"
-                disabled={isUploading}
-                onClick={() => fileInputRef.current?.click()}
-              />
+              {form.image.startsWith("/uploads/") ? (
+                <Button
+                  icon="bi-trash3"
+                  label="清除照片"
+                  variant="danger"
+                  disabled={isUploading}
+                  onClick={() => void clearImage()}
+                />
+              ) : (
+                <Button
+                  icon="bi-upload"
+                  label="上傳圖片"
+                  disabled={isUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                />
+              )}
               {isUploading && (
                 <span className="text-xs text-ink-faint">上傳中…</span>
               )}

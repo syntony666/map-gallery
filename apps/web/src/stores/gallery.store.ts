@@ -49,7 +49,7 @@ export class GalleryStoreError extends Error {
 
 async function requestData<T>(
   path: string,
-  options: { method?: string; body?: unknown } = {},
+  options: { method?: string; body?: unknown; keepalive?: boolean } = {},
 ): Promise<T> {
   const token = getAdminToken();
   const isFormData = options.body instanceof FormData;
@@ -68,6 +68,7 @@ async function requestData<T>(
         : isFormData
           ? (options.body as FormData)
           : JSON.stringify(options.body),
+    keepalive: options.keepalive,
   });
 
   const body = (await response.json().catch(() => null)) as
@@ -182,6 +183,22 @@ async function uploadImage(image: Blob): Promise<UploadImageDataResponse> {
   });
 }
 
+async function deleteUpload(
+  image: string,
+  options: { keepalive?: boolean } = {},
+): Promise<void> {
+  const name = image.split("/").pop();
+
+  if (!image.startsWith("/uploads/") || !name) {
+    return;
+  }
+
+  await requestData(`/api/v1/uploads/${name}`, {
+    method: "DELETE",
+    keepalive: options.keepalive,
+  });
+}
+
 async function createPhoto(payload: CreatePhotoRequest): Promise<PhotoDetail> {
   const response = await requestData<PhotoDataResponse>(`/api/v1/photos`, {
     method: "POST",
@@ -268,6 +285,7 @@ export const galleryStore = {
   getPhotos,
   deletePhotos,
   uploadImage,
+  deleteUpload,
   createPhoto,
   updatePhoto,
   updateAreaContent,

@@ -9,6 +9,7 @@ type TextFieldProps = {
   onChange: (value: string) => void;
   type?: "text" | "date" | "url";
   required?: boolean;
+  disabled?: boolean;
   /** Render a textarea instead of an input. */
   multiline?: boolean;
   rows?: number;
@@ -23,6 +24,7 @@ export function TextField({
   onChange,
   type = "text",
   required = false,
+  disabled = false,
   multiline = false,
   rows,
   children,
@@ -39,6 +41,7 @@ export function TextField({
           id={id}
           rows={rows ?? 5}
           required={required}
+          disabled={disabled}
           value={value}
           onChange={handleChange}
           className={`${inputClassName} w-full`}
@@ -48,6 +51,7 @@ export function TextField({
           id={id}
           type={type}
           required={required}
+          disabled={disabled}
           value={value}
           onChange={handleChange}
           className={`${inputClassName} w-full`}
