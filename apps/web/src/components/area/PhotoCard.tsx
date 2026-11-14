@@ -45,7 +45,7 @@ export function PhotoCard({
           className={`absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded border text-sm ${
             isSelected
               ? "border-primary bg-primary text-primary-fg"
-              : "border-line bg-surface/90 text-transparent"
+              : "border-line bg-surface/80 text-transparent"
           }`}
           aria-hidden="true"
         >
@@ -68,11 +68,11 @@ export function PhotoCard({
       <div className="absolute inset-x-2 bottom-2 rounded bg-surface/80 px-3 py-2 backdrop-blur-sm">
         <h3 className="truncate font-medium">{photo.title}</h3>
 
-        {photo.summary && (
-          <p className="mt-1 line-clamp-2 text-sm text-ink-muted">
-            {photo.summary}
-          </p>
-        )}
+        {/* Always reserves two summary lines so every caption box has the
+            same height; line-clamp truncates anything longer. */}
+        <p className="mt-1 line-clamp-2 min-h-10 text-sm text-ink-muted">
+          {photo.summary}
+        </p>
       </div>
     </button>
   );
