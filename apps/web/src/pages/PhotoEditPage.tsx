@@ -6,13 +6,17 @@ import { BottomBar } from "../components/common/BottomBar";
 import { BottomBarStack } from "../components/common/BottomBarStack";
 import { ButtonGroup } from "../components/common/ButtonGroup";
 import { EmptyState } from "../components/common/EmptyState";
-import { FieldLabel } from "../components/common/FieldLabel";
+import { TextField } from "../components/common/TextField";
 import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEditor";
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
-import { inputClassName } from "../utils/field-classes";
 import { pageBottomPad } from "../utils/layout-classes";
 import { useViewMode } from "../hooks/useViewMode";
+
+function BackToMapBar() {
+  const navigate = useNavigate();
+  return <TitleBar areaName="回到地圖" onBack={() => navigate("/")} />;
+}
 
 export function PhotoEditPage() {
   const { areaId, photoId } = useParams();
@@ -42,7 +46,7 @@ export function PhotoEditPage() {
   if (error) {
     return (
       <div>
-        <TitleBar areaName="回到地圖" onBack={() => navigate("/")} />
+        <BackToMapBar />
         <EmptyState title="無法載入資料" description={error} />
       </div>
     );
@@ -51,7 +55,7 @@ export function PhotoEditPage() {
   if (!area || !form) {
     return (
       <div>
-        <TitleBar areaName="回到地圖" onBack={() => navigate("/")} />
+        <BackToMapBar />
         <EmptyState title="載入中…" />
       </div>
     );
@@ -95,7 +99,6 @@ export function PhotoEditPage() {
     <main className={`grid gap-4 ${pageBottomPad}`}>
       <TitleBar
         areaName={`${area.name} — ${isEditMode ? "編輯照片" : "新增照片"}`}
-        onBack={() => navigate(-1)}
         buttonGroup={titleButtons}
         mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
       />
@@ -106,74 +109,58 @@ export function PhotoEditPage() {
         className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,2fr)] lg:gap-10"
       >
         <div>
-          <FieldLabel htmlFor="photo-image">圖片網址</FieldLabel>
-          <input
+          <TextField
             id="photo-image"
-            type="text"
+            label="圖片網址"
+            type="url"
             required
             value={form.image}
-            onChange={(event) => updateField("image", event.target.value)}
-            className={`${inputClassName} w-full`}
-          />
-          <div className="mt-2 aspect-square rounded-md bg-secondary-bg lg:aspect-4/3">
-            {form.image && (
-              <img
-                src={form.image}
-                alt="預覽"
-                className="h-full w-full object-contain"
-              />
-            )}
-          </div>
+            onChange={(value) => updateField("image", value)}
+          >
+            <div className="mt-2 aspect-square rounded-md bg-secondary-bg lg:aspect-4/3">
+              {form.image && (
+                <img
+                  src={form.image}
+                  alt="預覽"
+                  className="h-full w-full object-contain"
+                />
+              )}
+            </div>
+          </TextField>
         </div>
 
         <div className="grid content-start gap-4">
-          <div>
-            <FieldLabel htmlFor="photo-title">標題</FieldLabel>
-            <input
-              id="photo-title"
-              type="text"
-              required
-              value={form.title}
-              onChange={(event) => updateField("title", event.target.value)}
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-title"
+            label="標題"
+            required
+            value={form.title}
+            onChange={(value) => updateField("title", value)}
+          />
 
-          <div>
-            <FieldLabel htmlFor="photo-taken-at">拍攝日期</FieldLabel>
-            <input
-              id="photo-taken-at"
-              type="date"
-              required
-              value={form.takenAt}
-              onChange={(event) => updateField("takenAt", event.target.value)}
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-taken-at"
+            label="拍攝日期"
+            type="date"
+            required
+            value={form.takenAt}
+            onChange={(value) => updateField("takenAt", value)}
+          />
 
-          <div>
-            <FieldLabel htmlFor="photo-summary">簡述</FieldLabel>
-            <input
-              id="photo-summary"
-              type="text"
-              value={form.summary}
-              onChange={(event) => updateField("summary", event.target.value)}
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-summary"
+            label="簡述"
+            value={form.summary}
+            onChange={(value) => updateField("summary", value)}
+          />
 
-          <div>
-            <FieldLabel htmlFor="photo-description">說明</FieldLabel>
-            <textarea
-              id="photo-description"
-              rows={5}
-              value={form.description}
-              onChange={(event) =>
-                updateField("description", event.target.value)
-              }
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-description"
+            label="說明"
+            multiline
+            value={form.description}
+            onChange={(value) => updateField("description", value)}
+          />
 
           {collections && (
             <CollectionTagEditor
