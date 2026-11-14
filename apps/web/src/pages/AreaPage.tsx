@@ -246,33 +246,35 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     <main
       className={`grid gap-4 [overflow-anchor:none] ${needsBottomBarSpace ? pageBottomPad : ""}`}
     >
-      <TitleBarContent
-        areaName={area.name}
-        description={
-          UI.isAreaEditMode ? "對於這個地方，你想說..." : area.description
-        }
-        buttonGroup={titleButtons}
-      />
-
-      {UI.isAreaEditMode && draftDescription !== null ? (
-        <textarea
-          value={draftDescription}
-          onChange={(event) => actions.updateDescription(event.target.value)}
-          rows={3}
-          className={inputClassName}
-        />
-      ) : (
-        <CollectionBar
-          key={UI.isCollectionEditMode ? "editing" : "browse"}
-          collections={collections}
-          selectedCollectionId={filters.selectedCollectionId}
-          onSelect={filters.toggleCollection}
-          isEditMode={
-            UI.isCollectionEditMode && !UI.isCollectionPhotoSelectMode
+      <section className="glass rounded-md px-4 py-3 shadow-sm">
+        <TitleBarContent
+          areaName={area.name}
+          description={
+            UI.isAreaEditMode ? "對於這個地方，你想說..." : area.description
           }
-          onAdd={actions.onCollectionCreate}
+          buttonGroup={titleButtons}
         />
-      )}
+
+        {UI.isAreaEditMode && draftDescription !== null ? (
+          <textarea
+            value={draftDescription}
+            onChange={(event) => actions.updateDescription(event.target.value)}
+            rows={3}
+            className={`mt-3 ${inputClassName}`}
+          />
+        ) : (
+          <CollectionBar
+            key={UI.isCollectionEditMode ? "editing" : "browse"}
+            collections={collections}
+            selectedCollectionId={filters.selectedCollectionId}
+            onSelect={filters.toggleCollection}
+            isEditMode={
+              UI.isCollectionEditMode && !UI.isCollectionPhotoSelectMode
+            }
+            onAdd={actions.onCollectionCreate}
+          />
+        )}
+      </section>
 
       {UI.isCollectionEditMode ? (
         <CollectionManageToolbar
