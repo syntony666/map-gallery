@@ -49,6 +49,7 @@ export function DistrictPanel({
           {showInfo && (
             <Button
               raised
+              translucent
               icon="bi-arrow-left"
               aria-label="返回清單"
               onClick={() => setView("list")}

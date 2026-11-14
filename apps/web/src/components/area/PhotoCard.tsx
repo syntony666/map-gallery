@@ -63,7 +63,7 @@ export function PhotoCard({
         />
       </span>
 
-      <div className="absolute inset-x-2 bottom-2 rounded bg-surface/70 px-3 py-2 backdrop-blur-sm">
+      <div className="absolute inset-x-2 bottom-2 rounded bg-surface/70 px-3 py-2 backdrop-blur">
         <h3 className="truncate text-xs sm:text-base sm:font-medium">
           {photo.title}
         </h3>

@@ -39,7 +39,7 @@ export function HomePage() {
           areas={areas}
           photos={photos}
           onSelect={selectArea}
-          action={<ReadonlyToggle label raised size="md" />}
+          action={<ReadonlyToggle label raised translucent size="md" />}
         />
         <DistrictBottomBar
           area={selectedArea}

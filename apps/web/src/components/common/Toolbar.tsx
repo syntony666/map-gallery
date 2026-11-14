@@ -55,7 +55,7 @@ export function Toolbar({
       <section
         className={[
           "flex-wrap items-center justify-between gap-3",
-          "border-y border-line text-sm h-15",
+          "h-15 rounded-md bg-surface/70 text-sm shadow-sm backdrop-blur",
           bottomBar ? "hidden lg:flex" : "flex",
           className,
         ].join(" ")}
@@ -66,6 +66,7 @@ export function Toolbar({
           groups={buttonGroups}
           mobileMode={mobileMode}
           classname="mx-2"
+          translucent
         />
       </section>
 
@@ -79,6 +80,7 @@ export function Toolbar({
                   groups={buttonGroups}
                   mobileMode="inline"
                   breakpoint="md"
+                  translucent
                 />
               )
             }

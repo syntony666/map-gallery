@@ -271,9 +271,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           action={actions.collectionToolbar}
           extraGroups={collectionDoneGroup}
         />
-      ) : (
-        <div className="border-b border-line/40 -mt-4 pb-4" />
-      )}
+      ) : null}
 
       {/* 搜尋、篩選與排序列 */}
       {!UI.isEditMode && (
@@ -318,10 +316,12 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
                   groups={titleButtons}
                   mobileMode="inline"
                   breakpoint="md"
+                  translucent
                 />
                 {!UI.isEditMode && (
                   <Button
                     size="md"
+                    translucent
                     icon="bi-images"
                     label="編輯照片"
                     labelClassName="hidden md:inline"

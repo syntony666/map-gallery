@@ -50,6 +50,7 @@ export function CollectionManageToolbar({
   const menuButton = (
     <Button
       size="md"
+      translucent
       icon="bi-list"
       aria-label="管理相簿"
       className="lg:hidden"
@@ -154,6 +155,7 @@ export function CollectionManageToolbar({
             groups={[...buttons, ...extraGroups]}
             mobileMode="none"
             breakpoint="lg"
+            translucent
           />
           {menuButton}
           {extraGroups.flatMap((group) =>
@@ -161,6 +163,7 @@ export function CollectionManageToolbar({
               <Button
                 key={button.id}
                 size="md"
+                translucent
                 {...button}
                 labelClassName="hidden md:inline"
                 className="lg:hidden"

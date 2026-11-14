@@ -10,6 +10,8 @@ type ButtonGroupProps = {
   groups: ButtonActionGroup[];
   mobileMode?: ButtonGroupMobileMode;
   breakpoint?: "sm" | "md" | "lg";
+  /** Forwarded to every button — use on glass surfaces. */
+  translucent?: boolean;
 };
 
 export function ButtonGroup({
@@ -17,6 +19,7 @@ export function ButtonGroup({
   mobileMode = "inline",
   breakpoint = "sm",
   classname = "",
+  translucent = false,
 }: ButtonGroupProps) {
   const nonEmptyGroups = groups.filter((group) => group.buttons.length > 0);
   const desktopClass = {
@@ -50,7 +53,12 @@ export function ButtonGroup({
             ].join(" ")}
           >
             {group.buttons.map((button) => (
-              <Button key={button.id} size="md" {...button} />
+              <Button
+                key={button.id}
+                size="md"
+                translucent={translucent}
+                {...button}
+              />
             ))}
           </div>
         ))}
@@ -65,7 +73,13 @@ export function ButtonGroup({
         >
           {nonEmptyGroups.flatMap((group) =>
             group.buttons.map((button) => (
-              <Button key={button.id} size="md" {...button} iconOnly />
+              <Button
+                key={button.id}
+                size="md"
+                translucent={translucent}
+                {...button}
+                iconOnly
+              />
             )),
           )}
         </div>

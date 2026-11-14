@@ -285,7 +285,7 @@ export function TaiwanMap({
 
       {toastError && (
         <div
-          className={`overlay-enter ${error ? "" : "overlay-exit"} pointer-events-none absolute left-4 top-4 z-10 rounded bg-surface px-3 py-2 text-sm text-danger shadow`}
+          className={`overlay-enter ${error ? "" : "overlay-exit"} pointer-events-none absolute left-4 top-4 z-10 rounded bg-surface/70 px-3 py-2 text-sm text-danger shadow-lg backdrop-blur`}
         >
           {toastError}
         </div>
