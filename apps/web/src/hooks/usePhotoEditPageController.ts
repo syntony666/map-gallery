@@ -3,6 +3,10 @@ import { useAsyncData } from "./useAsyncData";
 import { useDialogs } from "./useDialogs";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
+import {
+  createCollectionWithAlert,
+  toggleInSet,
+} from "../utils/collections";
 import type { Collection, PhotoDetail } from "../types/gallery.type";
 
 export type PhotoEditForm = {
@@ -87,17 +91,7 @@ export function usePhotoEditPageController({
   }
 
   function toggleCollection(collectionId: string) {
-    setSelectedCollectionIds((current) => {
-      const next = new Set(current);
-
-      if (next.has(collectionId)) {
-        next.delete(collectionId);
-      } else {
-        next.add(collectionId);
-      }
-
-      return next;
-    });
+    setSelectedCollectionIds((current) => toggleInSet(current, collectionId));
   }
 
   async function createCollection(name: string): Promise<Collection | null> {
@@ -105,25 +99,20 @@ export function usePhotoEditPageController({
       return null;
     }
 
-    try {
-      const created = await galleryStore.createCollection({ areaId, name });
+    const created = await createCollectionWithAlert(dialogs, { areaId, name });
 
-      setCollections((current) =>
-        [...(current ?? []), created].sort((a, b) =>
-          a.name.localeCompare(b.name),
-        ),
-      );
-      setSelectedCollectionIds((current) => new Set(current).add(created.id));
-
-      return created;
-    } catch (reason) {
-      await dialogs.alert(
-        alertMessage(reason, "新增失敗", {
-          COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
-        }),
-      );
+    if (!created) {
       return null;
     }
+
+    setCollections((current) =>
+      [...(current ?? []), created].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+    );
+    setSelectedCollectionIds((current) => new Set(current).add(created.id));
+
+    return created;
   }
 
   async function submit(): Promise<PhotoDetail | null> {

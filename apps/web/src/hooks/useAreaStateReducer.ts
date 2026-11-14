@@ -1,4 +1,5 @@
 import type { CollectionPhotoMode } from "../types/gallery.type";
+import { toggleInSet } from "../utils/collections";
 
 export type AreaPageMode =
   | "browse"
@@ -104,17 +105,9 @@ export function areaPageReducer(
         };
       }
 
-      const selectedPhotoIds = new Set(state.selectedPhotoIds);
-
-      if (selectedPhotoIds.has(action.photoId)) {
-        selectedPhotoIds.delete(action.photoId);
-      } else {
-        selectedPhotoIds.add(action.photoId);
-      }
-
       return {
         ...state,
-        selectedPhotoIds,
+        selectedPhotoIds: toggleInSet(state.selectedPhotoIds, action.photoId),
       };
     }
 

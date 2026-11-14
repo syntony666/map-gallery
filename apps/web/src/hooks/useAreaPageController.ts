@@ -7,6 +7,7 @@ import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
 import type { Collection } from "../types/gallery.type";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
+import { createCollectionWithAlert } from "../utils/collections";
 import { useDialogs } from "./useDialogs";
 
 export type TitleBarActions = {
@@ -273,20 +274,17 @@ export function useAreaPageController({
       return;
     }
 
-    try {
-      const created = await galleryStore.createCollection({
-        areaId,
-        name: normalizedName,
-      });
-      await refetchCollections();
-      areaState.setSelectedCollectionId(created.id);
-    } catch (reason) {
-      await dialogs.alert(
-        alertMessage(reason, "新增失敗", {
-          COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
-        }),
-      );
+    const created = await createCollectionWithAlert(dialogs, {
+      areaId,
+      name: normalizedName,
+    });
+
+    if (!created) {
+      return;
     }
+
+    await refetchCollections();
+    areaState.setSelectedCollectionId(created.id);
   }
 
   function startPhotoDeleteSelect() {
