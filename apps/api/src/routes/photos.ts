@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { areaExists } from "../data/areas";
 import { getCollectionArea } from "../data/collections";
 import {
@@ -14,25 +14,54 @@ import {
   listPhotos,
   updatePhotoWithCollections,
 } from "../data/photos";
-import type { photos } from "../db/schema";
 import { fail, readJsonObject } from "./errors";
 import {
   escapeLikeKeyword,
+  parsePhotoFields,
   parsePhotoIdsBody,
   parsePositiveInteger,
   parseSort,
 } from "./photos-request";
-import {
-  isNonEmptyString,
-  isNullableString,
-  isValidDateString,
-} from "./validators";
+import { isNonEmptyString } from "./validators";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 24;
 const MAX_LIMIT = 100;
 
 export const photosRoute = new Hono();
+
+/** 404/422 response when collectionIds aren't usable in the photo's area. */
+function collectionAreaError(
+  context: Context,
+  collectionIds: string[] | undefined,
+  areaId: string,
+) {
+  if (!collectionIds) {
+    return null;
+  }
+
+  const check = checkCollectionsInArea(collectionIds, areaId);
+
+  if (check === "not_found") {
+    return fail(
+      context,
+      404,
+      "COLLECTION_NOT_FOUND",
+      "One or more collections were not found.",
+    );
+  }
+
+  if (check === "mismatch") {
+    return fail(
+      context,
+      422,
+      "PHOTO_AREA_MISMATCH",
+      "Collections must belong to the same area as the photo.",
+    );
+  }
+
+  return null;
+}
 
 photosRoute.get("/", (context) => {
   const areaId = context.req.query("areaId");
@@ -185,7 +214,7 @@ photosRoute.post("/", async (context) => {
   }
 
   const payload = parsedBody.payload;
-  const { areaId, title, image, takenAt, summary, description } = payload;
+  const { areaId } = payload;
 
   if (!isNonEmptyString(areaId)) {
     return fail(
@@ -196,93 +225,26 @@ photosRoute.post("/", async (context) => {
     );
   }
 
-  if (!isNonEmptyString(title)) {
-    return fail(
-      context,
-      400,
-      "INVALID_BODY",
-      "title must be a non-empty string.",
-    );
+  const parsed = parsePhotoFields(payload, "create");
+
+  if (!parsed.ok) {
+    return fail(context, 400, "INVALID_BODY", parsed.message);
   }
 
-  if (!isNonEmptyString(image)) {
-    return fail(
-      context,
-      400,
-      "INVALID_BODY",
-      "image must be a non-empty string.",
-    );
-  }
-
-  if (!isNonEmptyString(takenAt) || !isValidDateString(takenAt)) {
-    return fail(
-      context,
-      400,
-      "INVALID_BODY",
-      "takenAt must be a valid date string.",
-    );
-  }
-
-  if (summary !== undefined && !isNullableString(summary)) {
-    return fail(
-      context,
-      400,
-      "INVALID_BODY",
-      "summary must be a string or null.",
-    );
-  }
-
-  if (description !== undefined && !isNullableString(description)) {
-    return fail(
-      context,
-      400,
-      "INVALID_BODY",
-      "description must be a string or null.",
-    );
-  }
-
-  let collectionIds: string[] | undefined;
-
-  if (payload.collectionIds !== undefined) {
-    if (
-      !Array.isArray(payload.collectionIds) ||
-      payload.collectionIds.some((id) => !isNonEmptyString(id))
-    ) {
-      return fail(
-        context,
-        400,
-        "INVALID_BODY",
-        "collectionIds must be an array of strings.",
-      );
-    }
-
-    collectionIds = [...new Set(payload.collectionIds as string[])];
-  }
+  const { values, collectionIds } = parsed;
 
   if (!areaExists(areaId)) {
     return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
   }
 
-  if (collectionIds) {
-    const collectionCheck = checkCollectionsInArea(collectionIds, areaId);
+  const collectionError = collectionAreaError(
+    context,
+    collectionIds,
+    areaId,
+  );
 
-    if (collectionCheck === "not_found") {
-      return fail(
-        context,
-        404,
-        "COLLECTION_NOT_FOUND",
-        "One or more collections were not found.",
-      );
-    }
-
-    if (collectionCheck === "mismatch") {
-      return fail(
-        context,
-        422,
-        "PHOTO_AREA_MISMATCH",
-        "Collections must belong to the same area as the photo.",
-      );
-    }
+  if (collectionError) {
+    return collectionError;
   }
 
   const id = randomUUID();
@@ -292,11 +254,11 @@ photosRoute.post("/", async (context) => {
     {
       id,
       areaId,
-      title: title.trim(),
-      image: image.trim(),
-      takenAt: new Date(takenAt).toISOString(),
-      summary: summary ?? null,
-      description: description ?? null,
+      title: values.title,
+      image: values.image,
+      takenAt: values.takenAt,
+      summary: values.summary ?? null,
+      description: values.description ?? null,
       createdAt: now,
       updatedAt: now,
     },
@@ -321,94 +283,13 @@ photosRoute.patch("/:photoId", async (context) => {
     return parsedBody.response;
   }
 
-  const payload = parsedBody.payload;
-  const updates: Partial<typeof photos.$inferInsert> = {};
+  const parsed = parsePhotoFields(parsedBody.payload, "update");
 
-  if (payload.title !== undefined) {
-    if (!isNonEmptyString(payload.title)) {
-      return fail(
-        context,
-        400,
-        "INVALID_BODY",
-        "title must be a non-empty string.",
-      );
-    }
-
-    updates.title = payload.title.trim();
+  if (!parsed.ok) {
+    return fail(context, 400, "INVALID_BODY", parsed.message);
   }
 
-  if (payload.image !== undefined) {
-    if (!isNonEmptyString(payload.image)) {
-      return fail(
-        context,
-        400,
-        "INVALID_BODY",
-        "image must be a non-empty string.",
-      );
-    }
-
-    updates.image = payload.image.trim();
-  }
-
-  if (payload.takenAt !== undefined) {
-    if (
-      !isNonEmptyString(payload.takenAt) ||
-      !isValidDateString(payload.takenAt)
-    ) {
-      return fail(
-        context,
-        400,
-        "INVALID_BODY",
-        "takenAt must be a valid date string.",
-      );
-    }
-
-    updates.takenAt = new Date(payload.takenAt).toISOString();
-  }
-
-  if (payload.summary !== undefined) {
-    if (!isNullableString(payload.summary)) {
-      return fail(
-        context,
-        400,
-        "INVALID_BODY",
-        "summary must be a string or null.",
-      );
-    }
-
-    updates.summary = payload.summary;
-  }
-
-  if (payload.description !== undefined) {
-    if (!isNullableString(payload.description)) {
-      return fail(
-        context,
-        400,
-        "INVALID_BODY",
-        "description must be a string or null.",
-      );
-    }
-
-    updates.description = payload.description;
-  }
-
-  let collectionIds: string[] | undefined;
-
-  if (payload.collectionIds !== undefined) {
-    if (
-      !Array.isArray(payload.collectionIds) ||
-      payload.collectionIds.some((id) => !isNonEmptyString(id))
-    ) {
-      return fail(
-        context,
-        400,
-        "INVALID_BODY",
-        "collectionIds must be an array of strings.",
-      );
-    }
-
-    collectionIds = [...new Set(payload.collectionIds as string[])];
-  }
+  const { values: updates, collectionIds } = parsed;
 
   if (Object.keys(updates).length === 0 && collectionIds === undefined) {
     return fail(
@@ -419,26 +300,14 @@ photosRoute.patch("/:photoId", async (context) => {
     );
   }
 
-  if (collectionIds) {
-    const collectionCheck = checkCollectionsInArea(collectionIds, photo.areaId);
+  const collectionError = collectionAreaError(
+    context,
+    collectionIds,
+    photo.areaId,
+  );
 
-    if (collectionCheck === "not_found") {
-      return fail(
-        context,
-        404,
-        "COLLECTION_NOT_FOUND",
-        "One or more collections were not found.",
-      );
-    }
-
-    if (collectionCheck === "mismatch") {
-      return fail(
-        context,
-        422,
-        "PHOTO_AREA_MISMATCH",
-        "Collections must belong to the same area as the photo.",
-      );
-    }
+  if (collectionError) {
+    return collectionError;
   }
 
   updatePhotoWithCollections(photoId, updates, collectionIds);
