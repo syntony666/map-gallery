@@ -42,8 +42,8 @@
    secondary-mixed fill. Floaters pair it with shadow-lg, in-flow cards
    with shadow-sm. */
 @utility glass {
-  background: color-mix(in srgb, var(--color-fill) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-line) 40%, transparent);
+  background: color-mix(in srgb, var(--color-fill) 65%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
