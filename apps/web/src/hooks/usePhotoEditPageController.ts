@@ -3,6 +3,7 @@ import { useAsyncData } from "./useAsyncData";
 import { useDialogs } from "./useDialogs";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
+import { compressImage } from "../utils/image";
 import {
   createCollectionWithAlert,
   toggleInSet,
@@ -41,6 +42,7 @@ export function usePhotoEditPageController({
     Set<string>
   >(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data, error } = useAsyncData(
     () => {
@@ -115,6 +117,20 @@ export function usePhotoEditPageController({
     return created;
   }
 
+  async function uploadImage(file: File): Promise<void> {
+    setIsUploading(true);
+
+    try {
+      const blob = await compressImage(file);
+      const { image } = await galleryStore.uploadImage(blob);
+      updateField("image", image);
+    } catch (reason) {
+      await dialogs.alert(alertMessage(reason, "上傳失敗"));
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
   async function submit(): Promise<PhotoDetail | null> {
     if (!areaId || !form || isSubmitting) {
       return null;
@@ -151,6 +167,8 @@ export function usePhotoEditPageController({
     error,
     isEditMode: Boolean(photoId),
     isSubmitting,
+    isUploading,
+    uploadImage,
     updateField,
     toggleCollection,
     createCollection,

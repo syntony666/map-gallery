@@ -19,6 +19,7 @@ import {
   SquarePlus,
   Star,
   Trash2,
+  Upload,
   X,
 } from "lucide-react";
 
@@ -44,6 +45,7 @@ const icons = {
   "bi-star": Star,
   "bi-trash3": Trash2,
   "bi-unlock": LockOpen,
+  "bi-upload": Upload,
   "bi-x": X,
   "bi-x-lg": X,
 } satisfies Record<string, LucideIcon>;

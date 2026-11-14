@@ -1,6 +1,7 @@
 import { useRef } from "react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
+import { Button } from "../components/common/Button";
 import { TitleBar } from "../components/common/TitleBar";
 import { BottomBar } from "../components/common/BottomBar";
 import { BottomBarStack } from "../components/common/BottomBarStack";
@@ -22,6 +23,7 @@ export function PhotoEditPage() {
   const { areaId, photoId } = useParams();
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     area,
@@ -31,6 +33,8 @@ export function PhotoEditPage() {
     error,
     isEditMode,
     isSubmitting,
+    isUploading,
+    uploadImage,
     updateField,
     toggleCollection,
     createCollection,
@@ -71,6 +75,12 @@ export function PhotoEditPage() {
     }
   }
 
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) void uploadImage(file);
+  }
+
   const titleButtons: ButtonActionGroup[] = [
     {
       id: "photo-edit",
@@ -88,7 +98,7 @@ export function PhotoEditPage() {
           label: "儲存",
           icon: "bi-check-lg",
           variant: "primary",
-          disabled: isSubmitting,
+          disabled: isSubmitting || isUploading,
           onClick: () => formRef.current?.requestSubmit(),
         },
       ],
@@ -117,6 +127,24 @@ export function PhotoEditPage() {
             value={form.image}
             onChange={(value) => updateField("image", value)}
           >
+            <div className="mt-2 flex items-center gap-3">
+              <Button
+                icon="bi-upload"
+                label="上傳圖片"
+                disabled={isUploading}
+                onClick={() => fileInputRef.current?.click()}
+              />
+              {isUploading && (
+                <span className="text-xs text-ink-faint">上傳中…</span>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
             <div className="mt-2 aspect-square rounded-md bg-secondary-bg/50 lg:aspect-4/3">
               {form.image && (
                 <img

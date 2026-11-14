@@ -14,6 +14,7 @@ import type {
   UpdateAreaContentRequest,
   UpdateCollectionRequest,
   UpdatePhotoRequest,
+  UploadImageDataResponse,
 } from "@map-gallery/shared";
 
 import type {
@@ -51,16 +52,22 @@ async function requestData<T>(
   options: { method?: string; body?: unknown } = {},
 ): Promise<T> {
   const token = getAdminToken();
+  const isFormData = options.body instanceof FormData;
 
   const response = await fetch(path, {
     method: options.method ?? "GET",
     headers: {
-      ...(options.body !== undefined
+      ...(options.body !== undefined && !isFormData
         ? { "Content-Type": "application/json" }
         : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    body:
+      options.body === undefined
+        ? undefined
+        : isFormData
+          ? (options.body as FormData)
+          : JSON.stringify(options.body),
   });
 
   const body = (await response.json().catch(() => null)) as
@@ -165,6 +172,16 @@ async function deletePhotos(photoIds: string[]): Promise<void> {
   });
 }
 
+async function uploadImage(image: Blob): Promise<UploadImageDataResponse> {
+  const formData = new FormData();
+  formData.set("file", image, "photo.webp");
+
+  return requestData<UploadImageDataResponse>(`/api/v1/uploads`, {
+    method: "POST",
+    body: formData,
+  });
+}
+
 async function createPhoto(payload: CreatePhotoRequest): Promise<PhotoDetail> {
   const response = await requestData<PhotoDataResponse>(`/api/v1/photos`, {
     method: "POST",
@@ -250,6 +267,7 @@ export const galleryStore = {
   getPhotoById,
   getPhotos,
   deletePhotos,
+  uploadImage,
   createPhoto,
   updatePhoto,
   updateAreaContent,
