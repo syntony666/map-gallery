@@ -98,6 +98,7 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
     <main className={showActions ? "pb-12 lg:pb-0" : ""}>
       <TitleBar
         areaName={!isError && area ? area.name : "回到地圖"}
+        headingLevel={2}
         buttonGroup={showActions ? titleButtons : []}
         mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
         onBack={() => navigate(!isError && area ? `/area/${area.id}` : "/")}

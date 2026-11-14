@@ -29,6 +29,7 @@ export function HomePage() {
 
   return (
     <main className="map-page">
+      <h1 className="sr-only">地圖相簿</h1>
       <div className="relative h-full">
         <TaiwanMap
           areas={areas}
