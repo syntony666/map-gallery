@@ -1,4 +1,8 @@
-import { createBrowserRouter } from "react-router";
+import {
+  createBrowserRouter,
+  type NavigateOptions,
+  type To,
+} from "react-router";
 import { HomePage } from "./pages/HomePage";
 import { AreaPage } from "./pages/AreaPage";
 import { PhotoDetailPage } from "./pages/PhotoDetailPage";
@@ -26,3 +30,13 @@ export const router = createBrowserRouter([
     Component: PhotoEditPage,
   },
 ]);
+
+/* Every navigation crossfades through the View Transitions API; the
+   router no-ops the flag on browsers without support, and history
+   pops (back/forward) bypass navigate() by design. */
+const rawNavigate = router.navigate.bind(router);
+router.navigate = ((to: To | number, opts?: NavigateOptions) =>
+  typeof to === "number"
+    ? rawNavigate(to)
+    : rawNavigate(to, { viewTransition: true, ...opts })) as
+  typeof router.navigate;

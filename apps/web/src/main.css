@@ -236,4 +236,11 @@ img {
       translate: 0 8px;
     }
   }
+
+  /* Route changes ride the default view-transition crossfade, tuned
+     down to match the rest of the chrome. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 200ms;
+  }
 }
