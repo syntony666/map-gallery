@@ -149,6 +149,12 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       : [];
 
   const renderPhotoSection = () => {
+    if (filters.photosError) {
+      return (
+        <EmptyState title="無法載入照片" description={filters.photosError} />
+      );
+    }
+
     const photos = filters.visiblePhotos;
 
     if (photos === null) {

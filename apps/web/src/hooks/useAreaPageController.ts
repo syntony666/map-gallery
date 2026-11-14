@@ -357,6 +357,7 @@ export function useAreaPageController({
       selectedCollectionId: areaState.selectedCollectionId,
       toggleCollection: areaState.toggleCollection,
       visiblePhotos: areaState.visiblePhotos,
+      photosError: areaState.photosError,
       page: areaState.page,
       setPage: areaState.setPage,
       pagination: areaState.pagination,

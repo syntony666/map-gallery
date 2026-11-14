@@ -13,7 +13,6 @@ export function useAreaState(
   const [selectedCollectionId, setSelectedCollectionId] =
     useState(initialCollectionId);
   const [sort, setSort] = useState<SortOption>("newest");
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const filterKey = [
     areaId,
@@ -25,7 +24,11 @@ export function useAreaState(
 
   const [page, setPage] = useResetState(1, filterKey);
 
-  const { data: result, error } = useAsyncData(
+  const {
+    data: result,
+    error,
+    refresh: refreshPhotos,
+  } = useAsyncData(
     () =>
       galleryStore.getPhotos({
         areaId,
@@ -37,19 +40,11 @@ export function useAreaState(
         sort,
         page,
       }),
-    [
-      areaId,
-      keyword,
-      selectedCollectionId,
-      sort,
-      collectionPhotoMode,
-      refreshKey,
-      page,
-    ],
+    [areaId, keyword, selectedCollectionId, sort, collectionPhotoMode, page],
   );
 
   const visiblePhotos = error
-    ? []
+    ? null
     : result
       ? collectionPhotoMode === "add" && selectedCollectionId
         ? result.photos.filter(
@@ -68,10 +63,6 @@ export function useAreaState(
     );
   }
 
-  function refreshPhotos() {
-    setRefreshKey((key) => key + 1);
-  }
-
   return {
     keyword,
     setKeyword,
@@ -81,6 +72,7 @@ export function useAreaState(
     setSelectedCollectionId,
     toggleCollection,
     visiblePhotos,
+    photosError: error,
     refreshPhotos,
     page,
     setPage,

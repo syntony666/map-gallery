@@ -11,7 +11,8 @@ import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useMapPageController } from "../hooks/useMapPageController";
 
 export function HomePage() {
-  const { areas, selectedArea, selectArea, photos } = useMapPageController();
+  const { areas, areasError, selectedArea, selectArea, photos } =
+    useMapPageController();
   const [regionsOpen, setRegionsOpen] = useState(false);
 
   useDocumentTitle(null);
@@ -57,6 +58,14 @@ export function HomePage() {
             />
           }
         />
+        {areasError && (
+          <div
+            role="alert"
+            className="pointer-events-none absolute left-4 top-4 z-10 glass rounded px-3 py-2 text-sm text-danger shadow-lg"
+          >
+            {areasError}
+          </div>
+        )}
       </div>
     </main>
   );
