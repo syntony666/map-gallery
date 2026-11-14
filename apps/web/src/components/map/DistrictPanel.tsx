@@ -61,44 +61,51 @@ export function DistrictPanel({
       {!showInfo && <MenuHeading title="所有地區" titleIcon="bi-geo-alt" />}
 
       <div className="scroll-body">
-        {showInfo ? (
-          <>
-            <DistrictInfo area={area} />
+        {/* Keyed so list/info and area-to-area swaps remount and replay
+            the entry fade. */}
+        <div
+          key={showInfo ? `info-${area.id}` : "list"}
+          className="overlay-enter"
+        >
+          {showInfo ? (
+            <>
+              <DistrictInfo area={area} />
 
-            {photos.length > 0 && (
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {photos.map((photo) => (
-                  <Link
-                    key={photo.id}
-                    to={`/area/${area.id}/photo/${photo.id}`}
-                    title={photo.title}
-                    className="img-loading rounded-md"
-                  >
-                    <ShimmerImg
-                      src={photo.image}
-                      alt={photo.title}
-                      loading="lazy"
-                      className="aspect-square w-full object-cover"
-                    />
-                  </Link>
-                ))}
-              </div>
-            )}
-          </>
-        ) : (
-          <MenuList
-            dividers
-            sections={[
-              {
-                id: "regions",
-                rows: regionRows(areas, area?.id, (id) => {
-                  onSelect(id);
-                  setView("info");
-                }),
-              },
-            ]}
-          />
-        )}
+              {photos.length > 0 && (
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  {photos.map((photo) => (
+                    <Link
+                      key={photo.id}
+                      to={`/area/${area.id}/photo/${photo.id}`}
+                      title={photo.title}
+                      className="img-loading rounded-md"
+                    >
+                      <ShimmerImg
+                        src={photo.image}
+                        alt={photo.title}
+                        loading="lazy"
+                        className="aspect-square w-full object-cover"
+                      />
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <MenuList
+              dividers
+              sections={[
+                {
+                  id: "regions",
+                  rows: regionRows(areas, area?.id, (id) => {
+                    onSelect(id);
+                    setView("info");
+                  }),
+                },
+              ]}
+            />
+          )}
+        </div>
       </div>
     </FloatingCard>
   );

@@ -60,6 +60,7 @@ export function DistrictBottomBar({
 
       {cardArea && (
         <FloatingCard
+          key={cardArea.id}
           className={`hidden items-center gap-3 px-4 py-3 md:max-lg:flex ${cardOpen ? "" : "overlay-exit"}`}
         >
           <AreaCover
@@ -103,6 +104,7 @@ export function DistrictBottomBar({
 
       {cardArea && (
         <FloatingCard
+          key={cardArea.id}
           className={`flex max-h-[75dvh] flex-col overflow-hidden p-5
             md:hidden ${cardOpen ? "" : "overlay-exit"}`}
         >
