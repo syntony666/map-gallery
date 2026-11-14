@@ -20,6 +20,7 @@ import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useResetState } from "../hooks/useResetState";
 import { inputClassName } from "../utils/field-classes";
+import { pageBottomPad } from "../utils/layout-classes";
 import { useViewMode } from "../hooks/useViewMode";
 import { getPhotoGridHeading } from "../utils/photo-grid-heading";
 
@@ -223,7 +224,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
 
   return (
     <main
-      className={`grid gap-4 [overflow-anchor:none] ${needsBottomBarSpace ? "pb-12 lg:pb-0" : ""}`}
+      className={`grid gap-4 [overflow-anchor:none] ${needsBottomBarSpace ? pageBottomPad : ""}`}
     >
       <TitleBarContent
         areaName={area.name}

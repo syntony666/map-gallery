@@ -1,5 +1,6 @@
 import type { Collection } from "../../types/gallery.type";
 import { EmptyState } from "../common/EmptyState";
+import { CollectionAvatar } from "./CollectionAvatar";
 import { CollectionItem } from "./CollectionItem";
 import "./CollectionBar.css";
 
@@ -34,12 +35,7 @@ export function CollectionBar({
           onClick={onAdd}
           className="shrink-0 overflow-hidden"
         >
-          <span className="collection-item flex h-18 w-18 items-center justify-center rounded-full bg-fill text-2xl text-ink-muted sm:h-24 sm:w-24">
-            <i className="bi bi-plus-lg" />
-          </span>
-          <p className="mt-1 w-18 truncate text-xs text-ink-muted sm:w-24">
-            新增相簿
-          </p>
+          <CollectionAvatar icon="bi-plus-lg" label="新增相簿" muted />
         </button>
       )}
       {collections.map((collection) => (

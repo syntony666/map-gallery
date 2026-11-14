@@ -7,6 +7,7 @@ import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
+import { pageBottomPad } from "../utils/layout-classes";
 import { useDialogs } from "../hooks/useDialogs";
 import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
@@ -95,7 +96,7 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
   const showActions = !isError && !readonly;
 
   return (
-    <main className={showActions ? "pb-12 lg:pb-0" : ""}>
+    <main className={showActions ? pageBottomPad : ""}>
       <TitleBar
         areaName={!isError && area ? area.name : "回到地圖"}
         headingLevel={2}

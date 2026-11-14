@@ -11,6 +11,7 @@ import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEdito
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
 import { inputClassName } from "../utils/field-classes";
+import { pageBottomPad } from "../utils/layout-classes";
 import { useViewMode } from "../hooks/useViewMode";
 
 export function PhotoEditPage() {
@@ -91,7 +92,7 @@ export function PhotoEditPage() {
   ];
 
   return (
-    <main className="grid gap-4 pb-12 lg:pb-0">
+    <main className={`grid gap-4 ${pageBottomPad}`}>
       <TitleBar
         areaName={`${area.name} — ${isEditMode ? "編輯照片" : "新增照片"}`}
         onBack={() => navigate(-1)}
