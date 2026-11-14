@@ -25,16 +25,18 @@ export function PhotoGridToolbar({
     ? [
         {
           id: "photo-add",
-          label: "",
+          label: "新增照片",
           icon: "bi-plus-lg",
+          iconOnly: true,
           onClick: action.onAddPhoto,
         },
         ...(action.onDeletePhoto
           ? [
               {
                 id: "photo-delete",
-                label: "",
+                label: "刪除照片",
                 icon: "bi-trash3",
+                iconOnly: true,
                 onClick: action.onDeletePhoto,
               },
             ]

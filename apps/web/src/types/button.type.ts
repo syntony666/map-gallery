@@ -6,6 +6,9 @@ export type ButtonConfig = {
   icon?: string;
   variant?: ButtonVariant;
   disabled?: boolean;
+  /** Hide the label; the button still exposes it as its accessible name. */
+  iconOnly?: boolean;
+  "aria-label"?: string;
   onClick: () => void;
 };
 

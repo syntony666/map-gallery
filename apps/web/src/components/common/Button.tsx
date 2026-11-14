@@ -103,12 +103,14 @@ export function Button({
     </>
   );
 
+  const accessibleName = ariaLabel ?? (iconOnly ? label : undefined);
+
   if (to) {
     return (
       <Link
         to={to}
         title={title}
-        aria-label={ariaLabel}
+        aria-label={accessibleName}
         onClick={onClick}
         className={classes}
       >
@@ -121,7 +123,7 @@ export function Button({
     <button
       type={type}
       title={title ?? label}
-      aria-label={ariaLabel}
+      aria-label={accessibleName}
       onClick={onClick}
       className={classes}
       {...rest}
