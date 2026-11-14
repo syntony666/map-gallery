@@ -1,4 +1,6 @@
 export type ErrorCode =
+  | "INTERNAL_ERROR"
+  | "NOT_FOUND"
   | "UNAUTHORIZED"
   | "AREA_ID_REQUIRED"
   | "AREA_NOT_FOUND"
