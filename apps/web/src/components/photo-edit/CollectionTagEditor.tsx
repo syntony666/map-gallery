@@ -109,7 +109,7 @@ export function CollectionTagEditor({
                 }
               }}
               placeholder="新增相簿名稱"
-              className="w-40 rounded border border-line bg-surface px-2 py-1 text-base text-ink outline-none"
+              className="w-40 rounded border border-line bg-surface px-2 py-1 text-base text-ink focus-visible:outline-2 focus-visible:outline-primary"
             />
             <button
               type="button"
