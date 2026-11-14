@@ -50,11 +50,12 @@
 
 /* Lighter glass for toolbars and other low-chrome bars — the map (or
    photo) behind should visibly bleed through since these rarely carry
-   dense text. */
+   dense text. Weaker blur keeps the background readable instead of
+   washing it to the same flat tone as `glass`. */
 @utility glass-thin {
-  background: color-mix(in srgb, var(--color-fill) 50%, transparent);
+  background: color-mix(in srgb, var(--color-fill) 30%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
-  backdrop-filter: blur(8px) saturate(150%);
+  backdrop-filter: blur(4px) saturate(120%);
 }
 
 /* Keep alt text hidden while an image is loading or broken; it still
