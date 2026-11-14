@@ -1,7 +1,12 @@
 import { useNavigate, useParams } from "react-router";
 import { TitleBar } from "../components/common/TitleBar";
+import { BottomBar } from "../components/common/BottomBar";
+import { BottomBarStack } from "../components/common/BottomBarStack";
+import { ButtonGroup } from "../components/common/ButtonGroup";
 import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
+import { galleryStore } from "../stores/gallery.store";
+import { alertError } from "../utils/alert";
 import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -47,13 +52,32 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
 
   useDocumentTitle(isError ? null : photo.title);
 
+  async function deletePhoto() {
+    if (!window.confirm(`確定要刪除「${photo.title}」嗎？`)) {
+      return;
+    }
+    try {
+      await galleryStore.deletePhotos([photo.id]);
+      navigate(area ? `/area/${area.id}` : "/");
+    } catch (reason) {
+      alertError(reason, "刪除失敗");
+    }
+  }
+
   const titleButtons: ButtonActionGroup[] = [
     {
       id: "photo-detail",
       buttons: [
         {
+          id: "delete-photo-detail",
+          label: "刪除",
+          icon: "bi-trash3",
+          variant: "danger",
+          onClick: deletePhoto,
+        },
+        {
           id: "manage-photo-detail",
-          label: "",
+          label: "編輯",
           icon: "bi-pencil-square",
           onClick: () =>
             navigate(`/area/${photo.areaId}/photo/${photo.id}/edit`),
@@ -61,12 +85,15 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
       ],
     },
   ];
+
+  const showActions = !isError && !readonly;
+
   return (
-    <main>
+    <main className={showActions ? "pb-12 lg:pb-0" : ""}>
       <TitleBar
         areaName={!isError && area ? area.name : "回到地圖"}
-        buttonGroup={!isError && !readonly ? titleButtons : []}
-        mobileActions={{ mobileMode: "inline" }}
+        buttonGroup={showActions ? titleButtons : []}
+        mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
         onBack={() => navigate(!isError && area ? `/area/${area.id}` : "/")}
       />
 
@@ -75,6 +102,26 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
 
         <PhotoInfo photo={photo} />
       </article>
+
+      {showActions && (
+        <BottomBarStack className="lg:hidden">
+          <BottomBar
+            className="text-sm"
+            actions={
+              <ButtonGroup
+                groups={titleButtons}
+                mobileMode="inline"
+                breakpoint="md"
+                translucent
+              />
+            }
+          >
+            <p className="min-w-0 flex-1 truncate text-ink-muted">
+              {photo.title}
+            </p>
+          </BottomBar>
+        </BottomBarStack>
+      )}
     </main>
   );
 }
