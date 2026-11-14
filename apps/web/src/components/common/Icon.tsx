@@ -65,7 +65,7 @@ export function Icon({ name, className = "" }: IconProps) {
     <Component
       size="1em"
       aria-hidden="true"
-      className={`inline-block shrink-0 align-[-0.125em] ${className}`}
+      className={`inline-block shrink-0 ${className}`}
     />
   );
 }
