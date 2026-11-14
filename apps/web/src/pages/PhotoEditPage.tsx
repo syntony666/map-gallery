@@ -6,12 +6,17 @@ import { BottomBar } from "../components/common/BottomBar";
 import { BottomBarStack } from "../components/common/BottomBarStack";
 import { ButtonGroup } from "../components/common/ButtonGroup";
 import { EmptyState } from "../components/common/EmptyState";
-import { FieldLabel } from "../components/common/FieldLabel";
+import { TextField } from "../components/common/TextField";
 import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEditor";
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
-import { usePreventZoom } from "../hooks/usePreventZoom";
+import { pageBottomPad } from "../utils/layout-classes";
 import { useViewMode } from "../hooks/useViewMode";
+
+function BackToMapBar() {
+  const navigate = useNavigate();
+  return <TitleBar areaName="回到地圖" onBack={() => navigate("/")} />;
+}
 
 export function PhotoEditPage() {
   const { areaId, photoId } = useParams();
@@ -33,7 +38,6 @@ export function PhotoEditPage() {
   } = usePhotoEditPageController({ areaId, photoId });
 
   const { readonly } = useViewMode();
-  usePreventZoom();
 
   if (readonly) {
     return <Navigate to={areaId ? `/area/${areaId}` : "/"} replace />;
@@ -42,7 +46,7 @@ export function PhotoEditPage() {
   if (error) {
     return (
       <div>
-        <TitleBar areaName="回到地圖" onBack={() => navigate("/")} />
+        <BackToMapBar />
         <EmptyState title="無法載入資料" description={error} />
       </div>
     );
@@ -51,7 +55,7 @@ export function PhotoEditPage() {
   if (!area || !form) {
     return (
       <div>
-        <TitleBar areaName="回到地圖" onBack={() => navigate("/")} />
+        <BackToMapBar />
         <EmptyState title="載入中…" />
       </div>
     );
@@ -91,14 +95,10 @@ export function PhotoEditPage() {
     },
   ];
 
-  const inputClassName =
-    "rounded border border-line bg-surface px-2 py-2 text-sm text-ink outline-none";
-
   return (
-    <main className="grid gap-4 pb-12 lg:pb-0">
+    <main className={`grid gap-4 ${pageBottomPad}`}>
       <TitleBar
         areaName={`${area.name} — ${isEditMode ? "編輯照片" : "新增照片"}`}
-        onBack={() => navigate(-1)}
         buttonGroup={titleButtons}
         mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
       />
@@ -109,69 +109,58 @@ export function PhotoEditPage() {
         className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,2fr)] lg:gap-10"
       >
         <div>
-          <FieldLabel>圖片網址</FieldLabel>
-          <input
-            type="text"
+          <TextField
+            id="photo-image"
+            label="圖片網址"
+            type="url"
             required
             value={form.image}
-            onChange={(event) => updateField("image", event.target.value)}
-            className={`${inputClassName} w-full`}
-          />
-          <div className="mt-2 aspect-square rounded-md bg-secondary-bg lg:aspect-4/3">
-            {form.image && (
-              <img
-                src={form.image}
-                alt="預覽"
-                className="h-full w-full object-contain"
-              />
-            )}
-          </div>
+            onChange={(value) => updateField("image", value)}
+          >
+            <div className="mt-2 aspect-square rounded-md bg-secondary-bg lg:aspect-4/3">
+              {form.image && (
+                <img
+                  src={form.image}
+                  alt="預覽"
+                  className="h-full w-full object-contain"
+                />
+              )}
+            </div>
+          </TextField>
         </div>
 
         <div className="grid content-start gap-4">
-          <div>
-            <FieldLabel>標題</FieldLabel>
-            <input
-              type="text"
-              required
-              value={form.title}
-              onChange={(event) => updateField("title", event.target.value)}
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-title"
+            label="標題"
+            required
+            value={form.title}
+            onChange={(value) => updateField("title", value)}
+          />
 
-          <div>
-            <FieldLabel>拍攝日期</FieldLabel>
-            <input
-              type="date"
-              required
-              value={form.takenAt}
-              onChange={(event) => updateField("takenAt", event.target.value)}
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-taken-at"
+            label="拍攝日期"
+            type="date"
+            required
+            value={form.takenAt}
+            onChange={(value) => updateField("takenAt", value)}
+          />
 
-          <div>
-            <FieldLabel>簡述</FieldLabel>
-            <input
-              type="text"
-              value={form.summary}
-              onChange={(event) => updateField("summary", event.target.value)}
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-summary"
+            label="簡述"
+            value={form.summary}
+            onChange={(value) => updateField("summary", value)}
+          />
 
-          <div>
-            <FieldLabel>說明</FieldLabel>
-            <textarea
-              rows={5}
-              value={form.description}
-              onChange={(event) =>
-                updateField("description", event.target.value)
-              }
-              className={`${inputClassName} w-full`}
-            />
-          </div>
+          <TextField
+            id="photo-description"
+            label="說明"
+            multiline
+            value={form.description}
+            onChange={(value) => updateField("description", value)}
+          />
 
           {collections && (
             <CollectionTagEditor
@@ -197,9 +186,7 @@ export function PhotoEditPage() {
           }
         >
           <p className="min-w-0 flex-1 truncate text-ink-muted">
-            {isEditMode
-              ? "編輯照片資訊：修改標題、日期、說明與相簿"
-              : "新增照片：填寫標題、日期、說明與相簿"}
+            {isEditMode ? "編輯照片" : "新增照片"}
           </p>
         </BottomBar>
       </BottomBarStack>

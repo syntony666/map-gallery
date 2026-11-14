@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import type { ButtonActionGroup } from "./button.type";
+import type { IconName } from "../components/common/Icon";
 
 export type MenuRow = {
   id: string;
-  icon?: string;
+  icon?: IconName;
   label: ReactNode;
   /** Right-aligned muted text, e.g. a photo count. */
   meta?: ReactNode;
@@ -14,18 +14,3 @@ export type MenuRow = {
 };
 
 export type MenuSection = { id: string; rows: MenuRow[] };
-
-/** Map the button-strip config into menu sections. */
-export function menuSections(groups: ButtonActionGroup[]): MenuSection[] {
-  return groups.map((group) => ({
-    id: group.id,
-    rows: group.buttons.map((button) => ({
-      id: button.id,
-      icon: button.icon,
-      label: button.label,
-      danger: button.variant === "danger",
-      disabled: button.disabled,
-      onClick: button.onClick,
-    })),
-  }));
-}

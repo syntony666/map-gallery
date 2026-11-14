@@ -5,7 +5,7 @@ export type PhotoGridProps = {
   photos: Photo[];
   isSelectionMode?: boolean;
   selectedPhotoIds?: ReadonlySet<string>;
-  onOpenPhoto?: (photoId: string) => void;
+  photoTo?: (photoId: string) => string;
   onTogglePhotoSelection?: (photoId: string) => void;
 };
 
@@ -13,7 +13,7 @@ export function PhotoGrid({
   photos,
   isSelectionMode = false,
   selectedPhotoIds = new Set(),
-  onOpenPhoto,
+  photoTo,
   onTogglePhotoSelection,
 }: PhotoGridProps) {
   return (
@@ -24,7 +24,7 @@ export function PhotoGrid({
           photo={photo}
           isSelectionMode={isSelectionMode}
           isSelected={selectedPhotoIds.has(photo.id)}
-          onOpen={onOpenPhoto ? () => onOpenPhoto(photo.id) : undefined}
+          to={photoTo?.(photo.id)}
           onToggleSelection={() => onTogglePhotoSelection?.(photo.id)}
         />
       ))}

@@ -6,11 +6,12 @@ import { ButtonGroup } from "../components/common/ButtonGroup";
 import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
 import { galleryStore } from "../stores/gallery.store";
-import { alertError } from "../utils/alert";
+import { alertMessage } from "../utils/alert";
+import { pageBottomPad } from "../utils/layout-classes";
+import { useDialogs } from "../hooks/useDialogs";
 import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { usePreventZoom } from "../hooks/usePreventZoom";
 import { usePhotoDetailPageController } from "../hooks/usePhotoDetailPageController";
 import { useViewMode } from "../hooks/useViewMode";
 
@@ -18,7 +19,6 @@ export function PhotoDetailPage() {
   const { areaId, photoId } = useParams();
 
   const controller = usePhotoDetailPageController({ photoId, areaId });
-  usePreventZoom();
 
   const emptyPhoto: PhotoDetail = {
     id: "0",
@@ -49,18 +49,25 @@ type PhotoDetailContentProps = {
 function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
   const navigate = useNavigate();
   const { readonly } = useViewMode();
+  const dialogs = useDialogs();
 
   useDocumentTitle(isError ? null : photo.title);
 
   async function deletePhoto() {
-    if (!window.confirm(`確定要刪除「${photo.title}」嗎？`)) {
+    const confirmed = await dialogs.confirm(
+      `確定要刪除「${photo.title}」嗎？`,
+      { danger: true },
+    );
+
+    if (!confirmed) {
       return;
     }
+
     try {
       await galleryStore.deletePhotos([photo.id]);
       navigate(area ? `/area/${area.id}` : "/");
     } catch (reason) {
-      alertError(reason, "刪除失敗");
+      await dialogs.alert(alertMessage(reason, "刪除失敗"));
     }
   }
 
@@ -89,9 +96,10 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
   const showActions = !isError && !readonly;
 
   return (
-    <main className={showActions ? "pb-12 lg:pb-0" : ""}>
+    <main className={showActions ? pageBottomPad : ""}>
       <TitleBar
         areaName={!isError && area ? area.name : "回到地圖"}
+        headingLevel={2}
         buttonGroup={showActions ? titleButtons : []}
         mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
         onBack={() => navigate(!isError && area ? `/area/${area.id}` : "/")}

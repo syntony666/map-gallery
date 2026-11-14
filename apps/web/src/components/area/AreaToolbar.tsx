@@ -1,4 +1,5 @@
 import type { SortOption } from "../../types/gallery.type";
+import { toolbarInputClassName } from "../../utils/field-classes";
 
 type PhotoToolbarProps = {
   keyword: string;
@@ -14,19 +15,21 @@ export function AreaToolbar({
   onSortChange,
 }: PhotoToolbarProps) {
   return (
-    <section className="glass flex flex-wrap items-center gap-3 rounded-md p-2 shadow-sm">
+    <section className="flex flex-wrap items-center gap-3 max-lg:glass-thin max-lg:rounded-md max-lg:p-2 max-lg:shadow-sm">
       <input
         type="search"
+        aria-label="搜尋景點或照片"
         value={keyword}
         onChange={(event) => onKeywordChange(event.target.value)}
         placeholder="搜尋景點或照片"
-        className="min-w-0 flex-1 rounded border border-line/70 bg-page/60 px-3 py-2 text-sm"
+        className={`min-w-0 flex-1 ${toolbarInputClassName} text-base`}
       />
 
       <select
+        aria-label="排序方式"
         value={sort}
         onChange={(event) => onSortChange(event.target.value as SortOption)}
-        className="rounded border border-line/70 bg-page/60 px-3 py-2 text-sm"
+        className={`${toolbarInputClassName} text-sm`}
       >
         <option value="newest">最新</option>
         <option value="oldest">最舊</option>

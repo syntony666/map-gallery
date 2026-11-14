@@ -8,7 +8,7 @@ type EmptyStateProps = {
 
 export function EmptyState({ title, description, action }: EmptyStateProps) {
   return (
-    <section className="rounded-md border border-dashed border-line bg-surface my-4 p-10 text-center">
+    <section className="rounded-md border border-line bg-surface/60 backdrop-blur-sm my-4 p-10 text-center">
       <h1 className="text-xl font-semibold">{title}</h1>
 
       {description && (

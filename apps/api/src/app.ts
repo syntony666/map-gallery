@@ -2,6 +2,7 @@ import path from "node:path";
 import { Hono } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { isAdminAuthorized, requireAdmin } from "./auth";
+import { fail } from "./routes/errors";
 import { areasRoute } from "./routes/areas";
 import { collectionPhotosRoute } from "./routes/collection-photos";
 import { collectionsRoute } from "./routes/collections";
@@ -43,6 +44,15 @@ app.route("/api/v1/areas", areasRoute);
 app.route("/api/v1/collections", collectionsRoute);
 app.route("/api/v1/collection-photos", collectionPhotosRoute);
 app.route("/api/v1/photos", photosRoute);
+
+app.all("/api/*", (context) => {
+  return fail(context, 404, "NOT_FOUND", "API route not found.");
+});
+
+app.onError((error, context) => {
+  console.error("Unhandled API error:", error);
+  return fail(context, 500, "INTERNAL_ERROR", "Internal server error.");
+});
 
 // SPA static files; /api requests are handled by the routes above
 const distPath = path.resolve(import.meta.dirname, "../../web/dist");

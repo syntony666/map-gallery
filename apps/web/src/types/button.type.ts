@@ -1,11 +1,16 @@
+import type { IconName } from "../components/common/Icon";
+
 export type ButtonVariant = "default" | "primary" | "danger";
 
 export type ButtonConfig = {
   id: string;
   label: string;
-  icon?: string;
+  icon?: IconName;
   variant?: ButtonVariant;
   disabled?: boolean;
+  /** Hide the label; the button still exposes it as its accessible name. */
+  iconOnly?: boolean;
+  "aria-label"?: string;
   onClick: () => void;
 };
 

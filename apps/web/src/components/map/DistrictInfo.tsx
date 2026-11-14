@@ -1,6 +1,7 @@
 import type { Area } from "../../types/gallery.type";
 import { Button } from "../common/Button";
 import { AreaCover } from "./AreaCover";
+import { Icon } from "../common/Icon";
 
 type DistrictInfoProps = {
   area: Area | null;
@@ -40,7 +41,7 @@ export function DistrictInfo({
 
       {area.description && (
         <p className="text-sm leading-relaxed text-ink-secondary">
-          <i className="bi bi-chat-square-heart" />
+          <Icon name="bi-chat-square-heart" className="desc-icon" />
           {area.description}
         </p>
       )}

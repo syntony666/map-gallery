@@ -36,6 +36,13 @@
       "when": 1794474494722,
       "tag": "0004_area_cover_photo",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1794644303387,
+      "tag": "0005_fix_collections_cover_photo_fk",
+      "breakpoints": true
     }
   ]
 }

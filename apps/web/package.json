@@ -6,14 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@map-gallery/shared": "^0.0.0",
-    "@sakulime-ui/theme": "^0.4.8",
+    "@sakulime-ui/theme": "^0.4.9",
     "@tailwindcss/vite": "^4.2.2",
     "hammerjs": "^2.0.8",
+    "lucide-react": "^1.70.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router": "^8.3.0",

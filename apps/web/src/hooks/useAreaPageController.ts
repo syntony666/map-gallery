@@ -6,7 +6,9 @@ import { useAsyncData } from "./useAsyncData";
 import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
 import type { Collection } from "../types/gallery.type";
 import { galleryStore } from "../stores/gallery.store";
-import { alertError } from "../utils/alert";
+import { alertMessage } from "../utils/alert";
+import { createCollectionWithAlert } from "../utils/collections";
+import { useDialogs } from "./useDialogs";
 
 export type TitleBarActions = {
   onEditArea?: () => void;
@@ -25,6 +27,7 @@ export function useAreaPageController({
   areaId,
   initialCollectionId,
 }: UseAreaPageControllerOptions) {
+  const dialogs = useDialogs();
   const [UIState, dispatch] = useReducer(
     areaPageReducer,
     initialAreaPageUIState,
@@ -113,7 +116,7 @@ export function useAreaPageController({
       });
       setSourceArea(await galleryStore.getAreaById(areaId));
     } catch (reason) {
-      alertError(reason, "儲存失敗，請稍後再試");
+      await dialogs.alert(alertMessage(reason, "儲存失敗，請稍後再試"));
       return;
     }
 
@@ -209,9 +212,11 @@ export function useAreaPageController({
       areaState.refreshPhotos();
       dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
     } catch (reason) {
-      alertError(reason, "更新失敗", {
-        PHOTO_AREA_MISMATCH: "照片與相簿不屬於同一縣市",
-      });
+      await dialogs.alert(
+        alertMessage(reason, "更新失敗", {
+          PHOTO_AREA_MISMATCH: "照片與相簿不屬於同一縣市",
+        }),
+      );
     }
   }
 
@@ -220,13 +225,10 @@ export function useAreaPageController({
   }
 
   async function onCollectionRename(collection: Collection) {
-    const nextName = window.prompt("請輸入新的相簿名稱", collection.name);
-
-    if (nextName === null) {
-      return;
-    }
-
-    const normalizedName = nextName.trim();
+    const normalizedName = await dialogs.prompt(
+      "請輸入新的相簿名稱",
+      collection.name,
+    );
 
     if (!normalizedName || normalizedName === collection.name) {
       return;
@@ -238,15 +240,18 @@ export function useAreaPageController({
       });
       await refetchCollections();
     } catch (reason) {
-      alertError(reason, "更新失敗", {
-        COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
-      });
+      await dialogs.alert(
+        alertMessage(reason, "更新失敗", {
+          COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
+        }),
+      );
     }
   }
 
   async function onCollectionRemove(collection: Collection) {
-    const isConfirmed = window.confirm(
+    const isConfirmed = await dialogs.confirm(
       `確定要刪除「${collection.name}」嗎？其中 ${collection.photoCount} 張照片會解除與此相簿的關聯。`,
+      { danger: true },
     );
 
     if (!isConfirmed) {
@@ -258,35 +263,28 @@ export function useAreaPageController({
       await refetchCollections();
       areaState.setSelectedCollectionId("");
     } catch (reason) {
-      alertError(reason, "刪除失敗");
+      await dialogs.alert(alertMessage(reason, "刪除失敗"));
     }
   }
 
   async function onCollectionCreate() {
-    const nextName = window.prompt("請輸入新相簿名稱");
-
-    if (nextName === null) {
-      return;
-    }
-
-    const normalizedName = nextName.trim();
+    const normalizedName = await dialogs.prompt("請輸入新相簿名稱");
 
     if (!normalizedName) {
       return;
     }
 
-    try {
-      const created = await galleryStore.createCollection({
-        areaId,
-        name: normalizedName,
-      });
-      await refetchCollections();
-      areaState.setSelectedCollectionId(created.id);
-    } catch (reason) {
-      alertError(reason, "新增失敗", {
-        COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
-      });
+    const created = await createCollectionWithAlert(dialogs, {
+      areaId,
+      name: normalizedName,
+    });
+
+    if (!created) {
+      return;
     }
+
+    await refetchCollections();
+    areaState.setSelectedCollectionId(created.id);
   }
 
   function startPhotoDeleteSelect() {
@@ -301,8 +299,9 @@ export function useAreaPageController({
       return;
     }
 
-    const isConfirmed = window.confirm(
+    const isConfirmed = await dialogs.confirm(
       `確定要刪除已選取的 ${photoIds.length} 張照片嗎？`,
+      { danger: true },
     );
 
     if (!isConfirmed) {
@@ -315,7 +314,7 @@ export function useAreaPageController({
       areaState.refreshPhotos();
       dispatch({ type: "CONFIRM_PHOTO_DELETE" });
     } catch (reason) {
-      alertError(reason, "刪除失敗");
+      await dialogs.alert(alertMessage(reason, "刪除失敗"));
     }
   }
 
@@ -357,6 +356,7 @@ export function useAreaPageController({
       selectedCollectionId: areaState.selectedCollectionId,
       toggleCollection: areaState.toggleCollection,
       visiblePhotos: areaState.visiblePhotos,
+      photosError: areaState.photosError,
       page: areaState.page,
       setPage: areaState.setPage,
       pagination: areaState.pagination,

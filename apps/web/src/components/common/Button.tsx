@@ -1,6 +1,8 @@
 import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import { Link } from "react-router";
 import type { ButtonVariant } from "../../types/button.type";
+import { Icon } from "./Icon";
+import type { IconName } from "./Icon";
 
 export type ButtonSize = "sm" | "md";
 
@@ -14,8 +16,8 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
   ghost?: boolean;
   variant?: ButtonVariant;
   size?: ButtonSize;
-  icon?: string;
-  iconEnd?: string;
+  icon?: IconName;
+  iconEnd?: IconName;
   label?: string;
   /** The label rests collapsed to zero width and expands on hover/focus. */
   expandLabel?: boolean;
@@ -69,7 +71,7 @@ export function Button({
           : "bg-surface text-ink shadow hover:bg-page"
         : translucent
           ? "bg-fill/70 text-ink hover:bg-secondary/70"
-          : "bg-fill text-ink hover:bg-secondary",
+          : "border border-line/50 bg-fill/60 text-ink backdrop-blur-sm hover:bg-secondary/60",
     expandLabel ? "group" : "",
     className,
   ].join(" ");
@@ -77,10 +79,7 @@ export function Button({
   const content = (
     <>
       {icon && (
-        <i
-          className={`bi ${icon} ${getVariantClassName(variant)}`}
-          aria-hidden="true"
-        />
+        <Icon name={icon} className={getVariantClassName(variant)} />
       )}
       {label && !iconOnly && (
         <span
@@ -99,16 +98,18 @@ export function Button({
         </span>
       )}
       {children}
-      {iconEnd && <i className={`bi ${iconEnd}`} aria-hidden="true" />}
+      {iconEnd && <Icon name={iconEnd} />}
     </>
   );
+
+  const accessibleName = ariaLabel ?? (iconOnly ? label : undefined);
 
   if (to) {
     return (
       <Link
         to={to}
         title={title}
-        aria-label={ariaLabel}
+        aria-label={accessibleName}
         onClick={onClick}
         className={classes}
       >
@@ -121,7 +122,7 @@ export function Button({
     <button
       type={type}
       title={title ?? label}
-      aria-label={ariaLabel}
+      aria-label={accessibleName}
       onClick={onClick}
       className={classes}
       {...rest}

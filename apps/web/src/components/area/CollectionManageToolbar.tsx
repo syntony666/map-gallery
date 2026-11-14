@@ -5,7 +5,7 @@ import { BottomBarOverlay } from "../common/BottomBarOverlay";
 import { Button } from "../common/Button";
 import { ButtonGroup } from "../common/ButtonGroup";
 import { Toolbar } from "../common/Toolbar";
-import { menuSections } from "../../types/menu.type";
+import { menuSections } from "../../utils/menu";
 
 export type CollectionManageToolbarAction = {
   onCollectionRename: (collection: Collection) => void;

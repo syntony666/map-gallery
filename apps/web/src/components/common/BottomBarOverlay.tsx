@@ -3,13 +3,14 @@ import { FloatingCard } from "./FloatingCard";
 import { MenuHeading, MenuList } from "./MenuList";
 import { useDelayedUnmount } from "../../hooks/useDelayedUnmount";
 import type { MenuSection } from "../../types/menu.type";
+import type { IconName } from "./Icon";
 
 type BottomBarOverlayProps = {
   open: boolean;
   onClose: () => void;
   /** Heading row of the menu (icon optional via titleIcon). */
   title: string;
-  titleIcon?: string;
+  titleIcon?: IconName;
   sections: MenuSection[];
   /** Thin rules between rows (long lists like the region menu). */
   dividers?: boolean;

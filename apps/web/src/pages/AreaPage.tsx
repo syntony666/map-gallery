@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { BottomBar } from "../components/common/BottomBar";
 import { BottomBarOverlay } from "../components/common/BottomBarOverlay";
 import { BottomBarStack } from "../components/common/BottomBarStack";
-import { menuSections } from "../types/menu.type";
+import { menuSections } from "../utils/menu";
 import { Button } from "../components/common/Button";
 import { ButtonGroup } from "../components/common/ButtonGroup";
 import { CollectionBar } from "../components/area/CollectionBar";
@@ -15,11 +14,13 @@ import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
 import { PhotoPagination } from "../components/area/PhotoPagination";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
-import type { ButtonActionGroup } from "../types/button.type";
+import type { ButtonActionGroup, ButtonConfig } from "../types/button.type";
 import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { usePreventZoom } from "../hooks/usePreventZoom";
+import { useResetState } from "../hooks/useResetState";
+import { inputClassName } from "../utils/field-classes";
+import { pageBottomPad } from "../utils/layout-classes";
 import { useViewMode } from "../hooks/useViewMode";
 import { getPhotoGridHeading } from "../utils/photo-grid-heading";
 
@@ -60,17 +61,12 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     });
 
   const { readonly } = useViewMode();
-  const [photoMenuOpen, setPhotoMenuOpen] = useState(false);
-
-  // Mode switches unmount the bar but keep this state; close the menu so it
-  // does not reopen when the bar comes back.
-  const [wasEditMode, setWasEditMode] = useState(UI.isEditMode);
-  if (wasEditMode !== UI.isEditMode) {
-    setWasEditMode(UI.isEditMode);
-    setPhotoMenuOpen(false);
-  }
-  usePreventZoom();
-
+  // Mode switches unmount the bar but keep this state; closing the menu on
+  // mode change prevents it from reopening when the bar comes back.
+  const [photoMenuOpen, setPhotoMenuOpen] = useResetState(
+    false,
+    UI.isEditMode,
+  );
   useDocumentTitle(area?.name);
   const navigate = useNavigate();
 
@@ -115,7 +111,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         {
           id: "done",
           label: "完成",
-          icon: "bi-check-lg text-primary",
+          icon: "bi-check-lg",
           variant: "primary",
           onClick: actions.titleBar.onDoneEdit ?? (() => alert("非預期操作")),
         },
@@ -142,7 +138,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
                       label: "刪除照片",
                       icon: "bi-trash3",
                       onClick: actions.startPhotoDeleteSelect,
-                    },
+                    } satisfies ButtonConfig,
                   ]
                 : []),
             ],
@@ -151,6 +147,12 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       : [];
 
   const renderPhotoSection = () => {
+    if (filters.photosError) {
+      return (
+        <EmptyState title="無法載入照片" description={filters.photosError} />
+      );
+    }
+
     const photos = filters.visiblePhotos;
 
     if (photos === null) {
@@ -198,10 +200,10 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           photos={photos}
           isSelectionMode={!!UI.isPhotoSelectMode || UI.isAreaEditMode}
           selectedPhotoIds={UI.selectedPhotoIds}
-          onOpenPhoto={
+          photoTo={
             UI.isEditMode
               ? undefined
-              : (photoId) => navigate(`/area/${area.id}/photo/${photoId}`)
+              : (photoId) => `/area/${area.id}/photo/${photoId}`
           }
           onTogglePhotoSelection={actions.togglePhotoSelection}
         />
@@ -222,7 +224,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
 
   return (
     <main
-      className={`grid gap-4 [overflow-anchor:none] ${needsBottomBarSpace ? "pb-12 lg:pb-0" : ""}`}
+      className={`grid gap-4 [overflow-anchor:none] ${needsBottomBarSpace ? pageBottomPad : ""}`}
     >
       <TitleBarContent
         areaName={area.name}
@@ -237,8 +239,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           value={draftDescription}
           onChange={(event) => actions.updateDescription(event.target.value)}
           rows={3}
-          className="rounded border border-line bg-surface px-2 py-2 
-            text-sm text-ink outline-none"
+          className={inputClassName}
         />
       ) : (
         <CollectionBar
@@ -367,7 +368,7 @@ function buildButtons(
         {
           id: "cancel",
           label: "取消",
-          icon: "bi-x-lg text-danger",
+          icon: "bi-x-lg",
           variant: "danger",
           onClick: action.onCancelEdit ?? (() => alert("非預期操作")),
         },
@@ -375,7 +376,7 @@ function buildButtons(
           id: "save",
           label: "儲存",
           variant: "primary",
-          icon: "bi-check-lg text-primary",
+          icon: "bi-check-lg",
           onClick: action.onSaveEdit ?? (() => alert("非預期操作")),
         },
       ],

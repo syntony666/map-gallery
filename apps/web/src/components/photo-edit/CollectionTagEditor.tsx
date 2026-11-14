@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Collection } from "../../types/gallery.type";
 import { FieldLabel } from "../common/FieldLabel";
+import { Icon } from "../common/Icon";
 
 type CollectionTagEditorProps = {
   collections: Collection[];
@@ -60,7 +61,7 @@ export function CollectionTagEditor({
               onClick={() => onToggle(collection.id)}
               className="hover:text-primary"
             >
-              <i className="bi bi-x" />
+              <Icon name="bi-x" />
             </button>
           </span>
         ))}
@@ -109,7 +110,7 @@ export function CollectionTagEditor({
                 }
               }}
               placeholder="新增相簿名稱"
-              className="w-40 rounded border border-line bg-surface px-2 py-1 text-sm text-ink outline-none"
+              className="w-40 rounded border border-line bg-surface px-2 py-1 text-base text-ink focus-visible:outline-2 focus-visible:outline-primary"
             />
             <button
               type="button"

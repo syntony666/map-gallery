@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { CollectionPhotoMode, SortOption } from "../types/gallery.type";
 import { useAsyncData } from "./useAsyncData";
+import { useResetState } from "./useResetState";
 import { galleryStore } from "../stores/gallery.store";
 
 export function useAreaState(
@@ -12,7 +13,6 @@ export function useAreaState(
   const [selectedCollectionId, setSelectedCollectionId] =
     useState(initialCollectionId);
   const [sort, setSort] = useState<SortOption>("newest");
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const filterKey = [
     areaId,
@@ -22,14 +22,13 @@ export function useAreaState(
     collectionPhotoMode,
   ].join("|");
 
-  const [pageState, setPageState] = useState({ key: "", page: 1 });
-  const page = pageState.key === filterKey ? pageState.page : 1;
+  const [page, setPage] = useResetState(1, filterKey);
 
-  function setPage(nextPage: number) {
-    setPageState({ key: filterKey, page: nextPage });
-  }
-
-  const { data: result, error } = useAsyncData(
+  const {
+    data: result,
+    error,
+    refresh: refreshPhotos,
+  } = useAsyncData(
     () =>
       galleryStore.getPhotos({
         areaId,
@@ -41,39 +40,36 @@ export function useAreaState(
         sort,
         page,
       }),
-    [
-      areaId,
-      keyword,
-      selectedCollectionId,
-      sort,
-      collectionPhotoMode,
-      refreshKey,
-      page,
-    ],
+    [areaId, keyword, selectedCollectionId, sort, collectionPhotoMode, page],
   );
 
-  const visiblePhotos = error
-    ? []
-    : result
-      ? collectionPhotoMode === "add" && selectedCollectionId
-        ? result.photos.filter(
-            (photo) => !photo.collectionIds.includes(selectedCollectionId),
-          )
-        : result.photos
-      : null;
+  const visiblePhotos = useMemo(
+    () =>
+      error
+        ? null
+        : result
+          ? collectionPhotoMode === "add" && selectedCollectionId
+            ? result.photos.filter(
+                (photo) =>
+                  !photo.collectionIds.includes(selectedCollectionId),
+              )
+            : result.photos
+          : null,
+    [error, result, collectionPhotoMode, selectedCollectionId],
+  );
 
-  const pagination = result
-    ? { total: result.total, totalPages: result.totalPages }
-    : null;
+  const pagination = useMemo(
+    () =>
+      result
+        ? { total: result.total, totalPages: result.totalPages }
+        : null,
+    [result],
+  );
 
   function toggleCollection(collection: string) {
     setSelectedCollectionId((current) =>
       current === collection ? "" : collection,
     );
-  }
-
-  function refreshPhotos() {
-    setRefreshKey((key) => key + 1);
   }
 
   return {
@@ -85,6 +81,7 @@ export function useAreaState(
     setSelectedCollectionId,
     toggleCollection,
     visiblePhotos,
+    photosError: error,
     refreshPhotos,
     page,
     setPage,

@@ -46,6 +46,10 @@ photosRoute.get("/", (context) => {
     );
   }
 
+  if (!areaExists(areaId)) {
+    return fail(context, 404, "AREA_NOT_FOUND", "Area not found.");
+  }
+
   const sort = parseSort(context.req.query("sort"));
 
   if (!sort) {
