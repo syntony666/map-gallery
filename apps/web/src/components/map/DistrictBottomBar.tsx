@@ -60,7 +60,7 @@ export function DistrictBottomBar({
 
       {cardArea && (
         <FloatingCard
-          className={`hidden items-center gap-3 px-4 py-3 md:max-lg:flex ${cardOpen ? "" : "overlay-exit"}`}
+          className={`hidden items-center gap-3 px-4 py-3 md:max-lg:flex ${cardOpen ? "" : "overlay-exit absolute inset-x-0 bottom-0"}`}
         >
           {/* Keyed on the content, not the card — keying the FloatingCard
               itself combined with useDelayedUnmount's render-phase update
@@ -116,7 +116,7 @@ export function DistrictBottomBar({
       {cardArea && (
         <FloatingCard
           className={`flex max-h-[75dvh] flex-col overflow-hidden p-5
-            md:hidden ${cardOpen ? "" : "overlay-exit"}`}
+            md:hidden ${cardOpen ? "" : "overlay-exit absolute inset-x-0 bottom-0"}`}
         >
           <div
             key={cardArea.id}
