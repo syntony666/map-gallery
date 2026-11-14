@@ -17,6 +17,7 @@ export function AreaToolbar({
     <section className="glass flex flex-wrap items-center gap-3 rounded-md p-2 shadow-sm">
       <input
         type="search"
+        aria-label="搜尋景點或照片"
         value={keyword}
         onChange={(event) => onKeywordChange(event.target.value)}
         placeholder="搜尋景點或照片"
@@ -24,6 +25,7 @@ export function AreaToolbar({
       />
 
       <select
+        aria-label="排序方式"
         value={sort}
         onChange={(event) => onSortChange(event.target.value as SortOption)}
         className="rounded border border-line/70 bg-page/60 px-3 py-2 text-sm"

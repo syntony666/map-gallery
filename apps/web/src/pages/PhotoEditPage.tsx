@@ -105,8 +105,9 @@ export function PhotoEditPage() {
         className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(16rem,2fr)] lg:gap-10"
       >
         <div>
-          <FieldLabel>圖片網址</FieldLabel>
+          <FieldLabel htmlFor="photo-image">圖片網址</FieldLabel>
           <input
+            id="photo-image"
             type="text"
             required
             value={form.image}
@@ -126,8 +127,9 @@ export function PhotoEditPage() {
 
         <div className="grid content-start gap-4">
           <div>
-            <FieldLabel>標題</FieldLabel>
+            <FieldLabel htmlFor="photo-title">標題</FieldLabel>
             <input
+              id="photo-title"
               type="text"
               required
               value={form.title}
@@ -137,8 +139,9 @@ export function PhotoEditPage() {
           </div>
 
           <div>
-            <FieldLabel>拍攝日期</FieldLabel>
+            <FieldLabel htmlFor="photo-taken-at">拍攝日期</FieldLabel>
             <input
+              id="photo-taken-at"
               type="date"
               required
               value={form.takenAt}
@@ -148,8 +151,9 @@ export function PhotoEditPage() {
           </div>
 
           <div>
-            <FieldLabel>簡述</FieldLabel>
+            <FieldLabel htmlFor="photo-summary">簡述</FieldLabel>
             <input
+              id="photo-summary"
               type="text"
               value={form.summary}
               onChange={(event) => updateField("summary", event.target.value)}
@@ -158,8 +162,9 @@ export function PhotoEditPage() {
           </div>
 
           <div>
-            <FieldLabel>說明</FieldLabel>
+            <FieldLabel htmlFor="photo-description">說明</FieldLabel>
             <textarea
+              id="photo-description"
               rows={5}
               value={form.description}
               onChange={(event) =>
