@@ -38,5 +38,5 @@ const rawNavigate = router.navigate.bind(router);
 router.navigate = ((to: To | number, opts?: NavigateOptions) =>
   typeof to === "number"
     ? rawNavigate(to)
-    : rawNavigate(to, { viewTransition: true, ...opts })) as
+    : rawNavigate(to, { ...opts, viewTransition: opts?.viewTransition ?? true })) as
   typeof router.navigate;
