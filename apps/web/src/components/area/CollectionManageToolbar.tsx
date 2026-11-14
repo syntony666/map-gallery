@@ -155,6 +155,7 @@ export function CollectionManageToolbar({
             mobileMode="none"
             breakpoint="lg"
           />
+          {menuButton}
           {extraGroups.flatMap((group) =>
             group.buttons.map((button) => (
               <Button
@@ -166,7 +167,6 @@ export function CollectionManageToolbar({
               />
             )),
           )}
-          {menuButton}
         </>
       }
       barOverlay={
