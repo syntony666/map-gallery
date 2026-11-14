@@ -71,7 +71,7 @@ export function Button({
           : "bg-surface text-ink shadow hover:bg-page"
         : translucent
           ? "bg-fill/70 text-ink hover:bg-secondary/70"
-          : "bg-fill text-ink hover:bg-secondary",
+          : "border border-line/50 bg-fill/60 text-ink backdrop-blur-sm hover:bg-secondary/60",
     expandLabel ? "group" : "",
     className,
   ].join(" ");
