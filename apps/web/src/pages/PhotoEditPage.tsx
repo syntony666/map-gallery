@@ -10,7 +10,6 @@ import { FieldLabel } from "../components/common/FieldLabel";
 import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEditor";
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
-import { usePreventZoom } from "../hooks/usePreventZoom";
 import { inputClassName } from "../utils/field-classes";
 import { useViewMode } from "../hooks/useViewMode";
 
@@ -34,7 +33,6 @@ export function PhotoEditPage() {
   } = usePhotoEditPageController({ areaId, photoId });
 
   const { readonly } = useViewMode();
-  usePreventZoom();
 
   if (readonly) {
     return <Navigate to={areaId ? `/area/${areaId}` : "/"} replace />;

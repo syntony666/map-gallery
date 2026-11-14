@@ -18,7 +18,6 @@ import type { ButtonActionGroup } from "../types/button.type";
 import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { usePreventZoom } from "../hooks/usePreventZoom";
 import { useResetState } from "../hooks/useResetState";
 import { inputClassName } from "../utils/field-classes";
 import { useViewMode } from "../hooks/useViewMode";
@@ -67,8 +66,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     false,
     UI.isEditMode,
   );
-  usePreventZoom();
-
   useDocumentTitle(area?.name);
   const navigate = useNavigate();
 
