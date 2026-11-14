@@ -63,9 +63,9 @@ export function PhotoCard({
         />
       </span>
 
-      {/* Caption overlays the image's bottom edge; /80 keeps the photo
-          faintly visible through the surface veil. */}
-      <div className="absolute inset-x-0 bottom-0 bg-surface/80 px-3 py-2.5">
+      {/* Caption floats as an inset box near the image's bottom edge;
+          translucent surface + blur keep the photo readable through it. */}
+      <div className="absolute inset-x-2 bottom-2 rounded bg-surface/80 px-3 py-2 backdrop-blur-sm">
         <h3 className="truncate font-medium">{photo.title}</h3>
 
         {photo.summary && (
