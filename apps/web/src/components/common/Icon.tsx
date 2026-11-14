@@ -56,14 +56,15 @@ type IconProps = {
 };
 
 /** Inline SVG icon sized in em so surrounding text-* classes set the
-    glyph size, matching the font-icon behavior this replaces. */
+    glyph size. inline-block keeps it in the text flow — Tailwind
+    preflight makes bare svgs display:block. */
 export function Icon({ name, className = "" }: IconProps) {
   const Component = icons[name];
   return (
     <Component
       size="1em"
       aria-hidden="true"
-      className={`shrink-0 ${className}`}
+      className={`inline-block shrink-0 align-middle ${className}`}
     />
   );
 }
