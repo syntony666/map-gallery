@@ -196,7 +196,11 @@ export function PhotoEditPage() {
             />
           }
         >
-          <p className="min-w-0 flex-1 truncate text-ink-muted">編輯模式</p>
+          <p className="min-w-0 flex-1 truncate text-ink-muted">
+            {isEditMode
+              ? "編輯照片資訊：修改標題、日期、說明與相簿"
+              : "新增照片：填寫標題、日期、說明與相簿"}
+          </p>
         </BottomBar>
       </BottomBarStack>
     </main>
