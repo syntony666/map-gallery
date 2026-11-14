@@ -45,7 +45,7 @@ export function PhotoCard({
           className={`absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded border text-sm ${
             isSelected
               ? "border-primary bg-primary text-primary-fg"
-              : "border-line bg-surface/80 text-transparent"
+              : "border-line bg-surface/70 text-transparent"
           }`}
           aria-hidden="true"
         >
@@ -63,14 +63,13 @@ export function PhotoCard({
         />
       </span>
 
-      {/* Caption floats as an inset box near the image's bottom edge;
-          translucent surface + blur keep the photo readable through it. */}
-      <div className="absolute inset-x-2 bottom-2 rounded bg-surface/80 px-3 py-2 backdrop-blur-sm">
+      <div className="absolute inset-x-2 bottom-2 rounded bg-surface/70 px-3 py-2 backdrop-blur-sm">
         <h3 className="truncate font-medium">{photo.title}</h3>
 
-        {/* Always reserves two summary lines so every caption box has the
-            same height; line-clamp truncates anything longer. */}
-        <p className="mt-1 line-clamp-2 min-h-10 text-sm text-ink-muted">
+        <p
+          className="mt-1 hidden line-clamp-2 min-h-10 text-sm text-ink-muted
+            sm:block"
+        >
           {photo.summary}
         </p>
       </div>
