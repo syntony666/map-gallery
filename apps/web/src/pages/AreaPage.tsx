@@ -199,10 +199,10 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           photos={photos}
           isSelectionMode={!!UI.isPhotoSelectMode || UI.isAreaEditMode}
           selectedPhotoIds={UI.selectedPhotoIds}
-          onOpenPhoto={
+          photoTo={
             UI.isEditMode
               ? undefined
-              : (photoId) => navigate(`/area/${area.id}/photo/${photoId}`)
+              : (photoId) => `/area/${area.id}/photo/${photoId}`
           }
           onTogglePhotoSelection={actions.togglePhotoSelection}
         />

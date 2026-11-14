@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import type { PhotoDetail } from "../../types/gallery.type";
 
 type PhotoInfoProps = {
@@ -6,7 +6,6 @@ type PhotoInfoProps = {
 };
 
 export function PhotoInfo({ photo }: PhotoInfoProps) {
-  const navigate = useNavigate();
   return (
     <section className="glass rounded-md p-5 shadow-sm">
       <div>
@@ -18,18 +17,14 @@ export function PhotoInfo({ photo }: PhotoInfoProps) {
       {photo.collections.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {photo.collections.map((collection) => (
-            <button
+            <Link
               key={collection.id}
-              type="button"
-              onClick={() =>
-                navigate(`/area/${photo.areaId}`, {
-                  state: { collectionId: collection.id },
-                })
-              }
+              to={`/area/${photo.areaId}`}
+              state={{ collectionId: collection.id }}
               className="rounded-full my-2 px-2 py-1 text-sm text-accent bg-fill/80 hover:bg-fill"
             >
               #{collection.name}
-            </button>
+            </Link>
           ))}
         </div>
       )}
