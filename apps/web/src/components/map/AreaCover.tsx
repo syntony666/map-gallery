@@ -19,7 +19,7 @@ export function AreaCover({
   if (!src || failedSrc === src) {
     return (
       <span
-        className={`flex items-center justify-center bg-fill text-ink-faint ${className}`}
+        className={`flex items-center justify-center bg-fill/50 text-ink-faint ${className}`}
       >
         <Icon name="bi-images" className={iconClassName} />
       </span>

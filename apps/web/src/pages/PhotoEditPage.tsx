@@ -117,7 +117,7 @@ export function PhotoEditPage() {
             value={form.image}
             onChange={(value) => updateField("image", value)}
           >
-            <div className="mt-2 aspect-square rounded-md bg-secondary-bg lg:aspect-4/3">
+            <div className="mt-2 aspect-square rounded-md bg-secondary-bg/50 lg:aspect-4/3">
               {form.image && (
                 <img
                   src={form.image}

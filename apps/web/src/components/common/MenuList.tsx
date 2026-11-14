@@ -58,7 +58,7 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
                   ? "bg-fill/70 font-medium text-ink-strong"
                   : row.danger
                     ? "text-danger hover:bg-danger/20"
-                    : "text-ink hover:bg-fill/70",
+                    : "text-ink hover:bg-fill/50",
               ].join(" ")}
             >
               <span className="flex min-w-0 items-center gap-2.5">
