@@ -10,21 +10,21 @@ type PageMeta = {
   image?: string | null;
 };
 
-let cachedIndexHtml: string | null | undefined;
+let indexHtmlCache: { mtimeMs: number; html: string } | undefined;
 
 function readIndexHtml(distPath: string): string | null {
-  if (cachedIndexHtml === undefined) {
-    try {
-      cachedIndexHtml = fs.readFileSync(
-        path.join(distPath, "index.html"),
-        "utf8",
-      );
-    } catch {
-      cachedIndexHtml = null;
-    }
-  }
+  const filePath = path.join(distPath, "index.html");
 
-  return cachedIndexHtml;
+  try {
+    const { mtimeMs } = fs.statSync(filePath);
+    if (indexHtmlCache?.mtimeMs !== mtimeMs) {
+      indexHtmlCache = { mtimeMs, html: fs.readFileSync(filePath, "utf8") };
+    }
+    return indexHtmlCache.html;
+  } catch {
+    indexHtmlCache = undefined;
+    return null;
+  }
 }
 
 function escapeAttr(value: string): string {
