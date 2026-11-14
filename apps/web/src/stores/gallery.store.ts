@@ -71,8 +71,8 @@ async function requestData<T>(
 
     throw new GalleryStoreError(
       response.status,
-      errorResponse?.error.message ?? `Request failed: ${response.status}`,
-      errorResponse?.error.code,
+      errorResponse?.error?.message ?? `Request failed: ${response.status}`,
+      errorResponse?.error?.code,
     );
   }
 
