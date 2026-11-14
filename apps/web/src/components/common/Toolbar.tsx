@@ -55,7 +55,7 @@ export function Toolbar({
       <section
         className={[
           "flex-wrap items-center justify-between gap-3 px-2",
-          "h-15 glass-thin rounded-md text-sm shadow-sm",
+          "h-15 max-lg:glass-thin max-lg:rounded-md text-sm max-lg:shadow-sm",
           bottomBar ? "hidden lg:flex" : "flex",
           className,
         ].join(" ")}
