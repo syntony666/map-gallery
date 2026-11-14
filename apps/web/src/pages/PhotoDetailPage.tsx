@@ -5,6 +5,7 @@ import { BottomBarStack } from "../components/common/BottomBarStack";
 import { ButtonGroup } from "../components/common/ButtonGroup";
 import { PhotoViewer } from "../components/photo-detail/PhotoViewer";
 import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
+import { EmptyState } from "../components/common/EmptyState";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
 import { pageBottomPad } from "../utils/layout-classes";
@@ -17,6 +18,7 @@ import { useViewMode } from "../hooks/useViewMode";
 
 export function PhotoDetailPage() {
   const { areaId, photoId } = useParams();
+  const navigate = useNavigate();
 
   const controller = usePhotoDetailPageController({ photoId, areaId });
 
@@ -31,9 +33,18 @@ export function PhotoDetailPage() {
     areaId: areaId ?? "",
   };
 
-  if (!controller.area || !controller.photo || controller.error) {
+  if (!photoId || !areaId || controller.error) {
     return (
       <PhotoDetailContent area={controller.area} photo={emptyPhoto} isError />
+    );
+  }
+
+  if (!controller.area || !controller.photo) {
+    return (
+      <main>
+        <TitleBar areaName="回到地圖" onBack={() => navigate("/")} />
+        <EmptyState title="載入中…" />
+      </main>
     );
   }
 
