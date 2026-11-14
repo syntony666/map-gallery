@@ -75,8 +75,8 @@ export function TaiwanRegions({
               id={`map-region-mask-${region.id}`}
               maskUnits="userSpaceOnUse"
             >
-              {/* Covers the full artwork extents; enclave holes are
-                  subtracted from it below. */}
+              {/* Covers the artwork extents; enclave holes are subtracted
+                  below. */}
               <rect
                 x={-1000}
                 y={-1000}
@@ -141,8 +141,8 @@ export function TaiwanRegions({
               className="map-region is-active"
               style={regionStyle(id)}
             >
-              {/* Lit-glass treatment for the emphasized tile: its own top
-                  sheen and a bright inner rim under the boundary stroke. */}
+              {/* Lit-glass emphasis: per-region sheen plus a bright inner
+                  rim under the boundary stroke. */}
               <g clipPath={`url(#map-region-clip-${region.id})`}>
                 {region.paths.map((d) => (
                   <path

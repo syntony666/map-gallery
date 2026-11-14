@@ -37,19 +37,16 @@
 }
 
 /* The shared frosted-glass surface: warm translucent fill over a
-   hairline edge, backdrop blur underneath. Pure white-on-white reads as
-   nothing on TERRA's near-white page, so the tint comes from the warm
-   secondary-mixed fill. Floaters pair it with shadow-lg, in-flow cards
-   with shadow-sm. */
+   hairline edge, backdrop blur underneath. The fill stays light so
+   whatever sits behind bleeds through the blur — heavier opacity reads
+   as a flat panel, not glass. Floaters pair it with shadow-lg, in-flow
+   cards with shadow-sm. */
 @utility glass {
-  /* Blur radius alone changes nothing over flat backgrounds — the 40%
-     fill plus saturate() let whatever sits behind actually bleed
-     through, which is what reads as frosted. */
   background: color-mix(in srgb, var(--color-fill) 40%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
-  /* Keep this unprefixed: the minifier auto-adds -webkit- for Safari,
-     but a hand-written -webkit- line makes it drop the standard one. */
-  backdrop-filter: blur(16px) saturate(150%);
+  /* Keep unprefixed — the minifier adds -webkit- for Safari but drops
+     the standard property when both are written by hand. */
+  backdrop-filter: blur(8px) saturate(150%);
 }
 
 /* Keep alt text hidden while an image is loading or broken; it still

@@ -119,10 +119,8 @@ export function TaiwanMap({
     });
   }, [shapes, crop, landBox]);
 
-  // An invisible rect extends the content bounds toward the floating chrome
-  // (side panel on lg+, bottom bar below) so fit, centering and the pan clamp
-  // all treat that screen space as part of the map: the island rests clear of
-  // the chrome and may slide under it, but never out of view.
+  // An invisible rect extends the content bounds toward the floating
+  // chrome so fit, centering and the pan clamp reserve that space.
   const bounds =
     crop && viewportSize.w > 0
       ? (() => {
@@ -254,18 +252,16 @@ export function TaiwanMap({
                 region.paths.map((d) => <path key={d} d={d} />),
               )}
             </clipPath>
-            {/* Frosted-acrylic sheen across the whole island: bright at the
-                top, clear through the middle, a cool shadow at the bottom
-                edge. Rendered under the translucent region fills so the
-                light reads through them. */}
+            {/* Frosted sheen across the island, painted under the
+                translucent region fills so the light reads through. */}
             <linearGradient id="map-sheen" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
               <stop offset="0.4" stopColor="#ffffff" stopOpacity="0.14" />
               <stop offset="0.7" stopColor="#ffffff" stopOpacity="0" />
               <stop offset="1" stopColor="#2e5768" stopOpacity="0.12" />
             </linearGradient>
-            {/* Stronger top light plus a bottom bounce for the selected
-                tile — clipped per region so it reads as its own lit pane. */}
+            {/* Stronger top light for the selected tile, clipped per
+                region. */}
             <linearGradient
               id="map-sheen-active"
               x1="0"
@@ -306,8 +302,8 @@ export function TaiwanMap({
                         <path key={d} d={d} className="map-canvas__land-fill" />
                       )),
                     )}
-                    {/* The gradient maps to this rect's box, so it must match
-                        the island bounds; clip keeps it off the sea. */}
+                    {/* The gradient maps to this rect's box; clip keeps it
+                        off the sea. */}
                     {landBox && (
                       <rect
                         x={landBox.x}

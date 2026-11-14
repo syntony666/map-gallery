@@ -108,7 +108,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         actions.titleBar,
       );
 
-  // The done button lives in the collection toolbar, not the title bar.
   const collectionDoneGroup: ButtonActionGroup[] = [
     {
       id: "collection-edit-done",
@@ -219,8 +218,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   };
 
-  // Reserve space for the floating bottom bar below lg; every
-  // non-readonly mode has one now.
+  // Reserve space for the floating bottom bar below lg.
   const needsBottomBarSpace = !readonly;
 
   return (
@@ -394,7 +392,6 @@ function buildButtons(
 
   if (areaName.length === 0 || !showActions) return [];
   if (!isEditMode) return browseButtons;
-  // Collection edit puts its done button in the manage toolbar instead.
   return isCollectionEditMode ? [] : editButtons;
 }
 
