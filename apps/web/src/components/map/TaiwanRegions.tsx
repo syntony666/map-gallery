@@ -141,6 +141,26 @@ export function TaiwanRegions({
               className="map-region is-active"
               style={regionStyle(id)}
             >
+              {/* Lit-glass treatment for the emphasized tile: its own top
+                  sheen and a bright inner rim under the boundary stroke. */}
+              <g clipPath={`url(#map-region-clip-${region.id})`}>
+                {region.paths.map((d) => (
+                  <path
+                    key={d}
+                    d={d}
+                    fill="url(#map-sheen-active)"
+                    mask={regionMaskUrl(region)}
+                  />
+                ))}
+                {region.paths.map((d) => (
+                  <path
+                    key={d}
+                    d={d}
+                    className="map-region__rim"
+                    mask={regionMaskUrl(region)}
+                  />
+                ))}
+              </g>
               <RegionStrokes region={region} />
             </g>
           );

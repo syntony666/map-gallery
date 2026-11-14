@@ -185,6 +185,16 @@ img {
   stroke-width: 2px;
 }
 
+/* Bright inner edge on the emphasized tile — clipped to the region so it
+   reads as the lit rim of an acrylic pane. */
+.map-region__rim {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.55);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
 .map-page {
   height: 100dvh;
   overflow: hidden;

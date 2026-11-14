@@ -264,6 +264,20 @@ export function TaiwanMap({
               <stop offset="0.7" stopColor="#ffffff" stopOpacity="0" />
               <stop offset="1" stopColor="#2e5768" stopOpacity="0.12" />
             </linearGradient>
+            {/* Stronger top light plus a bottom bounce for the selected
+                tile — clipped per region so it reads as its own lit pane. */}
+            <linearGradient
+              id="map-sheen-active"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="0" stopColor="#ffffff" stopOpacity="0.6" />
+              <stop offset="0.35" stopColor="#ffffff" stopOpacity="0.22" />
+              <stop offset="0.75" stopColor="#ffffff" stopOpacity="0.04" />
+              <stop offset="1" stopColor="#ffffff" stopOpacity="0.3" />
+            </linearGradient>
           </defs>
           {/* svg-pan-zoom adopts this group as its transform viewport; it must
               stay the only non-defs child and carry no transform attribute. */}
