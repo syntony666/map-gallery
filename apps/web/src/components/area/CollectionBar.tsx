@@ -27,13 +27,9 @@ export function CollectionBar({
   }
 
   return (
-    <section className="flex gap-3 overflow-x-auto -mx-4 px-4">
+    <section className="flex gap-3 overflow-x-auto -mx-4 px-4 pt-1">
       {isEditMode && onAdd && (
-        <button
-          type="button"
-          onClick={onAdd}
-          className="shrink-0 overflow-hidden"
-        >
+        <button type="button" onClick={onAdd} className="shrink-0">
           <span className="collection-item flex h-18 w-18 items-center justify-center rounded-full bg-fill text-2xl text-ink-muted sm:h-24 sm:w-24">
             <i className="bi bi-plus-lg" />
           </span>

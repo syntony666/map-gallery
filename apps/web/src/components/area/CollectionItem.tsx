@@ -16,16 +16,16 @@ export function CollectionItem({
     <button
       type="button"
       onClick={onClick}
-      className={`flex shrink-0 flex-col overflow-hidden ${isSelected ? "" : "opacity-60"}`}
+      className={`flex shrink-0 flex-col ${isSelected ? "" : "opacity-60"}`}
     >
       {collection.coverImage ? (
-        <span className="img-loading self-start rounded-full">
+        <span className="collection-item img-loading self-start rounded-full">
           <ShimmerImg
             src={collection.coverImage}
             alt={collection.name}
             loading="lazy"
             decoding="async"
-            className="collection-item h-18 w-18 rounded-full object-cover sm:h-24 sm:w-24"
+            className="h-18 w-18 rounded-full object-cover sm:h-24 sm:w-24"
           />
         </span>
       ) : (
