@@ -1,13 +1,26 @@
 const STORAGE_KEY = "map-gallery:adminToken";
 
+let cachedToken: string | null | undefined;
+
 export function getAdminToken(): string | null {
-  return localStorage.getItem(STORAGE_KEY);
+  if (cachedToken === undefined) {
+    try {
+      cachedToken = localStorage.getItem(STORAGE_KEY);
+    } catch {
+      cachedToken = null;
+    }
+  }
+  return cachedToken;
 }
 
 function setAdminToken(token: string): void {
-  localStorage.setItem(STORAGE_KEY, token);
+  cachedToken = token;
+  try {
+    localStorage.setItem(STORAGE_KEY, token);
+  } catch {
+    // Storage unavailable; the token still applies to this session.
+  }
 }
-
 async function checkToken(token: string): Promise<boolean> {
   const response = await fetch("/api/v1/auth/check", {
     headers: { Authorization: `Bearer ${token}` },

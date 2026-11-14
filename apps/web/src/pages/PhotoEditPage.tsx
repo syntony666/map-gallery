@@ -11,6 +11,7 @@ import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEdito
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
 import { usePreventZoom } from "../hooks/usePreventZoom";
+import { inputClassName } from "../utils/field-classes";
 import { useViewMode } from "../hooks/useViewMode";
 
 export function PhotoEditPage() {
@@ -90,9 +91,6 @@ export function PhotoEditPage() {
       ],
     },
   ];
-
-  const inputClassName =
-    "rounded border border-line bg-surface px-2 py-2 text-sm text-ink outline-none";
 
   return (
     <main className="grid gap-4 pb-12 lg:pb-0">

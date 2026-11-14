@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import { BottomBar } from "../components/common/BottomBar";
 import { BottomBarOverlay } from "../components/common/BottomBarOverlay";
 import { BottomBarStack } from "../components/common/BottomBarStack";
-import { menuSections } from "../types/menu.type";
+import { menuSections } from "../utils/menu";
 import { Button } from "../components/common/Button";
 import { ButtonGroup } from "../components/common/ButtonGroup";
 import { CollectionBar } from "../components/area/CollectionBar";
@@ -20,6 +20,7 @@ import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { usePreventZoom } from "../hooks/usePreventZoom";
+import { inputClassName } from "../utils/field-classes";
 import { useViewMode } from "../hooks/useViewMode";
 import { getPhotoGridHeading } from "../utils/photo-grid-heading";
 
@@ -237,8 +238,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           value={draftDescription}
           onChange={(event) => actions.updateDescription(event.target.value)}
           rows={3}
-          className="rounded border border-line bg-surface px-2 py-2 
-            text-sm text-ink outline-none"
+          className={inputClassName}
         />
       ) : (
         <CollectionBar
