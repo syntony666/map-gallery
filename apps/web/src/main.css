@@ -36,13 +36,12 @@
   --color-danger: var(--sl-danger);
 }
 
-/* The shared frosted-glass surface: warm translucent fill over a
-   hairline edge, backdrop blur underneath. The fill stays light so
-   whatever sits behind bleeds through the blur — heavier opacity reads
-   as a flat panel, not glass. Floaters pair it with shadow-lg, in-flow
-   cards with shadow-sm. */
+/* The shared frosted-glass surface: mostly-solid warm fill over a
+   hairline edge, backdrop blur underneath. 75% fill keeps a hint of
+   the map bleeding through without competing with the content on top.
+   Floaters pair it with shadow-lg, in-flow cards with shadow-sm. */
 @utility glass {
-  background: color-mix(in srgb, var(--color-fill) 40%, transparent);
+  background: color-mix(in srgb, var(--color-fill) 75%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
   /* Keep unprefixed — the minifier adds -webkit- for Safari but drops
      the standard property when both are written by hand. */
@@ -122,7 +121,7 @@ img {
 /* Optically align the inline description icon with adjacent text. */
 .desc-icon {
   position: relative;
-  top: 0.1em;
+  /* top: 0.2em; */
   margin-right: 0.4em;
 }
 
