@@ -211,14 +211,27 @@ img {
   }
 
   /* Mount animation for floating chrome (FloatingCard + toasts).
-     Exit animation needs a JS-driven removal delay — intentionally
-     omitted. */
+     Adding .overlay-exit swaps the animation name, replaying it as
+     the exit keyframes — declared after .overlay-enter so the name
+     longhand wins at equal specificity. */
   .overlay-enter {
     animation: overlay-in 180ms ease-out;
   }
 
+  .overlay-exit {
+    animation-name: overlay-out;
+    animation-timing-function: ease-in;
+  }
+
   @keyframes overlay-in {
     from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+
+  @keyframes overlay-out {
+    to {
       opacity: 0;
       translate: 0 8px;
     }

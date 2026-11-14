@@ -1,6 +1,7 @@
 import { Button } from "./Button";
 import { FloatingCard } from "./FloatingCard";
 import { MenuHeading, MenuList } from "./MenuList";
+import { useDelayedUnmount } from "../../hooks/useDelayedUnmount";
 import type { MenuSection } from "../../types/menu.type";
 
 type BottomBarOverlayProps = {
@@ -27,7 +28,8 @@ export function BottomBarOverlay({
   dividers,
   className = "",
 }: BottomBarOverlayProps) {
-  if (!open) return null;
+  const mounted = useDelayedUnmount(open || null);
+  if (!mounted) return null;
 
   return (
     <>
@@ -41,6 +43,7 @@ export function BottomBarOverlay({
         className={[
           "absolute inset-x-0 bottom-[calc(100%_+_1rem)] flex",
           "max-h-[calc(100dvh-10rem)] flex-col overflow-hidden py-2 px-2 md:left-auto md:w-72",
+          open ? "" : "overlay-exit",
           className,
         ].join(" ")}
       >

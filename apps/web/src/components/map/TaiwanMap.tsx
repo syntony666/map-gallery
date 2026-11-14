@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import svgPanZoom from "svg-pan-zoom";
 import { useAsyncData } from "../../hooks/useAsyncData";
+import { useDelayedUnmount } from "../../hooks/useDelayedUnmount";
 import type { Area } from "../../types/gallery.type";
 import type { MapBox } from "./mapSizing";
 import { parseRegionsSvg } from "./regions";
@@ -67,6 +68,7 @@ export function TaiwanMap({
     [],
     { errorMessage: "無法載入地圖資料" },
   );
+  const toastError = useDelayedUnmount(error);
   const stageRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const viewportRef = useRef<SVGGElement>(null);
@@ -281,9 +283,11 @@ export function TaiwanMap({
         </svg>
       </div>
 
-      {error && (
-        <div className="overlay-enter pointer-events-none absolute left-4 top-4 z-10 rounded bg-surface px-3 py-2 text-sm text-danger shadow">
-          {error}
+      {toastError && (
+        <div
+          className={`overlay-enter ${error ? "" : "overlay-exit"} pointer-events-none absolute left-4 top-4 z-10 rounded bg-surface px-3 py-2 text-sm text-danger shadow`}
+        >
+          {toastError}
         </div>
       )}
     </div>

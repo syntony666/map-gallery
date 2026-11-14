@@ -6,6 +6,7 @@ import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
 import { AreaCover } from "./AreaCover";
+import { useDelayedUnmount } from "../../hooks/useDelayedUnmount";
 
 type DistrictBottomBarProps = {
   area: Area | null;
@@ -29,6 +30,11 @@ export function DistrictBottomBar({
   collapsed,
   overlay,
 }: DistrictBottomBarProps) {
+  /* cardArea keeps the last area during the exit window so the card
+     still has content while it animates out. */
+  const cardOpen = area !== null && !collapsed;
+  const cardArea = useDelayedUnmount(cardOpen ? area : null);
+
   return (
     <BottomBarStack overlay={overlay} className="lg:hidden">
       {area === null ? (
@@ -52,32 +58,34 @@ export function DistrictBottomBar({
         </BottomBar>
       ) : null}
 
-      {area !== null && !collapsed && (
-        <FloatingCard className="hidden items-center gap-3 px-4 py-3 md:max-lg:flex">
+      {cardArea && (
+        <FloatingCard
+          className={`hidden items-center gap-3 px-4 py-3 md:max-lg:flex ${cardOpen ? "" : "overlay-exit"}`}
+        >
           <AreaCover
-            src={area.coverImage}
+            src={cardArea.coverImage}
             className="h-12 w-20 shrink-0 rounded-md object-cover"
           />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-ink-strong">
-              {area.name}
+              {cardArea.name}
               <span className="font-normal text-ink-muted">
                 {" "}
-                • {area.photoCount}張照片
+                • {cardArea.photoCount}張照片
               </span>
             </p>
-            {area.description && (
+            {cardArea.description && (
               <p
                 className="mt-0.5 line-clamp-2 text-xs leading-relaxed
                   text-ink-secondary"
               >
                 <i className="bi bi-chat-square-heart" />
-                {area.description}
+                {cardArea.description}
               </p>
             )}
           </div>
           <Button
-            to={`/area/${area.id}`}
+            to={`/area/${cardArea.id}`}
             label="查看內容"
             icon="bi-arrow-up-right"
             className="shrink-0"
@@ -93,14 +101,14 @@ export function DistrictBottomBar({
         </FloatingCard>
       )}
 
-      {area !== null && !collapsed && (
+      {cardArea && (
         <FloatingCard
-          className="flex max-h-[75dvh] flex-col overflow-hidden p-5
-            md:hidden"
+          className={`flex max-h-[75dvh] flex-col overflow-hidden p-5
+            md:hidden ${cardOpen ? "" : "overlay-exit"}`}
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-ink-strong">
-              {area.name}
+              {cardArea.name}
             </h2>
             <span className="flex items-center gap-1.5">
               {actions}
@@ -113,11 +121,11 @@ export function DistrictBottomBar({
             </span>
           </div>
           <div className="scroll-body">
-            <DistrictInfo area={area} heading={false} link={false} />
+            <DistrictInfo area={cardArea} heading={false} link={false} />
           </div>
           <div className="mt-3 flex justify-end">
             <Button
-              to={`/area/${area.id}`}
+              to={`/area/${cardArea.id}`}
               label="查看內容"
               iconEnd="bi-arrow-right"
             />
