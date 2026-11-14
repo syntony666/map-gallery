@@ -9,16 +9,14 @@
     padding 0.1s ease;
 }
 
-/* 桌機／滑鼠 */
 @media (hover: hover) {
   .collection-item:hover {
-    border: 2px solid var(--color-line); /* 最外圈 */
-    padding: 2px; /* 中間白圈的寬度 */
-    background-color: var(--color-surface); /* 白圈 */
+    border: 2px solid var(--color-line);
+    padding: 2px;
+    background-color: var(--color-surface);
   }
 }
 
-/* 手機／手指按住時 */
 .collection-item:active {
   border: 2px solid var(--color-line);
   padding: 2px;

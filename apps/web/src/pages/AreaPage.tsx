@@ -123,7 +123,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     },
   ];
 
-  // 編輯照片按鈕展開的浮層選單內容
   const photoMenuGroups: ButtonActionGroup[] =
     !UI.isEditMode && !readonly
       ? [
@@ -225,7 +224,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     <main
       className={`grid gap-4 [overflow-anchor:none] ${needsBottomBarSpace ? "pb-12 lg:pb-0" : ""}`}
     >
-      {/* 標題列 */}
       <TitleBarContent
         areaName={area.name}
         description={
@@ -235,7 +233,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       />
 
       {UI.isAreaEditMode && draftDescription !== null ? (
-        /* 說明編輯區 編輯時相簿列隱藏 */
         <textarea
           value={draftDescription}
           onChange={(event) => actions.updateDescription(event.target.value)}
@@ -244,7 +241,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             text-sm text-ink outline-none"
         />
       ) : (
-        /* 橫向相簿列 */
         <CollectionBar
           key={UI.isCollectionEditMode ? "editing" : "browse"}
           collections={collections}
@@ -257,7 +253,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         />
       )}
 
-      {/* Edit mode 的相簿管理列 */}
       {UI.isCollectionEditMode ? (
         <CollectionManageToolbar
           collection={
@@ -271,7 +266,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         />
       ) : null}
 
-      {/* 搜尋、篩選與排序列 */}
       {!UI.isEditMode && (
         <AreaToolbar
           keyword={filters.keyword}
@@ -289,10 +283,8 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         />
       )}
 
-      {/* 景點卡片區 */}
       {renderPhotoSection()}
 
-      {/* <lg 的浮動操作列：md–lg 圖加字、<md 純圖示 */}
       {titleButtons.length > 0 && (
         <BottomBarStack
           className="lg:hidden"
