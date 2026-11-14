@@ -64,7 +64,7 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
             >
               <span className="flex min-w-0 items-center gap-2.5">
                 {row.icon && (
-                  <i className={`${row.icon} text-lg`} aria-hidden="true" />
+                  <i className={`bi ${row.icon} text-lg`} aria-hidden="true" />
                 )}
                 <span className="truncate">{row.label}</span>
               </span>
