@@ -26,7 +26,7 @@ export function PhotoInfo({ photo }: PhotoInfoProps) {
                   state: { collectionId: collection.id },
                 })
               }
-              className="rounded-full my-1 px-2 py-1 text-sm text-accent bg-fill/80 hover:bg-fill"
+              className="rounded-full my-2 px-2 py-1 text-sm text-accent bg-fill/80 hover:bg-fill"
             >
               #{collection.name}
             </button>
@@ -35,7 +35,7 @@ export function PhotoInfo({ photo }: PhotoInfoProps) {
       )}
 
       {photo.summary && (
-        <p className=" mt-5 font-medium leading-7 text-ink">
+        <p className="font-medium leading-7 text-ink">
           {photo.summary}
         </p>
       )}
