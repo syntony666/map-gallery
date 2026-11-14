@@ -3,7 +3,7 @@ import type { CollectionManageToolbarAction } from "../components/area/Collectio
 import { useAreaEditor } from "./useAreaEditor";
 import { useAreaState } from "./useAreaState";
 import { useAsyncData } from "./useAsyncData";
-import { areaPageReducer, initialAreaPageUIState } from "./useAreaStateReducer";
+import { areaPageReducer, initialAreaPageUIState } from "./area-page-reducer";
 import type { Collection } from "../types/gallery.type";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
