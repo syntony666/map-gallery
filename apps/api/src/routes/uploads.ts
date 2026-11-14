@@ -73,6 +73,22 @@ uploadsRoute.post("/", async (context) => {
   return context.json({ image: `/uploads/${name}` }, 201);
 });
 
+uploadsRoute.delete("/:name", async (context) => {
+  const name = context.req.param("name");
+
+  if (!/^[\w-]+\.\w{2,5}$/.test(name)) {
+    return fail(context, 400, "INVALID_BODY", "Invalid upload name.");
+  }
+
+  try {
+    await unlink(path.join(uploadsDir, name));
+  } catch {
+    // Missing files delete fine.
+  }
+
+  return context.body(null, 204);
+});
+
 /** Removes the file behind an /uploads/ path; other URLs are left alone. */
 export async function removeUploadedImage(image: string): Promise<void> {
   if (!image.startsWith("/uploads/")) {
