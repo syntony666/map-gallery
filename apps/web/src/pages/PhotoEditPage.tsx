@@ -2,6 +2,9 @@ import { useRef } from "react";
 import type { FormEvent } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { TitleBar } from "../components/common/TitleBar";
+import { BottomBar } from "../components/common/BottomBar";
+import { BottomBarStack } from "../components/common/BottomBarStack";
+import { ButtonGroup } from "../components/common/ButtonGroup";
 import { EmptyState } from "../components/common/EmptyState";
 import { FieldLabel } from "../components/common/FieldLabel";
 import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEditor";
@@ -92,12 +95,12 @@ export function PhotoEditPage() {
     "rounded border border-line bg-surface px-2 py-2 text-sm text-ink outline-none";
 
   return (
-    <main className="grid gap-4">
+    <main className="grid gap-4 pb-12 lg:pb-0">
       <TitleBar
         areaName={`${area.name} — ${isEditMode ? "編輯照片" : "新增照片"}`}
         onBack={() => navigate(-1)}
         buttonGroup={titleButtons}
-        mobileActions={{ mobileMode: "inline" }}
+        mobileActions={{ mobileMode: "none", breakpoint: "lg" }}
       />
 
       <form
@@ -180,6 +183,22 @@ export function PhotoEditPage() {
           )}
         </div>
       </form>
+
+      <BottomBarStack className="lg:hidden">
+        <BottomBar
+          className="text-sm"
+          actions={
+            <ButtonGroup
+              groups={titleButtons}
+              mobileMode="inline"
+              breakpoint="md"
+              translucent
+            />
+          }
+        >
+          <p className="min-w-0 flex-1 truncate text-ink-muted">編輯模式</p>
+        </BottomBar>
+      </BottomBarStack>
     </main>
   );
 }

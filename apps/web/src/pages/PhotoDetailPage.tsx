@@ -116,9 +116,7 @@ function PhotoDetailContent({ area, photo, isError }: PhotoDetailContentProps) {
               />
             }
           >
-            <p className="min-w-0 flex-1 truncate text-ink-muted">
-              {photo.title}
-            </p>
+            <p className="min-w-0 flex-1 truncate text-ink-muted">編輯模式</p>
           </BottomBar>
         </BottomBarStack>
       )}
