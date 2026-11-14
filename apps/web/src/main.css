@@ -42,10 +42,13 @@
    secondary-mixed fill. Floaters pair it with shadow-lg, in-flow cards
    with shadow-sm. */
 @utility glass {
-  background: color-mix(in srgb, var(--color-fill) 65%, transparent);
+  /* Blur radius alone changes nothing over flat backgrounds — the 40%
+     fill plus saturate() let whatever sits behind actually bleed
+     through, which is what reads as frosted. */
+  background: color-mix(in srgb, var(--color-fill) 40%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
 }
 
 /* Keep alt text hidden while an image is loading or broken; it still
