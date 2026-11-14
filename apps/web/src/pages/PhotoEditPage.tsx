@@ -122,7 +122,7 @@ export function PhotoEditPage() {
           <TextField
             id="photo-image"
             label="圖片網址"
-            type="url"
+            type="text"
             required
             value={form.image}
             onChange={(value) => updateField("image", value)}
