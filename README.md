@@ -9,7 +9,7 @@ A personal photo gallery organized by geography — photos are grouped by area o
 
 ## Features
 
-- Interactive Taiwan map (Leaflet) — hover labels and popups to browse areas
+- Interactive Taiwan map (SVG, svg-pan-zoom + Hammer gestures) — pan, zoom, and select regions to browse areas
 - Photo grid per area with pagination, batch selection, and manage toolbars
 - Collections — group photos into named sets within each area (many-to-many)
 - Photo detail viewer and editor with collection tagging
@@ -17,7 +17,7 @@ A personal photo gallery organized by geography — photos are grouped by area o
 
 ## Stack
 
-- **Web** — React 19, Vite, Tailwind CSS 4, React Router, Leaflet / react-leaflet
+- **Web** — React 19, Vite, Tailwind CSS 4, React Router, svg-pan-zoom / hammerjs
 - **API** — Hono on Node.js, Drizzle ORM, better-sqlite3
 - **Repo** — npm workspaces, shared TypeScript types in `packages/shared`
 
