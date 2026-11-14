@@ -60,77 +60,90 @@ export function DistrictBottomBar({
 
       {cardArea && (
         <FloatingCard
-          key={cardArea.id}
           className={`hidden items-center gap-3 px-4 py-3 md:max-lg:flex ${cardOpen ? "" : "overlay-exit"}`}
         >
-          <AreaCover
-            src={cardArea.coverImage}
-            className="h-12 w-20 shrink-0 rounded-md object-cover"
-          />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-ink-strong">
-              {cardArea.name}
-              <span className="font-normal text-ink-muted">
-                {" "}
-                • {cardArea.photoCount}張照片
-              </span>
-            </p>
-            {cardArea.description && (
-              <p
-                className="mt-0.5 line-clamp-2 text-xs leading-relaxed
-                  text-ink-secondary"
-              >
-                <i className="bi bi-chat-square-heart" />
-                {cardArea.description}
+          {/* Keyed on the content, not the card — keying the FloatingCard
+              itself combined with useDelayedUnmount's render-phase update
+              duplicates the node on remount. */}
+          <div
+            key={cardArea.id}
+            className="overlay-enter flex min-w-0 flex-1 items-center gap-3"
+          >
+            <AreaCover
+              src={cardArea.coverImage}
+              className="h-12 w-20 shrink-0 rounded-md object-cover"
+            />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-ink-strong">
+                {cardArea.name}
+                <span className="font-normal text-ink-muted">
+                  {" "}
+                  • {cardArea.photoCount}張照片
+                </span>
               </p>
-            )}
+              {cardArea.description && (
+                <p
+                  className="mt-0.5 line-clamp-2 text-xs leading-relaxed
+                    text-ink-secondary"
+                >
+                  <i className="bi bi-chat-square-heart" />
+                  {cardArea.description}
+                </p>
+              )}
+            </div>
+            <Button
+              to={`/area/${cardArea.id}`}
+              label="查看內容"
+              icon="bi-arrow-up-right"
+              className="shrink-0"
+            />
+            <span className="flex shrink-0 items-center gap-1.5">
+              {actions}
+            </span>
+            <Button
+              raised
+              icon="bi-x-lg"
+              aria-label="關閉簡介"
+              onClick={onClose}
+              className="shrink-0"
+            />
           </div>
-          <Button
-            to={`/area/${cardArea.id}`}
-            label="查看內容"
-            icon="bi-arrow-up-right"
-            className="shrink-0"
-          />
-          <span className="flex shrink-0 items-center gap-1.5">{actions}</span>
-          <Button
-            raised
-            icon="bi-x-lg"
-            aria-label="關閉簡介"
-            onClick={onClose}
-            className="shrink-0"
-          />
         </FloatingCard>
       )}
 
       {cardArea && (
         <FloatingCard
-          key={cardArea.id}
           className={`flex max-h-[75dvh] flex-col overflow-hidden p-5
             md:hidden ${cardOpen ? "" : "overlay-exit"}`}
         >
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-base font-semibold text-ink-strong">
-              {cardArea.name}
-            </h2>
-            <span className="flex items-center gap-1.5">
-              {actions}
+          <div
+            key={cardArea.id}
+            className="overlay-enter flex min-h-0 flex-1 flex-col"
+          >
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-base font-semibold text-ink-strong">
+                {cardArea.name}
+              </h2>
+              <span className="flex items-center gap-1.5">
+                {actions}
+                <Button
+                  raised
+                  icon="bi-x-lg"
+                  aria-label="關閉簡介"
+                  onClick={onClose}
+                />
+              </span>
+            </div>
+            <div className="scroll-body">
+              <DistrictInfo area={cardArea} heading={false} link={false} />
+            </div>
+            <div className="mt-3 flex justify-end">
               <Button
-                raised
-                icon="bi-x-lg"
-                aria-label="關閉簡介"
-                onClick={onClose}
+                to={`/area/${cardArea.id}`}
+                label="查看內容"
+                iconEnd="bi-arrow-right"
               />
-            </span>
-          </div>
-          <div className="scroll-body">
-            <DistrictInfo area={cardArea} heading={false} link={false} />
-          </div>
-          <div className="mt-3 flex justify-end">
-            <Button
-              to={`/area/${cardArea.id}`}
-              label="查看內容"
-              iconEnd="bi-arrow-right"
-            />
+            </div>
           </div>
         </FloatingCard>
       )}
