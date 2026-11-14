@@ -30,8 +30,10 @@ export function CollectionBar({
     <section className="flex gap-3 overflow-x-auto -mx-4 px-4 pt-1">
       {isEditMode && onAdd && (
         <button type="button" onClick={onAdd} className="shrink-0">
-          <span className="collection-item flex h-18 w-18 items-center justify-center rounded-full bg-fill text-2xl text-ink-muted sm:h-24 sm:w-24">
-            <i className="bi bi-plus-lg" />
+          <span className="collection-item glass h-18 w-18 rounded-md p-1 sm:h-24 sm:w-24">
+            <span className="flex h-full w-full items-center justify-center rounded bg-fill/70 text-2xl text-ink-muted">
+              <i className="bi bi-plus-lg" />
+            </span>
           </span>
           <p className="mt-1 w-18 truncate text-xs text-ink-muted sm:w-24">
             新增相簿
