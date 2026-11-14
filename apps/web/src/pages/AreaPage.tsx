@@ -219,8 +219,14 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     );
   };
 
+  // Reserve space for the floating bottom bar below lg; every
+  // non-readonly mode has one now.
+  const needsBottomBarSpace = !readonly;
+
   return (
-    <main className="grid gap-4">
+    <main
+      className={`grid gap-4 ${needsBottomBarSpace ? "pb-20 lg:pb-0" : ""}`}
+    >
       {/* 標題列 */}
       <TitleBarContent
         areaName={area.name}
@@ -293,7 +299,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       {/* <lg 的浮動操作列：md–lg 圖加字、<md 純圖示 */}
       {titleButtons.length > 0 && (
         <BottomBarStack
-          inFlow
           className="lg:hidden"
           overlay={
             <BottomBarOverlay

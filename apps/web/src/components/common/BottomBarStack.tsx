@@ -6,10 +6,6 @@ type BottomBarStackProps = {
   /** Floating overlay anchored above the bar inside the same wrapper. */
   overlay?: ReactNode;
   className?: string;
-  /** Render in flow at the content's end instead of fixed — sticks to the
-      viewport bottom while scrolling, and hugs short pages instead of
-      leaving a gap. Only for stacks that sit last in the page flow. */
-  inFlow?: boolean;
 };
 
 /** The one place that owns bottom-bar placement: always fixed to the viewport,
@@ -19,7 +15,6 @@ export function BottomBarStack({
   children,
   overlay,
   className = "",
-  inFlow = false,
 }: BottomBarStackProps) {
   const ref = useRef<HTMLDivElement>(null);
   const prevCommitted = useRef(0);
@@ -67,7 +62,7 @@ export function BottomBarStack({
     <div
       ref={ref}
       className={[
-        inFlow ? "sticky z-50 mx-4" : "fixed inset-x-4 z-50",
+        "fixed inset-x-4 z-50",
         "bottom-[calc(0.5rem+env(safe-area-inset-bottom))]",
         className,
       ].join(" ")}
