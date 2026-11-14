@@ -48,13 +48,12 @@
   backdrop-filter: blur(8px) saturate(150%);
 }
 
-/* Lighter glass for toolbars and other low-chrome bars — the map (or
-   photo) behind should visibly bleed through since these rarely carry
-   dense text. Weaker blur keeps the background readable instead of
-   washing it to the same flat tone as `glass`. */
+/* Barely-there glass for toolbars and other low-chrome bars — over a
+   flat page background a heavy fill just reads as a solid panel, so
+   this tier is only a light tint plus the hairline edge. */
 @utility glass-thin {
-  background: color-mix(in srgb, var(--color-fill) 30%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-line) 60%, transparent);
+  background: color-mix(in srgb, var(--color-fill) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-line) 45%, transparent);
   backdrop-filter: blur(4px) saturate(120%);
 }
 
