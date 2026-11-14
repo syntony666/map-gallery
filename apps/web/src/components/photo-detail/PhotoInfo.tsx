@@ -8,7 +8,7 @@ type PhotoInfoProps = {
 export function PhotoInfo({ photo }: PhotoInfoProps) {
   const navigate = useNavigate();
   return (
-    <section className="lg:pt-1">
+    <section className="rounded-md bg-surface/70 p-5 shadow-sm backdrop-blur">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">{photo.title}</h1>
 
@@ -16,7 +16,7 @@ export function PhotoInfo({ photo }: PhotoInfoProps) {
       </div>
 
       {photo.collections.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-x-3 gap-y-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {photo.collections.map((collection) => (
             <button
               key={collection.id}
@@ -26,7 +26,7 @@ export function PhotoInfo({ photo }: PhotoInfoProps) {
                   state: { collectionId: collection.id },
                 })
               }
-              className="text-sm text-accent hover:text-primary"
+              className="rounded-full bg-fill/70 px-3 py-1 text-sm text-accent hover:bg-fill"
             >
               #{collection.name}
             </button>
