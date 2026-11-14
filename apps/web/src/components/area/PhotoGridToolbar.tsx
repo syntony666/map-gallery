@@ -49,22 +49,24 @@ export function PhotoGridToolbar({
     : [];
   return (
     <section>
-      <div className="glass-thin flex flex-wrap items-center gap-3 rounded-md p-2 shadow-sm">
-        <span className="px-1 text-lg font-semibold">{title}</span>
+      <div className="glass-thin flex flex-col gap-2 rounded-md p-2 shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="px-1 text-lg font-semibold">{title}</span>
 
-        {buttons.length > 0 && (
-          <div className="hidden items-center gap-2 lg:flex">
-            {buttons.map((button) => (
-              <Button key={button.id} size="md" {...button} />
-            ))}
-          </div>
-        )}
+          {buttons.length > 0 && (
+            <div className="hidden items-center gap-2 lg:flex">
+              {buttons.map((button) => (
+                <Button key={button.id} size="md" {...button} />
+              ))}
+            </div>
+          )}
+
+          <span className="ml-auto px-1 text-sm text-ink-muted">
+            {photoCount} 個項目
+          </span>
+        </div>
 
         {filters}
-
-        <span className="ml-auto px-1 text-sm text-ink-muted">
-          {photoCount} 個項目
-        </span>
       </div>
 
       {hint && <p className="mt-1 px-1 text-xs text-ink-muted">{hint}</p>}
