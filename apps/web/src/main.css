@@ -36,6 +36,18 @@
   --color-danger: var(--sl-danger);
 }
 
+/* The shared frosted-glass surface: warm translucent fill over a
+   hairline edge, backdrop blur underneath. Pure white-on-white reads as
+   nothing on TERRA's near-white page, so the tint comes from the warm
+   secondary-mixed fill. Floaters pair it with shadow-lg, in-flow cards
+   with shadow-sm. */
+@utility glass {
+  background: color-mix(in srgb, var(--color-fill) 55%, transparent);
+  border: 1px solid var(--color-line);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 /* Keep alt text hidden while an image is loading or broken; it still
    reaches assistive technology. */
 img {

@@ -14,7 +14,7 @@ export function AreaToolbar({
   onSortChange,
 }: PhotoToolbarProps) {
   return (
-    <section className="flex flex-wrap items-center gap-3 rounded-md bg-surface/70 p-2 shadow-sm backdrop-blur">
+    <section className="glass flex flex-wrap items-center gap-3 rounded-md p-2 shadow-sm">
       <input
         type="search"
         value={keyword}

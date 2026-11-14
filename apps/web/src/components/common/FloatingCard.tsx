@@ -21,7 +21,7 @@ export function FloatingCard({
     <Tag
       aria-label={ariaLabel}
       style={style}
-      className={`overlay-enter rounded-md bg-surface/70 shadow-lg backdrop-blur ${className}`}
+      className={`overlay-enter glass rounded-md shadow-lg ${className}`}
     >
       {children}
     </Tag>

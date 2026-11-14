@@ -8,7 +8,7 @@ type PhotoInfoProps = {
 export function PhotoInfo({ photo }: PhotoInfoProps) {
   const navigate = useNavigate();
   return (
-    <section className="rounded-md bg-surface/70 p-5 shadow-sm backdrop-blur">
+    <section className="glass rounded-md p-5 shadow-sm">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">{photo.title}</h1>
 

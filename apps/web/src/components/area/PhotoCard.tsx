@@ -45,7 +45,7 @@ export function PhotoCard({
           className={`absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded border text-sm ${
             isSelected
               ? "border-primary bg-primary text-primary-fg"
-              : "border-line bg-surface/70 text-transparent"
+              : "border-line bg-fill/70 text-transparent"
           }`}
           aria-hidden="true"
         >
@@ -63,7 +63,7 @@ export function PhotoCard({
         />
       </span>
 
-      <div className="absolute inset-x-2 bottom-2 rounded bg-surface/70 px-3 py-2 backdrop-blur">
+      <div className="glass absolute inset-x-2 bottom-2 rounded px-3 py-2">
         <h3 className="truncate text-xs sm:text-base sm:font-medium">
           {photo.title}
         </h3>
