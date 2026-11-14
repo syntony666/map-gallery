@@ -208,8 +208,8 @@ export function useAreaPageController({
         });
       }
 
-      await refetchCollections();
       areaState.refreshPhotos();
+      await refetchCollections();
       dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
     } catch (reason) {
       await dialogs.alert(
@@ -310,8 +310,8 @@ export function useAreaPageController({
 
     try {
       await galleryStore.deletePhotos(photoIds);
-      await refetchCollections();
       areaState.refreshPhotos();
+      await refetchCollections();
       dispatch({ type: "CONFIRM_PHOTO_DELETE" });
     } catch (reason) {
       await dialogs.alert(alertMessage(reason, "刪除失敗"));
