@@ -197,17 +197,22 @@ img {
    svg-pan-zoom writes its transform every frame and a tween there
    would lag the drag. */
 @media (prefers-reduced-motion: no-preference) {
-  *:not(.svg-pan-zoom_viewport, .svg-pan-zoom_viewport *) {
-    transition:
-      background-color 160ms ease,
-      border-color 160ms ease,
-      color 160ms ease,
-      outline-color 160ms ease,
-      fill 160ms ease,
-      stroke 160ms ease,
-      opacity 160ms ease,
-      box-shadow 160ms ease,
-      transform 160ms ease;
+  /* Kept in @layer base so utility classes like transition-all and
+     duration-300 still win on the elements that carry them — unlayered
+     this shorthand would clobber every Tailwind transition utility. */
+  @layer base {
+    *:not(.svg-pan-zoom_viewport, .svg-pan-zoom_viewport *) {
+      transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        outline-color 160ms ease,
+        fill 160ms ease,
+        stroke 160ms ease,
+        opacity 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+    }
   }
 
   /* Mount animation for floating chrome (FloatingCard + toasts).
