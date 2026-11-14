@@ -155,6 +155,17 @@ export function CollectionManageToolbar({
             mobileMode="none"
             breakpoint="lg"
           />
+          {extraGroups.flatMap((group) =>
+            group.buttons.map((button) => (
+              <Button
+                key={button.id}
+                size="md"
+                {...button}
+                labelClassName="hidden md:inline"
+                className="lg:hidden"
+              />
+            )),
+          )}
           {menuButton}
         </>
       }
