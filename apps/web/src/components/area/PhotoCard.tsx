@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import type { Photo } from "../../types/gallery.type";
 import { ShimmerImg } from "../common/ShimmerImg";
+import { Icon } from "../common/Icon";
 
 type PhotoCardProps = {
   photo: Photo;
@@ -41,7 +42,7 @@ export function PhotoCard({
           }`}
           aria-hidden="true"
         >
-          <i className="bi bi-check" />
+          <Icon name="bi-check" />
         </span>
       )}
 

@@ -1,6 +1,8 @@
 import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import { Link } from "react-router";
 import type { ButtonVariant } from "../../types/button.type";
+import { Icon } from "./Icon";
+import type { IconName } from "./Icon";
 
 export type ButtonSize = "sm" | "md";
 
@@ -14,8 +16,8 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
   ghost?: boolean;
   variant?: ButtonVariant;
   size?: ButtonSize;
-  icon?: string;
-  iconEnd?: string;
+  icon?: IconName;
+  iconEnd?: IconName;
   label?: string;
   /** The label rests collapsed to zero width and expands on hover/focus. */
   expandLabel?: boolean;
@@ -77,10 +79,7 @@ export function Button({
   const content = (
     <>
       {icon && (
-        <i
-          className={`bi ${icon} ${getVariantClassName(variant)}`}
-          aria-hidden="true"
-        />
+        <Icon name={icon} className={getVariantClassName(variant)} />
       )}
       {label && !iconOnly && (
         <span
@@ -99,7 +98,7 @@ export function Button({
         </span>
       )}
       {children}
-      {iconEnd && <i className={`bi ${iconEnd}`} aria-hidden="true" />}
+      {iconEnd && <Icon name={iconEnd} />}
     </>
   );
 

@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 import type { MenuRow, MenuSection } from "../../types/menu.type";
+import { Icon } from "./Icon";
+import type { IconName } from "./Icon";
 
 type MenuHeadingProps = {
   title: ReactNode;
-  titleIcon?: string;
+  titleIcon?: IconName;
 };
 
 /** Heading row of a menu: optional icon + title. Render it outside the
@@ -12,10 +14,7 @@ export function MenuHeading({ title, titleIcon }: MenuHeadingProps) {
   return (
     <h2 className="py-2 px-2 text-base font-semibold text-ink-strong">
       {titleIcon && (
-        <i
-          className={`bi ${titleIcon} mr-1.5 text-ink-secondary`}
-          aria-hidden="true"
-        />
+        <Icon name={titleIcon} className="mr-1.5 text-ink-secondary" />
       )}
       {title}
     </h2>
@@ -63,9 +62,7 @@ export function MenuList({ sections, dividers, onSelect }: MenuListProps) {
               ].join(" ")}
             >
               <span className="flex min-w-0 items-center gap-2.5">
-                {row.icon && (
-                  <i className={`bi ${row.icon} text-lg`} aria-hidden="true" />
-                )}
+                {row.icon && <Icon name={row.icon} className="text-lg" />}
                 <span className="truncate">{row.label}</span>
               </span>
               {row.meta && (

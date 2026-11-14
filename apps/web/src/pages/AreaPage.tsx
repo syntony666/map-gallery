@@ -14,7 +14,7 @@ import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
 import { PhotoPagination } from "../components/area/PhotoPagination";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
-import type { ButtonActionGroup } from "../types/button.type";
+import type { ButtonActionGroup, ButtonConfig } from "../types/button.type";
 import type { TitleBarActions } from "../hooks/useAreaPageController";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -111,7 +111,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
         {
           id: "done",
           label: "完成",
-          icon: "bi-check-lg text-primary",
+          icon: "bi-check-lg",
           variant: "primary",
           onClick: actions.titleBar.onDoneEdit ?? (() => alert("非預期操作")),
         },
@@ -138,7 +138,7 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
                       label: "刪除照片",
                       icon: "bi-trash3",
                       onClick: actions.startPhotoDeleteSelect,
-                    },
+                    } satisfies ButtonConfig,
                   ]
                 : []),
             ],
@@ -368,7 +368,7 @@ function buildButtons(
         {
           id: "cancel",
           label: "取消",
-          icon: "bi-x-lg text-danger",
+          icon: "bi-x-lg",
           variant: "danger",
           onClick: action.onCancelEdit ?? (() => alert("非預期操作")),
         },
@@ -376,7 +376,7 @@ function buildButtons(
           id: "save",
           label: "儲存",
           variant: "primary",
-          icon: "bi-check-lg text-primary",
+          icon: "bi-check-lg",
           onClick: action.onSaveEdit ?? (() => alert("非預期操作")),
         },
       ],

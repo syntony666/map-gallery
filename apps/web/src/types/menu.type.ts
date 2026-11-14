@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
+import type { IconName } from "../components/common/Icon";
 
 export type MenuRow = {
   id: string;
-  icon?: string;
+  icon?: IconName;
   label: ReactNode;
   /** Right-aligned muted text, e.g. a photo count. */
   meta?: ReactNode;

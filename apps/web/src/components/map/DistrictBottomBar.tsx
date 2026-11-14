@@ -6,6 +6,7 @@ import { Button } from "../common/Button";
 import { FloatingCard } from "../common/FloatingCard";
 import { DistrictInfo } from "./DistrictInfo";
 import { AreaCover } from "./AreaCover";
+import { Icon } from "../common/Icon";
 import { useDelayedUnmount } from "../../hooks/useDelayedUnmount";
 
 type DistrictBottomBarProps = {
@@ -86,7 +87,7 @@ export function DistrictBottomBar({
                   className="mt-0.5 line-clamp-2 text-xs leading-relaxed
                     text-ink-secondary"
                 >
-                  <i className="bi bi-chat-square-heart" />
+                  <Icon name="bi-chat-square-heart" className="desc-icon" />
                   {cardArea.description}
                 </p>
               )}

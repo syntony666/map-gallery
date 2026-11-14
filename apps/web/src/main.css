@@ -119,8 +119,8 @@ img {
   overflow-y: auto;
 }
 
-/* Optically align the heart-bubble icon with adjacent text. */
-.bi-chat-square-heart {
+/* Optically align the inline description icon with adjacent text. */
+.desc-icon {
   position: relative;
   top: 0.1em;
   margin-right: 0.4em;

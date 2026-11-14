@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Collection } from "../../types/gallery.type";
 import { FieldLabel } from "../common/FieldLabel";
+import { Icon } from "../common/Icon";
 
 type CollectionTagEditorProps = {
   collections: Collection[];
@@ -60,7 +61,7 @@ export function CollectionTagEditor({
               onClick={() => onToggle(collection.id)}
               className="hover:text-primary"
             >
-              <i className="bi bi-x" />
+              <Icon name="bi-x" />
             </button>
           </span>
         ))}

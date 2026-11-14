@@ -5,6 +5,7 @@ import type {
 } from "../../types/button.type";
 import { Button } from "./Button";
 import { ButtonGroup } from "./ButtonGroup";
+import { Icon } from "./Icon";
 
 type TitleBarComponentProps = {
   areaName: string;
@@ -34,9 +35,9 @@ export function TitleBar({
       <div className="flex items-center justify-between gap-4">
         <Heading className="min-w-0">
           <Button ghost onClick={handleBack} className="min-w-0">
-            <i
-              className="bi bi-arrow-left-short shrink-0 text-3xl leading-none
-                text-ink-strong"
+            <Icon
+              name="bi-arrow-left-short"
+              className="text-3xl leading-none text-ink-strong"
             />
 
             <span className="truncate text-2xl font-bold text-ink sm:text-3xl">
@@ -51,7 +52,7 @@ export function TitleBar({
       {description && (
         <div className="ml-3 text-sm text-ink-muted">
           <p className="flex items-start">
-            <i className="bi bi-chat-square-heart" />
+            <Icon name="bi-chat-square-heart" className="desc-icon" />
             <span>{description}</span>
           </p>
         </div>

@@ -38,7 +38,7 @@ export function PhotoGridToolbar({
                 icon: "bi-trash3",
                 iconOnly: true,
                 onClick: action.onDeletePhoto,
-              },
+              } satisfies ButtonConfig,
             ]
           : []),
       ]

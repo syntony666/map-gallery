@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon } from "../common/Icon";
 
 type AreaCoverProps = {
   src?: string;
@@ -20,7 +21,7 @@ export function AreaCover({
       <span
         className={`flex items-center justify-center bg-fill text-ink-faint ${className}`}
       >
-        <i className={`bi bi-images ${iconClassName ?? ""}`} />
+        <Icon name="bi-images" className={iconClassName} />
       </span>
     );
   }
