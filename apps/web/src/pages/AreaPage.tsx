@@ -170,16 +170,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             action={{
               onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
             }}
-            filters={
-              !UI.isEditMode ? (
-                <AreaToolbar
-                  keyword={filters.keyword}
-                  sort={filters.sort}
-                  onKeywordChange={filters.setKeyword}
-                  onSortChange={filters.setSort}
-                />
-              ) : undefined
-            }
           />
           <EmptyState
             title=""
@@ -204,16 +194,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
             onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
             onDeletePhoto: actions.startPhotoDeleteSelect,
           }}
-          filters={
-            !UI.isEditMode ? (
-              <AreaToolbar
-                keyword={filters.keyword}
-                sort={filters.sort}
-                onKeywordChange={filters.setKeyword}
-                onSortChange={filters.setSort}
-              />
-            ) : undefined
-          }
         />
 
         <PhotoGrid
@@ -286,6 +266,15 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
           extraGroups={collectionDoneGroup}
         />
       ) : null}
+
+      {!UI.isEditMode && (
+        <AreaToolbar
+          keyword={filters.keyword}
+          sort={filters.sort}
+          onKeywordChange={filters.setKeyword}
+          onSortChange={filters.setSort}
+        />
+      )}
 
       {UI.isPhotoDeleteSelectMode && (
         <PhotoSelectionToolbar

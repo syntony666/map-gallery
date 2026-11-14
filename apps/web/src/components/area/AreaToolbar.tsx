@@ -15,7 +15,7 @@ export function AreaToolbar({
   onSortChange,
 }: PhotoToolbarProps) {
   return (
-    <div className="flex min-w-40 flex-1 items-center gap-3">
+    <section className="flex flex-wrap items-center gap-3 max-lg:glass-thin max-lg:rounded-md max-lg:p-2 max-lg:shadow-sm">
       <input
         type="search"
         aria-label="搜尋景點或照片"
@@ -35,6 +35,6 @@ export function AreaToolbar({
         <option value="oldest">最舊</option>
         <option value="title">名稱</option>
       </select>
-    </div>
+    </section>
   );
 }
