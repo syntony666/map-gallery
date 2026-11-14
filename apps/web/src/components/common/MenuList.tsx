@@ -10,7 +10,7 @@ type MenuHeadingProps = {
     scrollable row area so it stays put while rows scroll. */
 export function MenuHeading({ title, titleIcon }: MenuHeadingProps) {
   return (
-    <h2 className="py-2 px-2 text-md font-semibold text-ink-strong">
+    <h2 className="py-2 px-2 text-base font-semibold text-ink-strong">
       {titleIcon && (
         <i
           className={`bi ${titleIcon} mr-1.5 text-ink-secondary`}
