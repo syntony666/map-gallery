@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useState } from "react";
 
 /** Delays unmounting conditional content so a CSS exit animation can
     play. Non-null `value` passes through; when it becomes null the
@@ -7,21 +7,17 @@ import { useEffect, useReducer, useRef } from "react";
     e.g. `useDelayedUnmount(open ? area : null)` for content that
     also needs the data during its exit. */
 export function useDelayedUnmount<T>(value: T | null, duration = 180) {
-  const [, forceRender] = useReducer((n: number) => n + 1, 0);
-  const last = useRef(value);
+  const [cached, setCached] = useState(value);
 
-  if (value !== null) {
-    last.current = value;
+  if (value !== null && value !== cached) {
+    setCached(value);
   }
 
   useEffect(() => {
     if (value !== null) return;
-    const timer = setTimeout(() => {
-      last.current = null;
-      forceRender();
-    }, duration);
+    const timer = setTimeout(() => setCached(null), duration);
     return () => clearTimeout(timer);
   }, [value, duration]);
 
-  return value !== null ? value : last.current;
+  return value !== null ? value : cached;
 }
