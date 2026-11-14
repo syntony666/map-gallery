@@ -1,4 +1,5 @@
 import { useViewMode } from "../../hooks/useViewMode";
+import { useDialogs } from "../../hooks/useDialogs";
 import { ensureAdminToken } from "../../utils/auth";
 import { Button, type ButtonSize } from "./Button";
 
@@ -21,9 +22,10 @@ export function ReadonlyToggle({
   className = "",
 }: ReadonlyToggleProps) {
   const { readonly, toggleReadonly } = useViewMode();
+  const dialogs = useDialogs();
 
   async function handleClick() {
-    if (readonly && !(await ensureAdminToken())) {
+    if (readonly && !(await ensureAdminToken(dialogs))) {
       return;
     }
 

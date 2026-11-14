@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useAsyncData } from "./useAsyncData";
+import { useDialogs } from "./useDialogs";
 import { galleryStore } from "../stores/gallery.store";
-import { alertError } from "../utils/alert";
+import { alertMessage } from "../utils/alert";
 import type { Collection, PhotoDetail } from "../types/gallery.type";
 
 export type PhotoEditForm = {
@@ -29,6 +30,7 @@ export function usePhotoEditPageController({
   areaId,
   photoId,
 }: UsePhotoEditPageControllerOptions) {
+  const dialogs = useDialogs();
   const [collections, setCollections] = useState<Collection[] | null>(null);
   const [form, setForm] = useState<PhotoEditForm | null>(null);
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
@@ -115,9 +117,11 @@ export function usePhotoEditPageController({
 
       return created;
     } catch (reason) {
-      alertError(reason, "新增失敗", {
-        COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
-      });
+      await dialogs.alert(
+        alertMessage(reason, "新增失敗", {
+          COLLECTION_NAME_CONFLICT: "已有相同名稱的相簿",
+        }),
+      );
       return null;
     }
   }
@@ -143,7 +147,7 @@ export function usePhotoEditPageController({
         ? await galleryStore.updatePhoto(photoId, payload)
         : await galleryStore.createPhoto({ areaId, ...payload });
     } catch (reason) {
-      alertError(reason, "儲存失敗");
+      await dialogs.alert(alertMessage(reason, "儲存失敗"));
       return null;
     } finally {
       setIsSubmitting(false);
