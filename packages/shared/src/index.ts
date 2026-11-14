@@ -3,3 +3,4 @@ export * from "./collection.type";
 export * from "./photo.type";
 export * from "./error.type";
 export * from "./site";
+export * from "./upload.type";

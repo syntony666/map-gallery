@@ -7,6 +7,7 @@ import { areasRoute } from "./routes/areas";
 import { collectionPhotosRoute } from "./routes/collection-photos";
 import { collectionsRoute } from "./routes/collections";
 import { photosRoute } from "./routes/photos";
+import { uploadsRoute } from "./routes/uploads";
 import { getAreaMeta, getHomeMeta, getPhotoMeta, serveMetaPage } from "./seo";
 
 export const app = new Hono();
@@ -44,6 +45,7 @@ app.route("/api/v1/areas", areasRoute);
 app.route("/api/v1/collections", collectionsRoute);
 app.route("/api/v1/collection-photos", collectionPhotosRoute);
 app.route("/api/v1/photos", photosRoute);
+app.route("/api/v1/uploads", uploadsRoute);
 
 app.all("/api/*", (context) => {
   return fail(context, 404, "NOT_FOUND", "API route not found.");
@@ -56,6 +58,11 @@ app.onError((error, context) => {
 
 // SPA static files; /api requests are handled by the routes above
 const distPath = path.resolve(import.meta.dirname, "../../web/dist");
+// serveStatic joins the full request path onto root, so root is the data
+// dir and /uploads/* lands inside data/uploads/.
+const dataPath = path.resolve(import.meta.dirname, "../data");
+
+app.use("/uploads/*", serveStatic({ root: dataPath }));
 
 app.get("/", (context, next) => {
   const page = serveMetaPage(distPath, getHomeMeta(), context.req.url);

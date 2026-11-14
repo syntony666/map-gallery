@@ -36,6 +36,9 @@ coverage
 *.db-shm
 *.db-wal
 
+# Uploaded photos
+apps/api/data/uploads/
+
 # Vite
 apps/web/dist
 

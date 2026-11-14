@@ -11,7 +11,8 @@ export type ErrorCode =
   | "INVALID_BODY"
   | "COLLECTION_NAME_CONFLICT"
   | "PHOTO_AREA_MISMATCH"
-  | "PHOTO_COLLECTION_NOT_FOUND";
+  | "PHOTO_COLLECTION_NOT_FOUND"
+  | "UPLOAD_TOO_LARGE";
 
 export type ErrorDataResponse = {
   error: {
