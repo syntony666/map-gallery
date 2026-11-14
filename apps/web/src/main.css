@@ -130,7 +130,7 @@ img {
 /* Optically align the inline description icon with adjacent text. */
 .desc-icon {
   position: relative;
-  /* top: 0.2em; */
+  top: -0.1em;
   margin-right: 0.4em;
 }
 

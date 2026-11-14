@@ -51,10 +51,8 @@ export function TitleBar({
 
       {description && (
         <div className="ml-3 text-sm text-ink-muted">
-          <p className="flex items-start">
-            <Icon name="bi-chat-square-heart" className="desc-icon" />
-            <span>{description}</span>
-          </p>
+          <Icon name="bi-chat-square-heart" className="desc-icon" />
+          <span>{description}</span>
         </div>
       )}
     </header>
