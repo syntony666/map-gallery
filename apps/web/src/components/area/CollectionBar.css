@@ -1,26 +1,26 @@
-/* Glass-magnet tile: the chip is a `glass` rounded square with the photo
-   inset inside it. The hover ring is drawn with box-shadow so the tile
-   itself never resizes. */
 .collection-item {
+  box-sizing: border-box;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgb(30 50 60 / 0.2);
-  transition: box-shadow 0.15s ease;
+  border: 0 solid transparent;
+  padding: 0;
+  background-clip: content-box;
+  transition:
+    border-width 0.1s ease,
+    padding 0.1s ease;
 }
 
 /* 桌機／滑鼠 */
 @media (hover: hover) {
   .collection-item:hover {
-    box-shadow:
-      0 0 0 2px var(--color-surface),
-      0 0 0 4px var(--color-line),
-      0 4px 10px rgb(30 50 60 / 0.2);
+    border: 2px solid var(--color-line); /* 最外圈 */
+    padding: 2px; /* 中間白圈的寬度 */
+    background-color: var(--color-surface); /* 白圈 */
   }
 }
 
 /* 手機／手指按住時 */
 .collection-item:active {
-  box-shadow:
-    0 0 0 2px var(--color-surface),
-    0 0 0 4px var(--color-line),
-    0 4px 10px rgb(30 50 60 / 0.2);
+  border: 2px solid var(--color-line);
+  padding: 2px;
+  background-color: var(--color-surface);
 }
