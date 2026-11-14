@@ -2,7 +2,7 @@ import encWasmUrl from "@jsquash/webp/codec/enc/webp_enc.wasm?url";
 import encSimdWasmUrl from "@jsquash/webp/codec/enc/webp_enc_simd.wasm?url";
 
 const MAX_EDGE = 1600;
-const WEBP_QUALITY = 0.9;
+const WEBP_QUALITY = 0.85;
 
 function encodeCanvas(
   canvas: HTMLCanvasElement,
