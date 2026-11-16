@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useAsyncData } from "./useAsyncData";
 import { useDialogs } from "./useDialogs";
+import { usePendingUpload } from "./usePendingUpload";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
-import { compressImage } from "../utils/image";
 import {
   createCollectionWithAlert,
   toggleInSet,
@@ -42,37 +42,7 @@ export function usePhotoEditPageController({
     Set<string>
   >(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  // The /uploads/ file this session sent but hasn't saved into a record
-  // yet; deleted on clear/cancel/leave so it never orphans.
-  const pendingUploadRef = useRef<string | null>(null);
-  const originalImageRef = useRef<string | null>(null);
-  const mountedRef = useRef(true);
-
-  useEffect(() => {
-    mountedRef.current = true;
-
-    const discardPending = (keepalive = false) => {
-      const pending = pendingUploadRef.current;
-
-      if (!pending) {
-        return;
-      }
-
-      pendingUploadRef.current = null;
-      void galleryStore.deleteUpload(pending, { keepalive });
-    };
-
-    const onPageHide = () => discardPending(true);
-
-    window.addEventListener("pagehide", onPageHide);
-
-    return () => {
-      window.removeEventListener("pagehide", onPageHide);
-      mountedRef.current = false;
-      discardPending();
-    };
-  }, []);
+  const uploads = usePendingUpload();
 
   const { data, error } = useAsyncData(
     () => {
@@ -95,7 +65,7 @@ export function usePhotoEditPageController({
     {
       errorMessage: "無法載入資料",
       onData: (d) => {
-        originalImageRef.current = d?.photo?.image ?? null;
+        uploads.setOwned(d?.photo?.image ?? null);
         setCollections(d?.collections ?? null);
         setSelectedCollectionIds(
           new Set(
@@ -149,44 +119,17 @@ export function usePhotoEditPageController({
   }
 
   async function uploadImage(file: File): Promise<void> {
-    setIsUploading(true);
+    const image = await uploads.upload(file, (reason) =>
+      dialogs.alert(alertMessage(reason, "上傳失敗")),
+    );
 
-    try {
-      const blob = await compressImage(file);
-      const { image } = await galleryStore.uploadImage(blob);
-
-      // The page left mid-upload; the file has no owner, drop it.
-      if (!mountedRef.current) {
-        await galleryStore.deleteUpload(image);
-        return;
-      }
-
-      const stale = pendingUploadRef.current;
-      pendingUploadRef.current = image;
+    if (image) {
       updateField("image", image);
-
-      if (stale) {
-        await galleryStore.deleteUpload(stale);
-      }
-    } catch (reason) {
-      if (mountedRef.current) {
-        await dialogs.alert(alertMessage(reason, "上傳失敗"));
-      }
-    } finally {
-      if (mountedRef.current) {
-        setIsUploading(false);
-      }
     }
   }
 
   async function clearImage(): Promise<void> {
-    const pending = pendingUploadRef.current;
-
-    if (pending && pending === form?.image) {
-      pendingUploadRef.current = null;
-      await galleryStore.deleteUpload(pending);
-    }
-
+    await uploads.clear(form?.image);
     updateField("image", "");
   }
 
@@ -211,25 +154,7 @@ export function usePhotoEditPageController({
         ? await galleryStore.updatePhoto(photoId, payload)
         : await galleryStore.createPhoto({ areaId, ...payload });
 
-      // The pending file is referenced by the record now; drop whatever
-      // it replaced and whatever the field no longer points at.
-      const pending = pendingUploadRef.current;
-      pendingUploadRef.current = null;
-
-      if (pending && pending !== saved.image) {
-        await galleryStore.deleteUpload(pending);
-      }
-
-      const original = originalImageRef.current;
-      originalImageRef.current = saved.image;
-
-      if (
-        original &&
-        original !== saved.image &&
-        original.startsWith("/uploads/")
-      ) {
-        await galleryStore.deleteUpload(original);
-      }
+      await uploads.settle(saved.image);
 
       return saved;
     } catch (reason) {
@@ -248,7 +173,7 @@ export function usePhotoEditPageController({
     error,
     isEditMode: Boolean(photoId),
     isSubmitting,
-    isUploading,
+    isUploading: uploads.isUploading,
     uploadImage,
     clearImage,
     updateField,
