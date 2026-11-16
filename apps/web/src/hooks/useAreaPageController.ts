@@ -11,11 +11,11 @@ import { createCollectionWithAlert } from "../utils/collections";
 import { useDialogs } from "./useDialogs";
 
 export type TitleBarActions = {
-  onEditArea?: () => void;
-  onEditCollection?: () => void;
-  onCancelEdit?: () => void;
-  onSaveEdit?: () => void;
-  onDoneEdit?: () => void;
+  onEditArea: () => void;
+  onEditCollection: () => void;
+  onCancelEdit: () => void;
+  onSaveEdit: () => void;
+  onDoneEdit: () => void;
 };
 
 type UseAreaPageControllerOptions = {
@@ -60,6 +60,11 @@ export function useAreaPageController({
       galleryStore.getCollectionsByAreaId(areaId).then(setSourceCollections),
     [areaId, setSourceCollections],
   );
+
+  async function refreshAfterMutation() {
+    areaState.refreshPhotos();
+    await refetchCollections();
+  }
 
   const areaState = useAreaState(
     areaId,
@@ -208,8 +213,7 @@ export function useAreaPageController({
         });
       }
 
-      areaState.refreshPhotos();
-      await refetchCollections();
+      await refreshAfterMutation();
       dispatch({ type: "CONFIRM_PHOTO_SELECTION" });
     } catch (reason) {
       await dialogs.alert(
@@ -310,8 +314,7 @@ export function useAreaPageController({
 
     try {
       await galleryStore.deletePhotos(photoIds);
-      areaState.refreshPhotos();
-      await refetchCollections();
+      await refreshAfterMutation();
       dispatch({ type: "CONFIRM_PHOTO_DELETE" });
     } catch (reason) {
       await dialogs.alert(alertMessage(reason, "刪除失敗"));

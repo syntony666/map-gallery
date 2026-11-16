@@ -14,15 +14,18 @@ import { EmptyState } from "../components/common/EmptyState";
 import { PhotoGridToolbar } from "../components/area/PhotoGridToolbar";
 import { PhotoPagination } from "../components/area/PhotoPagination";
 import { PhotoSelectionToolbar } from "../components/area/PhotoSelectionToolbar";
-import type { ButtonActionGroup, ButtonConfig } from "../types/button.type";
-import type { TitleBarActions } from "../hooks/useAreaPageController";
+import type { ButtonActionGroup } from "../types/button.type";
 import { useAreaPageController } from "../hooks/useAreaPageController";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useResetState } from "../hooks/useResetState";
-import { inputClassName } from "../utils/field-classes";
-import { pageBottomPad } from "../utils/layout-classes";
+import { inputClassName, pageBottomPad } from "../utils/ui-classes";
 import { useViewMode } from "../hooks/useViewMode";
 import { getPhotoGridHeading } from "../utils/photo-grid-heading";
+import {
+  buildCollectionDoneGroup,
+  buildPhotoMenuGroups,
+  buildTitleButtons,
+} from "../components/area/area-page-buttons";
 
 export function AreaPage() {
   const { areaId } = useParams();
@@ -94,56 +97,26 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
     collections,
   });
 
-  const titleButtons = readonly
-    ? []
-    : buildButtons(
-        area.name,
-        !UI.isPhotoSelectMode,
-        UI.isEditMode,
-        UI.isCollectionEditMode,
-        actions.titleBar,
-      );
+  const titleButtons =
+    readonly || !area.name || UI.isPhotoSelectMode
+      ? []
+      : buildTitleButtons({
+          isEditMode: UI.isEditMode,
+          isCollectionEditMode: UI.isCollectionEditMode,
+          action: actions.titleBar,
+        });
 
-  const collectionDoneGroup: ButtonActionGroup[] = [
-    {
-      id: "collection-edit-done",
-      buttons: [
-        {
-          id: "done",
-          label: "完成",
-          icon: "bi-check-lg",
-          variant: "primary",
-          onClick: actions.titleBar.onDoneEdit ?? (() => alert("非預期操作")),
-        },
-      ],
-    },
-  ];
+  const collectionDoneGroup = buildCollectionDoneGroup(
+    actions.titleBar.onDoneEdit,
+  );
 
-  const photoMenuGroups: ButtonActionGroup[] =
+  const photoMenuGroups =
     !UI.isEditMode && !readonly
-      ? [
-          {
-            id: "photo-actions",
-            buttons: [
-              {
-                id: "photo-add",
-                label: "新增照片",
-                icon: "bi-plus-lg",
-                onClick: () => navigate(`/area/${area.id}/photo/new`),
-              },
-              ...(filters.visiblePhotos && filters.visiblePhotos.length > 0
-                ? [
-                    {
-                      id: "photo-delete",
-                      label: "刪除照片",
-                      icon: "bi-trash3",
-                      onClick: actions.startPhotoDeleteSelect,
-                    } satisfies ButtonConfig,
-                  ]
-                : []),
-            ],
-          },
-        ]
+      ? buildPhotoMenuGroups({
+          hasPhotos: (filters.visiblePhotos?.length ?? 0) > 0,
+          onAddPhoto: () => navigate(`/area/${area.id}/photo/new`),
+          onDeletePhoto: actions.startPhotoDeleteSelect,
+        })
       : [];
 
   const renderPhotoSection = () => {
@@ -332,60 +305,6 @@ function AreaContent({ areaId, initialCollectionId }: AreaContentProps) {
       )}
     </main>
   );
-}
-
-function buildButtons(
-  areaName: string,
-  showActions: boolean,
-  isEditMode: boolean,
-  isCollectionEditMode: boolean,
-  action: TitleBarActions,
-): ButtonActionGroup[] {
-  const browseButtons: ButtonActionGroup[] = [
-    {
-      id: "title-browser",
-      buttons: [
-        {
-          id: "manage-description",
-          icon: "bi-pencil-square",
-          label: "編輯地區資訊",
-          onClick: action.onEditArea ?? (() => alert("非預期操作")),
-        },
-        {
-          id: "manage-album",
-          icon: "bi-journals",
-          label: "編輯相簿",
-          onClick: action.onEditCollection ?? (() => alert("非預期操作")),
-        },
-      ],
-    },
-  ];
-
-  const editButtons: ButtonActionGroup[] = [
-    {
-      id: "title-edit",
-      buttons: [
-        {
-          id: "cancel",
-          label: "取消",
-          icon: "bi-x-lg",
-          variant: "danger",
-          onClick: action.onCancelEdit ?? (() => alert("非預期操作")),
-        },
-        {
-          id: "save",
-          label: "儲存",
-          variant: "primary",
-          icon: "bi-check-lg",
-          onClick: action.onSaveEdit ?? (() => alert("非預期操作")),
-        },
-      ],
-    },
-  ];
-
-  if (areaName.length === 0 || !showActions) return [];
-  if (!isEditMode) return browseButtons;
-  return isCollectionEditMode ? [] : editButtons;
 }
 
 function TitleBarContent({
