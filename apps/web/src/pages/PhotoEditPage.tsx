@@ -11,7 +11,7 @@ import { TextField } from "../components/common/TextField";
 import { CollectionTagEditor } from "../components/photo-edit/CollectionTagEditor";
 import type { ButtonActionGroup } from "../types/button.type";
 import { usePhotoEditPageController } from "../hooks/usePhotoEditPageController";
-import { pageBottomPad } from "../utils/layout-classes";
+import { pageBottomPad } from "../utils/ui-classes";
 import { useViewMode } from "../hooks/useViewMode";
 
 function BackToMapBar() {

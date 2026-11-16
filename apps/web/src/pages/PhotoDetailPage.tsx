@@ -8,7 +8,7 @@ import { PhotoInfo } from "../components/photo-detail/PhotoInfo";
 import { EmptyState } from "../components/common/EmptyState";
 import { galleryStore } from "../stores/gallery.store";
 import { alertMessage } from "../utils/alert";
-import { pageBottomPad } from "../utils/layout-classes";
+import { pageBottomPad } from "../utils/ui-classes";
 import { useDialogs } from "../hooks/useDialogs";
 import type { Area, PhotoDetail } from "../types/gallery.type";
 import type { ButtonActionGroup } from "../types/button.type";

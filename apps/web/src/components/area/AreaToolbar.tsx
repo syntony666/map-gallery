@@ -1,5 +1,5 @@
 import type { SortOption } from "../../types/gallery.type";
-import { toolbarInputClassName } from "../../utils/field-classes";
+import { toolbarInputClassName } from "../../utils/ui-classes";
 
 type PhotoToolbarProps = {
   keyword: string;

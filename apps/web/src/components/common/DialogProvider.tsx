@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent, ReactNode } from "react";
 import { DialogsContext } from "../../hooks/useDialogs";
 import { useDelayedUnmount } from "../../hooks/useDelayedUnmount";
-import { inputClassName } from "../../utils/field-classes";
+import { inputClassName } from "../../utils/ui-classes";
 import { Button } from "./Button";
 import { FloatingCard } from "./FloatingCard";
 

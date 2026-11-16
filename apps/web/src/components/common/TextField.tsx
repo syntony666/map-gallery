@@ -1,6 +1,6 @@
 import type { ChangeEvent, ReactNode } from "react";
 import { FieldLabel } from "./FieldLabel";
-import { inputClassName } from "../../utils/field-classes";
+import { inputClassName } from "../../utils/ui-classes";
 
 type TextFieldProps = {
   id: string;
